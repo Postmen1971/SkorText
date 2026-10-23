@@ -1,5 +1,35 @@
-SAVED stage_super-lig 200 255535
-SAVED stage_white 200 196499
-SAVED stage_bl1 200 316394
-SAVED stage_rlsw 200 194567
-SAVED live 200 6608
+TRY stage/soccer/champions-league/league-stage/0 200 265621 True
+TRY stage/soccer/champions-league/league-phase/0 410 0 False
+TRY stage/soccer/champions-league/group-stage/0 410 0 False
+TRY stage/soccer/champions-league/0 404 53 False
+TRY stage/soccer/europa-league/league-stage/0 200 200109 True
+TRY stage/soccer/europa-league/league-phase/0 410 0 False
+TRY stage/soccer/europa-league/group-stage/0 410 0 False
+TRY stage/soccer/europa-league/0 404 53 False
+TRY stage/soccer/conference-league/league-stage/0 200 139651 True
+TRY stage/soccer/conference-league/league-phase/0 410 0 False
+TRY stage/soccer/conference-league/group-stage/0 410 0 False
+TRY stage/soccer/conference-league/0 404 53 False
+TRY stage/soccer/europa-conference-league/league-stage/0 410 0 False
+TRY stage/soccer/europa-conference-league/league-phase/0 410 0 False
+TRY stage/soccer/europa-conference-league/group-stage/0 410 0 False
+TRY stage/soccer/europa-conference-league/0 404 53 False
+TRY stage/soccer/uefa-champions-league/league-stage/0 410 0 False
+TRY stage/soccer/uefa-champions-league/league-phase/0 410 0 False
+TRY stage/soccer/uefa-champions-league/group-stage/0 410 0 False
+TRY stage/soccer/uefa-champions-league/0 404 53 False
+TRY stage/soccer/uefa-europa-league/league-stage/0 410 0 False
+TRY stage/soccer/uefa-europa-league/league-phase/0 410 0 False
+TRY stage/soccer/uefa-europa-league/group-stage/0 410 0 False
+TRY stage/soccer/uefa-europa-league/0 404 53 False
+TRY stage/soccer/uefa-conference-league/league-stage/0 410 0 False
+TRY stage/soccer/uefa-conference-league/league-phase/0 410 0 False
+TRY stage/soccer/uefa-conference-league/group-stage/0 410 0 False
+TRY stage/soccer/uefa-conference-league/0 404 53 False
+DATE 20261021 champions-league league-stage Champions League League Stage 60 9
+DATE 20261021 africa caf-champions-league-qualification Africa CAF Champions League: Qualification 223 2
+DATE 20261021 uefa-youth-league champions-league-path-2024 UEFA Youth League Champions League Path 109 9
+DATE 20261022 europa-league league-stage Europa League League Stage 36 18
+DATE 20261022 conference-league league-stage Conference League League Stage 62 18
+DATE 20261023 england championship England Championship 70 1
+DATE 20261023 africa caf-champions-league-qualification Africa CAF Champions League: Qualification 223 4
