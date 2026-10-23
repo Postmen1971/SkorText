@@ -24,38 +24,20 @@ jobs:
           import datetime
           OUT = []
           def print_(*a): return ' '.join(str(x) for x in a)
-          seen = {}
-          for off in range(-8, 3):
-              d = (datetime.date(2026,10,24) + datetime.timedelta(days=off)).strftime("%Y%m%d")
-              r = requests.get("https://prod-public-api.livescore.com/v1/api/app/date/soccer/%s/0?MD=1" % d, headers=H, timeout=20)
-              for st in r.json().get("Stages", []):
-                  c = st.get("Cnm") or ""
-                  if c.startswith("Turk") or "erbandsliga" in (st.get("Snm") or "") or "rttemberg" in (st.get("Snm") or ""):
-                      k = (st.get("Ccd"), st.get("Scd"))
-                      seen[k] = (c, st.get("Snm"), st.get("Sid"), st.get("CompId"), st.get("CompN"))
-          for k, v in sorted(seen.items()):
-              OUT.append(print_("STAGE", k[0], k[1], "|", v[0], "|", v[1], "| Sid", v[2], "| Comp", v[3], v[4]))
-          for ccd, scd in sorted(seen.keys())[:12]:
-              try:
-                  rr = requests.get("https://prod-public-api.livescore.com/v1/api/app/stage/soccer/%s/%s/0?MD=1" % (ccd, scd), headers=H, timeout=20)
-                  j = rr.json(); st = j["Stages"][0]; ev = st.get("Events", []); lt = st.get("LeagueTable") or {}
-                  tabs = (lt.get("L") or [{}])[0].get("Tables", [])
-                  rnds = sorted(set(e.get("ErnInf") for e in ev), key=lambda x: (len(str(x)), str(x)))
-                  OUT.append(print_("DETAIL", ccd, scd, rr.status_code, "events", len(ev), "tables", len(tabs), "rounds", rnds[:3], rnds[-3:], "eps", sorted(set(e.get("Eps") for e in ev))[:12]))
-                  if tabs: OUT.append(print_("TABKEYS", scd, sorted(k for k in tabs[0].keys() if k != "team"), json.dumps({k: tabs[0][k] for k in tabs[0] if k != "team"}, ensure_ascii=False)[:400]))
-              except Exception as e:
-                  OUT.append(print_("DETAIL", ccd, scd, "ERR", str(e)[:80]))
-          rr = requests.get("https://prod-public-api.livescore.com/v1/api/app/stage/soccer/germany/bundesliga/0?MD=1", headers=H, timeout=20).json()
-          lt = rr["Stages"][0].get("LeagueTable") or {}
-          OUT.append(print_("BL1TABLEMETA", json.dumps({k: v for k, v in lt.items() if k != "L"}, ensure_ascii=False)[:600]))
-          t0 = lt["L"][0]["Tables"][0]
-          OUT.append(print_("BL1PHRX", json.dumps(t0.get("phrX"), ensure_ascii=False)[:800]))
+          import os
+          os.makedirs("samples", exist_ok=True)
+          for name, u in [("stage_super-lig", "stage/soccer/turkey/super-lig/0"), ("stage_white", "stage/soccer/turkey/2nd-lig-white-group/0"),
+                          ("stage_bl1", "stage/soccer/germany/bundesliga/0"), ("stage_rlsw", "stage/soccer/germany/regionalliga-sudwest/0"),
+                          ("live", "live/soccer/0")]:
+              r = requests.get("https://prod-public-api.livescore.com/v1/api/app/%s?MD=1" % u, headers=H, timeout=20)
+              open("samples/%s.json" % name, "w").write(r.text)
+              OUT.append(print_("SAVED", name, r.status_code, len(r.text)))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
         with:
           path: repo
       - run: |
-          cp probe-result.txt repo/probe-result.txt
+          cp probe-result.txt repo/probe-result.txt && mkdir -p repo/samples && cp samples/*.json repo/samples/
           cd repo && git config user.name Claude && git config user.email noreply@anthropic.com
-          git add probe-result.txt && git commit -m 'Testergebnis [skip ci]' && git push
+          git add probe-result.txt samples && git commit -m 'Testergebnis [skip ci]' && git push
