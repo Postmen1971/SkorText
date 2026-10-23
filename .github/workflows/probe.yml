@@ -26,27 +26,44 @@ jobs:
           def print_(*a): return ' '.join(str(x) for x in a)
           import os
           os.makedirs("samples", exist_ok=True)
-          C = ["champions-league","europa-league","conference-league","europa-conference-league","uefa-champions-league","uefa-europa-league","uefa-conference-league"]
-          S = ["league-stage","league-phase","group-stage","",]
-          for c in C:
-              for sc in S:
-                  u = "stage/soccer/%s/%s/0" % (c, sc) if sc else "stage/soccer/%s/0" % c
-                  try:
-                      r = requests.get("https://prod-public-api.livescore.com/v1/api/app/%s?MD=1" % u, headers=H, timeout=20)
-                      ok = r.status_code == 200 and '"Events"' in r.text
-                      OUT.append(print_("TRY", u, r.status_code, len(r.text), ok))
-                      if ok:
-                          open("samples/uefa_%s_%s.json" % (c, sc or "x"), "w").write(r.text)
-                  except Exception as ex:
-                      OUT.append(print_("ERR", u, ex))
-          for d in ["20261021","20261022","20261023"]:
-              r = requests.get("https://prod-public-api.livescore.com/v1/api/app/date/soccer/%s/0?MD=1" % d, headers=H, timeout=20)
+          import re
+          seen = {}
+          days = ["20261003","20261004","20261010","20261011","20261017","20261018","20261024","20261025"]
+          for d in days:
               try:
+                  r = requests.get("https://prod-public-api.livescore.com/v1/api/app/date/soccer/%s/0?MD=1" % d, headers=H, timeout=20)
                   for st in r.json().get("Stages", []):
-                      if any(k in (st.get("Ccd","")+st.get("Cnm","")+st.get("CompN","")).lower() for k in ["champ","europa","confer","uefa"]):
-                          OUT.append(print_("DATE", d, st.get("Ccd"), st.get("Scd"), st.get("Cnm"), st.get("Snm"), st.get("CompId"), len(st.get("Events",[]))))
+                      if st.get("Ccd") in ("germany", "turkey"):
+                          k = st.get("Ccd") + "/" + st.get("Scd")
+                          seen.setdefault(k, [st.get("Snm"), st.get("CompN"), 0])
+                          seen[k][2] += len(st.get("Events", []))
+                      for e in st.get("Events", []):
+                          for t in (e.get("T1", []) + e.get("T2", [])):
+                              if re.search("pping|Goepp|Goppingen|Göpp", t.get("Nm", "")):
+                                  OUT.append(print_("GOEPP", d, st.get("Ccd"), st.get("Scd"), t.get("Nm")))
               except Exception as ex:
-                  OUT.append(print_("DERR", d, r.status_code, ex))
+                  OUT.append(print_("DERR", d, ex))
+          for k in sorted(seen):
+              OUT.append(print_("STAGE", k, seen[k]))
+          # Ersatzquellen fuer Verbandsliga
+          for name, u, hd in [
+              ("fotmob", "https://www.fotmob.com/api/search/suggest?term=Goppinger", {}),
+              ("fotmob2", "https://www.fotmob.com/api/search/suggest?term=Verbandsliga", {}),
+              ("sofa", "https://api.sofascore.com/api/v1/unique-tournament/32338/seasons", {}),
+              ("sofa2", "https://www.sofascore.com/api/v1/unique-tournament/32338/seasons", {}),
+              ("fussballde", "https://www.fussball.de/spieltagsuebersicht/verbandsliga-wuerttemberg-wuerttemberg-verbandsliga-herren-saison2627-wuerttemberg/-/staffel/", {}),
+              ("ls_search", "https://search-api.livescore.com/api/v2/search/soccer/goppinger?locale=en", {}),
+              ("ls_search2", "https://prod-public-api.livescore.com/v1/api/app/search/soccer/goppinger?locale=en", {}),
+          ]:
+              try:
+                  h = dict(H); h.update(hd)
+                  r = requests.get(u, headers=h, timeout=20)
+                  OUT.append(print_("SRC", name, r.status_code, len(r.text), r.text[:300].replace("\n", " ")))
+              except Exception as ex:
+                  OUT.append(print_("SRCERR", name, ex))
+          for sl in ["verbandsliga-wurttemberg","verbandsliga-wuerttemberg","oberliga-wurttemberg","verbandsliga"]:
+              r = requests.get("https://prod-public-api.livescore.com/v1/api/app/stage/soccer/germany/%s/0?MD=1" % sl, headers=H, timeout=20)
+              OUT.append(print_("TRY", sl, r.status_code, len(r.text)))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
