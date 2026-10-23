@@ -1,0 +1,35 @@
+name: Sofascore-Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths: [ '.github/workflows/probe.yml' ]
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -q curl_cffi requests
+      - name: Abruf testen
+        run: |
+          python - <<'PY'
+          import requests
+          from curl_cffi import requests as cr
+          urls = ["https://api.sofascore.com/api/v1/sport/football/events/live",
+                  "https://www.sofascore.com/api/v1/sport/football/events/live",
+                  "https://api.sofascore.com/api/v1/unique-tournament/52/seasons",
+                  "https://www.sofascore.com/api/v1/unique-tournament/52/season/98080/standings/total"]
+          H = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+               "Accept": "application/json", "Referer": "https://www.sofascore.com/"}
+          for u in urls:
+              for name, fn in (("requests", lambda u: requests.get(u, headers=H, timeout=20)),
+                               ("curl_cffi", lambda u: cr.get(u, impersonate="chrome", timeout=20))):
+                  try:
+                      r = fn(u); print("RESULT", name, r.status_code, len(r.content), u.split("/api/v1")[0], u.split("/api/v1")[1][:45], r.text[:90].replace("\n"," "))
+                  except Exception as e:
+                      print("RESULT", name, "ERR", e, u)
+          PY
