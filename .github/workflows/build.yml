@@ -31,7 +31,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cp app/build/outputs/apk/release/app-release.apk SkorText.apk
-          cp SkorText.apk skortext.apk
+          cp app/build/outputs/apk/release/app-release.apk skortext.apk
           TAG="v1.0.${{ github.run_number }}"
-          gh release create "$TAG" SkorText.apk skortext.apk --title "SkorText TV $TAG" --notes "Automatisch gebaut" --latest
+          gh release create "$TAG" skortext.apk --title "SkorText TV $TAG" --notes "Automatisch gebaut" --latest
