@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "1.2";
+var VERSION = "2.0";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -12,11 +12,11 @@ var TXT = {
   stand:"Stand",cDE:"DEUTSCHLAND",cTR:"TÜRKEI",cEU:"EUROPA",cNEWS:"HABERLER",openHint:"▲▼◄► wählen · OK öffnen · ZURÜCK beenden",
   home:"ZURÜCK = Übersicht",exitAgain:"Übersicht · ZURÜCK nochmal = beenden",setHint:"▲▼ wählen · ◄► ändern · ZURÜCK zurück",
   loading:"Lade Daten …",noData:"Keine Daten erreichbar.",noData2:"Internetverbindung prüfen.",noGames:"Keine Spiele gefunden.",
-  noTable:"Keine Tabelle verfügbar.",source:"Daten: Sofascore (inoffiziell)",mdNow:"(aktuell)",mdBrowse:"Spieltag",
+  noTable:"Keine Tabelle verfügbar.",source:"Daten: LiveScore",mdNow:"(aktuell)",mdBrowse:"Spieltag",
   noMore:"Kein weiterer Spieltag",newsHint:"▲▼ wählen · OK lesen · ◄► Rubrik",articleHint:"▲▼ / ◄► nächste Meldung · OK / ZURÜCK",
   resHint:"◄► Liga · OK Tabelle",tabHint:"◄► Liga · OK Ergebnisse",
   helpRows:[["◄ ►","Liga wechseln"],["OK","Ergebnisse ⇄ Tabelle"],["▲ ▼","Ergebnisse: Spieltag vor/zurück"],["▲ ▼","Tabelle: Unterseite"],
-   ["ZURÜCK","Übersicht, nochmal = App beenden"],["Übersicht","▲▼◄► wählen, OK öffnet"],["500","Alle Live-Spiele"],["600","Haberler (Nachrichten)"],
+   ["ZURÜCK","Übersicht, nochmal = App beenden"],["Übersicht","▲▼◄► wählen, OK öffnet"],["440–460","Champions / Europa / Conference League"],["500","Alle Live-Spiele"],["600","Haberler (Nachrichten)"],
    ["900","Einstellungen (Stil, Sprache …)"],["Farbtasten","falls vorhanden: DE / TR / Europa / Live"],["0–9","falls vorhanden: Seitennummer"]]},
  tr: {overview:"Genel Bakış",results:"Sonuçlar",table:"Puan Durumu",liveTable:"Canlı Puan Durumu",md:"%d. Hafta",live:"Canlı",
   allLive:"Tüm Canlı Maçlar",help:"Kullanım",settings:"Ayarlar",noLive:"Şu an canlı maç yok",ht:"İY",ft:"MS",
@@ -25,11 +25,11 @@ var TXT = {
   stand:"Güncel",cDE:"ALMANYA",cTR:"TÜRKİYE",cEU:"AVRUPA",cNEWS:"HABERLER",openHint:"▲▼◄► seç · OK aç · GERİ çık",
   home:"GERİ = Genel Bakış",exitAgain:"Genel Bakış · tekrar GERİ = çık",setHint:"▲▼ seç · ◄► değiştir · GERİ",
   loading:"Veriler yükleniyor …",noData:"Veri alınamadı.",noData2:"İnternet bağlantısını kontrol et.",noGames:"Maç bulunamadı.",
-  noTable:"Puan durumu yok.",source:"Veri: Sofascore (resmi değil)",mdNow:"(güncel)",mdBrowse:"Hafta",
+  noTable:"Puan durumu yok.",source:"Veri: LiveScore",mdNow:"(güncel)",mdBrowse:"Hafta",
   noMore:"Başka hafta yok",newsHint:"▲▼ seç · OK oku · ◄► kategori",articleHint:"▲▼ / ◄► sonraki haber · OK / GERİ",
   resHint:"◄► Lig · OK Puan",tabHint:"◄► Lig · OK Sonuçlar",
   helpRows:[["◄ ►","Lig değiştir"],["OK","Sonuçlar ⇄ Puan Durumu"],["▲ ▼","Sonuçlar: önceki/sonraki hafta"],["▲ ▼","Puan durumu: alt sayfa"],
-   ["GERİ","Genel Bakış, tekrar = uygulamadan çık"],["Genel Bakış","▲▼◄► seç, OK aç"],["500","Tüm canlı maçlar"],["600","Haberler"],
+   ["GERİ","Genel Bakış, tekrar = uygulamadan çık"],["Genel Bakış","▲▼◄► seç, OK aç"],["440–460","Şampiyonlar / Avrupa / Konferans Ligi"],["500","Tüm canlı maçlar"],["600","Haberler"],
    ["900","Ayarlar (görünüm, dil …)"],["Renk tuşları","varsa: DE / TR / Avrupa / Canlı"],["0–9","varsa: sayfa numarası"]]}
 };
 var SETTINGS = [
@@ -67,166 +67,151 @@ window.__skorRes = function (id, ok, status, text) {
   var p = pending[id]; delete pending[id]; if (!p) return;
   if (ok && status >= 200 && status < 300) p.res(text); else p.rej(new Error(ok ? "HTTP " + status : String(text)));
 };
-var SAME_ORIGIN = /sofascore\.com$/.test(location.hostname);
 function httpGet(url) {
-  if (SAME_ORIGIN && url.indexOf("https://api.sofascore.com/") === 0) {
-    // Abruf durch den eingebauten Chrome selbst, auf demselben Weg wie die Sofascore-Webseite (www.sofascore.com/api/v1)
-    return fetch(url.replace("https://api.sofascore.com", ""), {credentials: "include", headers: {"Accept": "*/*"}})
-      .then(function (r) {
-        if (r.ok) return r.text();
-        return r.text().then(function (t) { return Promise.reject(new Error("HTTP " + r.status + " " + t.replace(/\s+/g, " ").slice(0, 70))); },
-          function () { return Promise.reject(new Error("HTTP " + r.status)); });
-      });
-  }
   return new Promise(function (res, rej) {
     if (window.SkorBridge && SkorBridge.get) { var id = ++reqId; pending[id] = {res: res, rej: rej}; SkorBridge.get(id, url); }
     else fetch(url).then(function (r) { return r.ok ? r.text() : Promise.reject(new Error("HTTP " + r.status)); }).then(res, rej);
   });
 }
 function getJSON(url) { return httpGet(url).then(function (t) { return JSON.parse(t); }); }
-var BASE = "https://api.sofascore.com/api/v1";
-function sofa(path) { return getJSON(BASE + path); }
+var BASE = "https://prod-public-api.livescore.com/v1/api/app";
 function niceError(e) {
   var s = String(e && e.message || e);
-  if (s.indexOf("403") >= 0) return "Gesperrt (403): " + s.replace(/^.*?403\s*/, "").slice(0, 60);
-  if (s.indexOf("404") >= 0) return "Daten nicht gefunden (HTTP 404)";
+  if (s.indexOf("403") >= 0) return "Gesperrt (HTTP 403)";
+  if (s.indexOf("404") >= 0 || s.indexOf("410") >= 0) return "Liga bei der Datenquelle nicht gefunden";
   if (/timeout|timed out/i.test(s)) return "Zeitüberschreitung – Internet langsam oder weg";
   if (/unknownhost|unable to resolve|dns/i.test(s)) return "Keine Internetverbindung";
   return s.slice(0, 80);
 }
 
-/* ================= Daten ================= */
+/* ================= Daten (LiveScore) ================= */
+// Seite, Land, LiveScore-Land, LiveScore-Liga, Name deutsch, Name türkisch, Kürzel
 var LEAGUES_DEF = [
- [200,"de",35,"1. Bundesliga","Bundesliga",""],[210,"de",44,"2. Bundesliga","2. Bundesliga",""],[220,"de",491,"3. Liga","3. Lig (Almanya)",""],
- [230,"de",1079,"Regionalliga Südwest","Regionalliga Güneybatı",""],[240,"de",493,"Regionalliga West","Regionalliga Batı",""],
- [250,"de",1085,"Regionalliga Bayern","Regionalliga Bavyera",""],[260,"de",42,"Regionalliga Nord","Regionalliga Kuzey",""],
- [270,"de",1083,"Regionalliga Nordost","Regionalliga Kuzeydoğu",""],[280,"de",32338,"Verbandsliga Württemberg","Verbandsliga Württemberg",""],
- [300,"tr",52,"Trendyol Süper Lig","Trendyol Süper Lig",""],[310,"tr",98,"Trendyol 1. Lig (2. Liga)","Trendyol 1. Lig",""],
- [320,"tr",97,"2. Lig (3. Liga)","Nesine 2. Lig",""],[330,"tr",16934,"3. Lig (4. Liga)","Nesine 3. Lig",""],
- [400,"eu",17,"Premier League","Premier Lig","ENG"],[410,"eu",8,"LaLiga","LaLiga","ESP"],[420,"eu",23,"Serie A","Serie A","ITA"],[430,"eu",34,"Ligue 1","Ligue 1","FRA"]
+ [200,"de","germany","bundesliga","1. Bundesliga","Bundesliga",""],[210,"de","germany","2-bundesliga","2. Bundesliga","2. Bundesliga",""],
+ [220,"de","germany","3-liga","3. Liga","3. Lig (Almanya)",""],
+ [230,"de","germany","regionalliga-sudwest","Regionalliga Südwest","Regionalliga Güneybatı",""],[240,"de","germany","regionalliga-west","Regionalliga West","Regionalliga Batı",""],
+ [250,"de","germany","regionalliga-bayern","Regionalliga Bayern","Regionalliga Bavyera",""],[260,"de","germany","regionalliga-nord","Regionalliga Nord","Regionalliga Kuzey",""],
+ [270,"de","germany","regionalliga-nordost","Regionalliga Nordost","Regionalliga Kuzeydoğu",""],
+ [280,"de","germany","oberliga-baden-wurttemberg","Oberliga Baden-Württemberg","Oberliga Baden-Württemberg",""],
+ [300,"tr","turkey","super-lig","Trendyol Süper Lig","Trendyol Süper Lig",""],[310,"tr","turkey","1st-lig","Trendyol 1. Lig (2. Liga)","Trendyol 1. Lig",""],
+ [320,"tr","turkey","2nd-lig-white-group","2. Lig (3. Liga) · Beyaz Grup","Nesine 2. Lig · Beyaz Grup",""],
+ [322,"tr","turkey","2nd-lig-red-group","2. Lig (3. Liga) · Kırmızı Grup","Nesine 2. Lig · Kırmızı Grup",""],
+ [400,"eu","england","premier-league","Premier League","Premier Lig","ENG"],[410,"eu","spain","laliga","LaLiga","LaLiga","ESP"],
+ [420,"eu","italy","serie-a","Serie A","Serie A","ITA"],[430,"eu","france","ligue-1","Ligue 1","Ligue 1","FRA"],
+ [440,"eu","champions-league","league-stage","Champions League","Şampiyonlar Ligi",""],
+ [450,"eu","europa-league","league-stage","Europa League","Avrupa Ligi",""],
+ [460,"eu","conference-league","league-stage","Conference League","Konferans Ligi",""]
 ];
-var GROUPS = {
- 97: [["Beyaz Grup", /beyaz|white/], ["Kırmızı Grup", /k[ıi]rm[ıi]z[ıi]|red/]],
- 16934: [["1. Grup", /(gru?p|group)\s*1\b|\b1\.\s*gru?p/], ["2. Grup", /(gru?p|group)\s*2\b|\b2\.\s*gru?p/], ["3. Grup", /(gru?p|group)\s*3\b|\b3\.\s*gru?p/]]
-};
-function shortGroup(name) { if (!name) return ""; return name.indexOf(",") >= 0 ? name.split(",").pop().trim() : ""; }
-function zoneOf(t) {
-  t = (t || "").toLowerCase(); if (!t) return null;
-  if (t.indexOf("relegation") >= 0 && /playoff|play-off|qualif/.test(t)) return "y";
-  if (t.indexOf("relegation") >= 0) return "r";
-  if (t.indexOf("champions league") >= 0) return t.indexOf("qualif") >= 0 ? "c" : "g";
-  if (t.indexOf("europa league") >= 0) return "c";
-  if (t.indexOf("conference") >= 0) return "m";
-  if (t.indexOf("promotion") >= 0) return /playoff|play-off/.test(t) ? "c" : "g";
-  if (/playoff|play-off/.test(t)) return "c";
-  return null;
+var NAME_FIX = [["FC Cologne","1. FC Köln"],["Cologne","Köln"],["Bayern Munich","Bayern München"],["Munich 1860","TSV 1860 München"],["Nuremberg","Nürnberg"],["Monchengladbach","Mönchengladbach"],["Dusseldorf","Düsseldorf"],["Furth","Fürth"],["Munster","Münster"],["Osnabruck","Osnabrück"],["Saarbrucken","Saarbrücken"],["Wurzburg","Würzburg"],["Gottingen","Göttingen"],["Goppingen","Göppingen"],["Lubeck","Lübeck"],["Grossaspach","Großaspach"],["Koln","Köln"],["Gutersloh","Gütersloh"],["Rodinghausen","Rödinghausen"],["Wiedenbruck","Wiedenbrück"],["Gmund","Gmünd"],["Nottingen","Nöttingen"],["Turkgucu","Türkgücü"],["Turkspor","Türkspor"],["Zweibrucken","Zweibrücken"],["Volklingen","Völklingen"],["Bodoe/Glimt","Bodø/Glimt"],["Slavia Prague","SK Slavia Prag"],["Sparta Prague","AC Sparta Prag"],["Atletico Madrid","Atlético Madrid"],["Ferencvaros","Ferencváros"],["Viktoria Plzen","Viktoria Pilsen"],["Lech Poznan","Lech Posen"],["Lillestroem","Lillestrøm"],["Mjaellby","Mjällby"],["FC Nordsjaelland","FC Nordsjælland"],["FC Copenhagen","FC Kopenhagen"],["FC Salzburg","RB Salzburg"],["Union St.Gilloise","Union Saint-Gilloise"],["Besiktas","Beşiktaş"],["Fenerbahce","Fenerbahçe"],["Basaksehir","Başakşehir"],["Kasimpasa","Kasımpaşa"],["Eyupspor","Eyüpspor"],["Goztepe","Göztepe"],["Caykur","Çaykur"],["Genclerbirligi","Gençlerbirliği"],["Karagumruk","Karagümrük"],["Igdir","Iğdır"],["Corum","Çorum"],["Bandirmaspor","Bandırmaspor"],["Umraniyespor","Ümraniyespor"],["Keciorengucu","Keçiörengücü"],["Istanbulspor","İstanbulspor"],["Sariyer","Sarıyer"],["Sanliurfaspor","Şanlıurfaspor"],["Arnavutkoy","Arnavutköy"],["Mus Spor","Muşspor"],["Musspor","Muşspor"],["Elazigspor","Elazığspor"],["Corluspor","Çorluspor"],["Genclik","Gençlik"],["Kirklarelispor","Kırklarelispor"],["Inegolspor","İnegölspor"],["Altinordu","Altınordu"],["Usakspor","Uşakspor"],["Kahramanmaras","Kahramanmaraş"],["Istiklalspor","İstiklalspor"],["Yildirimspor","Yıldırımspor"],["Aliaga","Aliağa"],["Karsiyaka","Karşıyaka"],["Mugla","Muğla"],["Duzce","Düzce"],["Guzide","Güzide"],["Kucukcekmece","Küçükçekmece"],["Beyoglu","Beyoğlu"],["Carsi","Çarşı"],["Iskenderun","İskenderun"],["Sile","Şile"],["Bursa Yildirim","Bursa Yıldırım"],["Igdir FK","Iğdır FK"],["Eskisehir","Eskişehir"],["Kutahya","Kütahya"],["Balikesir","Balıkesir"],["Canakkale","Çanakkale"],["Diyarbakir","Diyarbakır"],["Kirsehir","Kırşehir"],["Nevsehir","Nevşehir"],["Nigde","Niğde"],["Kirikkale","Kırıkkale"],["Inegol","İnegöl"],["Dernegi","Derneği"],["Agri ","Ağrı "],["Akcaabat","Akçaabat"],["Carsamba","Çarşamba"]];
+function fixName(n) {
+  for (var i = 0; i < NAME_FIX.length; i++) { var a = NAME_FIX[i][0], b = NAME_FIX[i][1]; if (n.indexOf(a) >= 0 && n.indexOf(b) < 0) n = n.split(a).join(b); }
+  return n;
 }
-function parseEvent(e, now) {
-  now = now || Date.now() / 1000;
-  var st = e.status || {}, code = st.code, hs = (e.homeScore || {}).current, as = (e.awayScore || {}).current;
-  var state = {notstarted: "pre", inprogress: "in", finished: "post"}[st.type] || "pp", minute = "";
-  if (hs === undefined) hs = null; if (as === undefined) as = null;
-  if (state === "in") {
-    if (code === 31) state = "ht";
-    else {
-      var cps = (e.time || {}).currentPeriodStartTimestamp;
-      if (cps && (code === 6 || code === 7)) {
-        var m = Math.floor((now - cps) / 60) + 1;
-        if (code === 6) minute = m <= 45 ? String(m) : "45+" + (m - 45);
-        else { m += 45; minute = m <= 90 ? String(m) : "90+" + (m - 90); }
-      } else if ([41, 42, 33, 34].indexOf(code) >= 0) minute = "Verl";
-      else if (code === 50) minute = "Elf";
-      else minute = "live";
-    }
+function esdTs(v) {
+  var s = String(v || ""); if (s.length < 12) return 0;
+  return Date.UTC(+s.slice(0, 4), +s.slice(4, 6) - 1, +s.slice(6, 8), +s.slice(8, 10), +s.slice(10, 12), +(s.slice(12, 14) || 0)) / 1000;
+}
+function toInt(v) { var n = parseInt(v, 10); return isNaN(n) ? null : n; }
+function parseEvent(e, key) {
+  var eps = String(e.Eps || "").trim(), minute = "", state;
+  if (eps === "NS" || eps === "") state = "pre";
+  else if (["FT", "AET", "AP", "Pen.", "FT Pen", "After Pen.", "Awarded"].indexOf(eps) >= 0) state = "post";
+  else if (eps === "HT") state = "ht";
+  else if (["Postp.", "Canc.", "Aband.", "Int.", "Susp.", "Delayed", "Postponed", "Cancelled"].indexOf(eps) >= 0) state = "pp";
+  else {
+    state = "in";
+    if (eps.slice(-1) === "'") minute = eps.slice(0, -1);
+    else if (["ET", "BET"].indexOf(eps) >= 0) minute = "Verl";
+    else if (eps.indexOf("Pen") >= 0) minute = "Elf";
+    else minute = eps.slice(0, 5);
   }
-  var ht = e.homeTeam || {}, at = e.awayTeam || {}, tour = e.tournament || {};
-  return {id: e.id, h: ht.name || "?", hsn: ht.shortName || "", a: at.name || "?", asn: at.shortName || "",
-    hs: hs, as: as, state: state, min: minute, ts: e.startTimestamp || 0, group: shortGroup(tour.name),
-    ut: (tour.uniqueTournament || {}).id, goal_at: 0, goal_by: null};
+  var t1 = (e.T1 || [{}])[0] || {}, t2 = (e.T2 || [{}])[0] || {};
+  var hs = toInt(e.Tr1), as = toInt(e.Tr2);
+  if (state === "pre") hs = as = null;
+  return {id: String(e.Eid), h: fixName(t1.Nm || "?"), hsn: t1.Abr || "", a: fixName(t2.Nm || "?"), asn: t2.Abr || "",
+    hs: hs, as: as, state: state, min: minute, ts: esdTs(e.Esd), round: toInt(e.ErnInf), group: "", ut: key, goal_at: 0, goal_by: null};
+}
+function parseTable(stage) {
+  var lt = stage.LeagueTable || {}, tabs = ((lt.L || [{}])[0] || {}).Tables || [], tab = null;
+  tabs.forEach(function (t) { if (!tab && t.LTT === 1) tab = t; });
+  if (!tab && tabs.length) tab = tabs[0];
+  if (!tab) return [];
+  var teams = tab.team || [], n = teams.length;
+  var rows = teams.map(function (r) {
+    return {pos: r.rnk || 0, tm: fixName(r.Tnm || "?"), short: "", p: r.pld || 0, w: r.win || 0, d: r.drw || 0, l: r.lst || 0,
+      gf: r.gf || 0, ga: r.ga || 0, pts: r.pts || 0, phr: (r.phr || [null])[0], zone: null};
+  });
+  var top = [], bottom = [];
+  rows.forEach(function (r) {
+    if (r.phr === null || r.phr === undefined) return;
+    if (r.pos <= n / 2) { if (top.indexOf(r.phr) < 0) top.push(r.phr); }
+    else if (bottom.indexOf(r.phr) < 0) bottom.push(r.phr);
+  });
+  rows.forEach(function (r) {
+    if (r.phr === null || r.phr === undefined) return;
+    if (top.indexOf(r.phr) >= 0) r.zone = ["g", "c", "m", "c"][Math.min(top.indexOf(r.phr), 3)];
+    else r.zone = ["r", "y", "y"][Math.min(bottom.length - 1 - bottom.indexOf(r.phr), 2)];
+  });
+  return [["", rows]];
+}
+function inferRounds(evs) {
+  if (!evs.length || evs.every(function (e) { return e.round !== null; })) return;
+  var buckets = [], last = null;
+  evs.forEach(function (e) { if (last === null || e.ts - last > 60 * 3600) buckets.push([]); buckets[buckets.length - 1].push(e); last = e.ts; });
+  var prev = 0;
+  buckets.forEach(function (b) {
+    var cnt = {}, best = null;
+    b.forEach(function (e) { if (e.round !== null) { cnt[e.round] = (cnt[e.round] || 0) + 1; if (best === null || cnt[e.round] > cnt[best]) best = e.round; } });
+    var r = best !== null ? best : prev + 1;
+    b.forEach(function (e) { if (e.round === null) e.round = r; });
+    prev = Math.max(prev, r);
+  });
 }
 
 function League(d) {
-  this.page = d[0]; this.c = d[1]; this.ut = d[2]; this.nameDe = d[3]; this.nameTr = d[4]; this.tag = d[5];
-  this.season = null; this.tSeason = 0; this.round = null; this.tRound = 0; this.maxRound = null;
+  this.page = d[0]; this.c = d[1]; this.ccd = d[2]; this.scd = d[3]; this.nameDe = d[4]; this.nameTr = d[5]; this.tag = d[6];
+  this.ut = this.ccd + "/" + this.scd;
+  this.season = true; this.round = null; this.maxRound = null; this.allEvents = [];
   this.events = []; this.prevEvents = []; this.prevRound = null; this.rcache = {}; this.rloading = {};
-  this.tables = []; this.tLoad = 0; this.loading = false; this.error = null; this.gdefs = GROUPS[this.ut] || [];
+  this.tables = []; this.tLoad = 0; this.loading = false; this.error = null; this.gdefs = [];
 }
 League.prototype.name = function (lang) { return lang === "tr" ? this.nameTr : this.nameDe; };
-League.prototype.views = function () {
-  if (this.gdefs.length) return this.gdefs.map(function (g, i) { return [this.page + 2 * i, i]; }, this);
-  return [[this.page, null]];
-};
-League.prototype.groups = function () {
-  var names = this.tables.map(function (t) { return t[0]; });
-  this.events.forEach(function (e) { if (names.indexOf(e.group) < 0) names.push(e.group); });
-  return names.length ? names : [""];
-};
-League.prototype.groupIndex = function (name) {
-  var low = (name || "").toLowerCase();
-  for (var i = 0; i < this.gdefs.length; i++) if (this.gdefs[i][1].test(low)) return i;
-  var names = this.groups(), k = names.indexOf(name);
-  return k >= 0 && k < this.gdefs.length ? k : null;
-};
-League.prototype.inGroup = function (name, gi) { return gi === null || gi === undefined ? true : this.groupIndex(name) === gi; };
-League.prototype.pageOfGroup = function (name) { var gi = this.gdefs.length ? this.groupIndex(name) : null; return gi === null ? this.page : this.page + 2 * gi; };
+League.prototype.views = function () { return [[this.page, null]]; };
+League.prototype.groups = function () { return [""]; };
+League.prototype.groupIndex = function () { return null; };
+League.prototype.inGroup = function () { return true; };
+League.prototype.pageOfGroup = function () { return this.page; };
 League.prototype.eventsOfRound = function (n) {
-  if (n === this.round) return this.events;
-  if (n === this.prevRound) return this.prevEvents;
-  return this.rcache[n] === undefined ? null : this.rcache[n];
+  if (n === null || n === undefined) return [];
+  return this.allEvents.filter(function (e) { return e.round === n; });
 };
 League.prototype.load = function () {
-  var self = this, now = Date.now() / 1000, base;
-  var p = Promise.resolve();
-  if (!self.season || now - self.tSeason > 86400) {
-    p = sofa("/unique-tournament/" + self.ut + "/seasons").then(function (d) {
-      var ss = d.seasons || []; self.season = null;
-      for (var i = 0; i < ss.length; i++) { var n = (ss[i].name || "").toLowerCase(); if (/playoff|play-off|relegation/.test(n)) continue; self.season = ss[i].id; break; }
-      if (!self.season && ss.length) self.season = ss[0].id;
-      self.tSeason = now;
-    });
-  }
-  return p.then(function () {
-    base = "/unique-tournament/" + self.ut + "/season/" + self.season;
-    if (!self.round || now - self.tRound > 1800)
-      return sofa(base + "/rounds").then(function (r) {
-        self.round = (r.currentRound || {}).round || null;
-        var nums = (r.rounds || []).map(function (x) { return x.round; }).filter(function (x) { return typeof x === "number"; });
-        self.maxRound = nums.length ? Math.max.apply(null, nums) : null; self.tRound = now;
-      }, function () { self.round = null; });
-  }).then(function () {
-    if (self.round) return sofa(base + "/events/round/" + self.round).then(function (d) { return d.events || []; });
-    return Promise.all(["/events/last/0", "/events/next/0"].map(function (x) {
-      return sofa("/unique-tournament/" + self.ut + x).then(function (d) { return d.events || []; }, function () { return []; });
-    })).then(function (a) { return a[0].concat(a[1]); });
-  }).then(function (evs) {
-    self.events = evs.map(function (e) { return parseEvent(e, now); });
-    if (self.round && self.round > 1)
-      return sofa(base + "/events/round/" + (self.round - 1)).then(function (d) { return d.events || []; }, function () { return []; });
-    return [];
-  }).then(function (prev) {
-    self.prevEvents = prev.map(function (e) { return parseEvent(e, now); });
-    self.prevRound = prev.length ? self.round - 1 : null;
-    return sofa(base + "/standings/total").then(function (d) { return d.standings || []; }, function () { return []; });
-  }).then(function (st) {
-    self.tables = st.map(function (s) {
-      var rows = (s.rows || []).map(function (r) {
-        var tm = r.team || {};
-        return {pos: r.position || 0, tm: tm.name || "?", short: tm.shortName || "", p: r.matches || 0, w: r.wins || 0, d: r.draws || 0,
-          l: r.losses || 0, gf: r.scoresFor || 0, ga: r.scoresAgainst || 0, pts: r.points || 0, zone: zoneOf((r.promotion || {}).text)};
-      });
-      var full = s.name || (s.tournament || {}).name || "", name = shortGroup(full);
-      if (!name && st.length > 1) name = full;
-      return [name, rows];
+  var self = this;
+  return getJSON(BASE + "/stage/soccer/" + self.ccd + "/" + self.scd + "/0?MD=1").then(function (d) {
+    var st = (d.Stages || [])[0];
+    if (!st) throw new Error("404 keine Daten");
+    var evs = (st.Events || []).map(function (e) { return parseEvent(e, self.ut); });
+    evs.sort(function (x, y) { return x.ts - y.ts; });
+    inferRounds(evs);
+    self.allEvents = evs;
+    var rounds = []; evs.forEach(function (e) { if (e.round !== null && rounds.indexOf(e.round) < 0) rounds.push(e.round); });
+    rounds.sort(function (x, y) { return x - y; });
+    self.maxRound = rounds.length ? rounds[rounds.length - 1] : null;
+    var cur = null;
+    for (var i = 0; i < evs.length; i++) if (evs[i].round !== null && ["pre", "in", "ht"].indexOf(evs[i].state) >= 0) { cur = evs[i].round; break; }
+    if (cur === null && rounds.length) cur = rounds[rounds.length - 1];
+    self.round = cur;
+    self.events = cur ? self.eventsOfRound(cur) : evs.slice(-10);
+    self.prevRound = cur && cur > 1 ? cur - 1 : null;
+    self.prevEvents = self.prevRound ? self.eventsOfRound(self.prevRound) : [];
+    self.tables = parseTable(st);
+    if (self.scd === "league-stage") self.tables.forEach(function (t) {
+      if (t[1].every(function (r) { return !r.zone; })) t[1].forEach(function (r) { r.zone = r.pos <= 8 ? "g" : (r.pos <= 24 ? "c" : null); });
     });
     self.tLoad = Date.now() / 1000; self.error = null;
   });
 };
-League.prototype.loadRound = function (n) {
-  var self = this;
-  return sofa("/unique-tournament/" + self.ut + "/season/" + self.season + "/events/round/" + n).then(function (d) {
-    self.rcache[n] = (d.events || []).map(function (e) { return parseEvent(e); });
-  });
-};
+League.prototype.loadRound = function (n) { return Promise.resolve(n); };
 
 var STORE = {leagues: LEAGUES_DEF.map(function (d) { return new League(d); }), live: {}, tLive: 0, liveError: null, goals: [], loadingLive: false};
 STORE.byUt = {}; STORE.leagues.forEach(function (l) { STORE.byUt[l.ut] = l; });
@@ -234,11 +219,14 @@ STORE.allViews = function () { var out = []; this.leagues.forEach(function (lg) 
 STORE.view = function (p) { var v = this.allViews(); for (var i = 0; i < v.length; i++) { if (p === v[i][1]) return [v[i][0], v[i][2], "res"]; if (p === v[i][1] + 1) return [v[i][0], v[i][2], "tab"]; } return null; };
 STORE.leagueByPage = function (p) { var v = this.view(p); return v ? v[0] : null; };
 STORE.liveCount = function (lg) { var n = 0; for (var k in this.live) if (!lg || this.live[k].ut === lg.ut) n++; return n; };
-STORE.liveCountView = function (lg, gi) { var n = 0; for (var k in this.live) { var e = this.live[k]; if (e.ut === lg.ut && lg.inGroup(e.group, gi)) n++; } return n; };
+STORE.liveCountView = function (lg) { return this.liveCount(lg); };
 STORE.fetchLive = function () {
-  return sofa("/sport/football/events/live").then(function (d) {
-    var now = Date.now() / 1000, out = {};
-    (d.events || []).forEach(function (e) { var ut = ((e.tournament || {}).uniqueTournament || {}).id; if (STORE.byUt[ut]) { var pe = parseEvent(e, now); out[pe.id] = pe; } });
+  return getJSON(BASE + "/live/soccer/0?MD=1").then(function (d) {
+    var out = {};
+    (d.Stages || []).forEach(function (st) {
+      var key = st.Ccd + "/" + st.Scd; if (!STORE.byUt[key]) return;
+      (st.Events || []).forEach(function (e) { var pe = parseEvent(e, key); if (pe.state === "in" || pe.state === "ht") out[pe.id] = pe; });
+    });
     return out;
   });
 };
@@ -256,10 +244,14 @@ STORE.applyLive = function (nw) {
   self.live = nw; self.tLive = now;
   self.goals = self.goals.filter(function (g) { return now - g[0] < 60; });
   self.leagues.forEach(function (lg) {
-    var changed = false, ids = {};
-    lg.events.forEach(function (ev, i) { if (nw[ev.id]) lg.events[i] = nw[ev.id]; else if (ended.indexOf(String(ev.id)) >= 0) changed = true; ids[ev.id] = 1; });
+    var changed = false;
+    [lg.allEvents, lg.events].forEach(function (lst) {
+      lst.forEach(function (ev, i) {
+        if (nw[ev.id]) { var ne = {}; for (var q in nw[ev.id]) ne[q] = nw[ev.id][q]; ne.round = ev.round; lst[i] = ne; }
+        else if (ended.indexOf(ev.id) >= 0) changed = true;
+      });
+    });
     if (changed) lg.tLoad = 0;
-    for (var k2 in nw) if (nw[k2].ut === lg.ut && !ids[nw[k2].id] && lg.events.length) lg.tLoad = 0;
   });
 };
 
@@ -598,7 +590,7 @@ function subpages() {
     }
     while (lines.length < 19) lines.push(blank());
     lines.push(text(T("openHint"), "c"));
-    subs = [{ban: [up(T("overview")), "SkorText " + VERSION], bg: ["b", "w"], head: infoHead("LIVESCORE · " + T("source")), lines: lines}];
+    subs = [{ban: [up(T("overview")), "SkorText " + VERSION], bg: ["b", "w"], head: infoHead("LIVESCORE"), lines: lines}];
   } else if (t === "res" || t === "tab") {
     var v = STORE.view(S.page), lg = v[0], gi = v[1], bgc = COUNTRY_BG[lg.c], title = up(lg.name(lang), lg.c), stl = statusLines(lg);
     var parts;

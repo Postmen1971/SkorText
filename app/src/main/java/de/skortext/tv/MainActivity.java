@@ -37,11 +37,7 @@ import java.util.zip.GZIPInputStream;
 public class MainActivity extends Activity {
 	private WebView web;
 	private SharedPreferences prefs;
-	// Die App-Seite wird unter der Sofascore-Adresse ausgeliefert (aus den eingebauten Dateien).
-	// So holt der eingebaute Chrome die Daten selbst - wie bei einem normalen Webseitenbesuch.
-	private static final String HOST = "www.sofascore.com";
-	private static final String APP_URL = "https://" + HOST + "/skortext/index.html";
-	private static final String WARM_URL = "https://" + HOST + "/";
+	private static final String APP_URL = "file:///android_asset/www/index.html";
 	private boolean appLoaded = false;
 
 	@Override
@@ -62,42 +58,10 @@ public class MainActivity extends Activity {
 		CookieManager cm = CookieManager.getInstance();
 		cm.setAcceptCookie(true);
 		if (android.os.Build.VERSION.SDK_INT >= 21) cm.setAcceptThirdPartyCookies(web, true);
-		web.setWebViewClient(new WebViewClient() {
-			@Override
-			public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest req) {
-				Uri u = req.getUrl();
-				String path = u.getPath();
-				if (HOST.equals(u.getHost()) && path != null && path.startsWith("/skortext/")) {
-					String asset = "www/" + path.substring("/skortext/".length());
-					try {
-						return new WebResourceResponse(mime(asset), "utf-8", getAssets().open(asset));
-					} catch (IOException e) {
-						return new WebResourceResponse("text/plain", "utf-8", 404, "Not Found", null, new ByteArrayInputStream(new byte[0]));
-					}
-				}
-				return null;
-			}
-
-			@Override
-			public void onPageFinished(WebView view, String url) {
-				// Erst ein normaler Seitenbesuch bei Sofascore (Cookies/Pruefung), dann die App laden
-				if (!appLoaded && url != null && url.startsWith(WARM_URL) && !url.contains("/skortext/")) {
-					appLoaded = true;
-					new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-						@Override
-						public void run() { web.loadUrl(APP_URL); }
-					}, 2500);
-				}
-			}
-		});
+		web.setWebViewClient(new WebViewClient());
 		setContentView(web);
-		web.loadUrl(WARM_URL);
-		new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if (!appLoaded) { appLoaded = true; web.loadUrl(APP_URL); }
-			}
-		}, 12000);
+		appLoaded = true;
+		web.loadUrl(APP_URL);
 		web.requestFocus(View.FOCUS_DOWN);
 	}
 
@@ -191,10 +155,6 @@ public class MainActivity extends Activity {
 						c.setRequestProperty("Accept", "application/json, application/rss+xml, application/xml, text/xml, */*");
 						c.setRequestProperty("Accept-Language", "de-DE,de;q=0.9,tr;q=0.8,en;q=0.7");
 						c.setRequestProperty("Accept-Encoding", "gzip");
-						if (url.contains("sofascore")) {
-							c.setRequestProperty("Referer", "https://www.sofascore.com/");
-							c.setRequestProperty("Origin", "https://www.sofascore.com");
-						}
 						int code = c.getResponseCode();
 						InputStream in = code >= 400 ? c.getErrorStream() : c.getInputStream();
 						String body = "";
