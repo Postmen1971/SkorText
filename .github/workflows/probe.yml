@@ -26,26 +26,30 @@ jobs:
           os.makedirs("samples", exist_ok=True)
           import re
           U = [
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?round=10",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?round=11",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?limit=400",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?page=2",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?offset=25",
             "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/standing",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/standings",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/rounds",
-            "https://api.fupa.net/v2/competitions/verbandsliga-wuerttemberg",
-            "https://www.fupa.net/league/verbandsliga-wuerttemberg",
-            "https://www.fupa.net/league/verbandsliga-wuerttemberg/standing",
-            "https://api.fupa.net/v1/teams/1-goppinger-sv-m1-2026-27",
-            "https://api.fupa.net/v1/clubs/1-goppinger-sv",
-            "https://www.kicker.de/verbandsliga-wuerttemberg/tabelle",
-            "https://www.kicker.de/verbandsliga-wuerttemberg/spieltag",
-            "https://www.kicker.de/1-goeppinger-sv/info",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/standings?type=total",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/table",
+            "https://api.fupa.net/v1/standings?competitionSeasonId=172160",
+            "https://api.fupa.net/v1/competition-seasons/172160/standings",
+            "https://api.fupa.net/v1/standings/172160",
+            "https://api.fupa.net/v1/competitionseasons/172160/standing",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/rounds/11/matches",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?section=PRE",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?sort=desc",
+            "https://api.fupa.net/v1/leagues/verbandsliga-wuerttemberg",
           ]
           for u in U:
               try:
                   r = requests.get(u, headers=H, timeout=20)
                   t = r.text
                   OUT.append(print_("SRC", r.status_code, len(t), u))
-                  OUT.append("   " + re.sub(r"\s+", " ", t[:500]))
+                  OUT.append("   " + re.sub(r"\s+", " ", t[:350]))
                   i = t.find("pping")
                   if i >= 0: OUT.append("   GOEPP@" + str(i) + ": " + re.sub(r"\s+", " ", t[max(0,i-200):i+200]))
                   if r.status_code == 200:
