@@ -1,17 +1,5 @@
-STAGE germany oberliga-baden-wurttemberg | Germany | Oberliga: Baden-Wurttemberg | Sid 25794 | Comp None None
-STAGE turkey 1st-lig | Turkiye | 1st Lig | Sid 25779 | Comp 165 1st Lig
-STAGE turkey 2nd-lig-red-group | Turkiye | 2nd Lig: Red Group | Sid 25822 | Comp None None
-STAGE turkey 2nd-lig-white-group | Turkiye | 2nd Lig: White Group | Sid 25823 | Comp None None
-STAGE turkey super-lig | Turkiye | Süper Lig | Sid 25764 | Comp 32 Süper Lig
-DETAIL germany oberliga-baden-wurttemberg 200 events 306 tables 3 rounds ['1', '2', '3'] ['32', '33', '34'] eps ['FT', 'NS']
-TABKEYS oberliga-baden-wurttemberg ['LTT', 'phrX'] {"LTT": 1, "phrX": []}
-DETAIL turkey 1st-lig 200 events 380 tables 3 rounds ['1', '2', '3'] ['37', '38', 'Regular Season'] eps ['FT', 'Int.', 'NS']
-TABKEYS 1st-lig ['LTT', 'phrC', 'phrX'] {"LTT": 1, "phrX": [], "phrC": {"1001": "Seed 3 qualifies for the Playoff Final"}}
-DETAIL turkey 2nd-lig-red-group 200 events 272 tables 3 rounds ['1', '2', '3'] ['33', '34', 'Kırmızı'] eps ['FT', 'NS']
-TABKEYS 2nd-lig-red-group ['LTT', 'phrX'] {"LTT": 1, "phrX": []}
-DETAIL turkey 2nd-lig-white-group 200 events 306 tables 3 rounds ['1', '2', '3'] ['33', '34', 'Beyaz'] eps ['FT', 'NS']
-TABKEYS 2nd-lig-white-group ['LTT', 'phrX'] {"LTT": 1, "phrX": []}
-DETAIL turkey super-lig 200 events 306 tables 3 rounds ['1', '2', '3'] ['33', '34', 'Regular Season'] eps ['FT', 'NS']
-TABKEYS super-lig ['LTT', 'phrX'] {"LTT": 1, "phrX": [{"V": 151, "D": 1}]}
-BL1TABLEMETA {}
-BL1PHRX [{"V": 150, "D": 1}]
+SAVED stage_super-lig 200 255535
+SAVED stage_white 200 196499
+SAVED stage_bl1 200 316394
+SAVED stage_rlsw 200 194567
+SAVED live 200 6608
