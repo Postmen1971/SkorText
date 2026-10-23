@@ -13,23 +13,46 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install -q curl_cffi requests
-      - name: Abruf testen
+      - run: pip install -q requests
+      - name: Quellen testen
         run: |
           python - <<'PY'
-          import requests
-          from curl_cffi import requests as cr
-          urls = ["https://api.sofascore.com/api/v1/sport/football/events/live",
-                  "https://www.sofascore.com/api/v1/sport/football/events/live",
-                  "https://api.sofascore.com/api/v1/unique-tournament/52/seasons",
-                  "https://www.sofascore.com/api/v1/unique-tournament/52/season/98080/standings/total"]
-          H = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
-               "Accept": "application/json", "Referer": "https://www.sofascore.com/"}
-          for u in urls:
-              for name, fn in (("requests", lambda u: requests.get(u, headers=H, timeout=20)),
-                               ("curl_cffi", lambda u: cr.get(u, impersonate="chrome", timeout=20))):
+          import requests, json
+          H = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36", "Accept": "application/json"}
+          T = [
+           ("ls-date", "https://prod-public-api.livescore.com/v1/api/app/date/soccer/20261024/1?MD=1"),
+           ("ls-stage-tr", "https://prod-public-api.livescore.com/v1/api/app/stage/soccer/turkey/super-lig/1?MD=1"),
+           ("ls-stage-tr2", "https://prod-public-api.livescore.com/v1/api/app/stage/soccer/turkey/2-lig-white-group/1?MD=1"),
+           ("ls-stage-rlsw", "https://prod-public-api.livescore.com/v1/api/app/stage/soccer/germany/regionalliga-southwest/1?MD=1"),
+           ("ls-live", "https://prod-public-api.livescore.com/v1/api/app/live/soccer/1?MD=1"),
+           ("espn-tur1", "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.1/scoreboard"),
+           ("espn-tur1-st", "https://site.api.espn.com/apis/v2/sports/soccer/tur.1/standings"),
+           ("openliga-bl1", "https://api.openligadb.de/getmatchdata/bl1"),
+           ("tsdb", "https://www.thesportsdb.com/api/v1/json/123/lookuptable.php?l=4339&s=2026-2027"),
+           ("fotmob", "https://www.fotmob.com/api/leagues?id=71"),
+          ]
+          for name, u in T:
+              try:
+                  r = requests.get(u, headers=H, timeout=20)
+                  txt = r.text
+                  info = ""
                   try:
-                      r = fn(u); print("::notice::RESULT", name, r.status_code, len(r.content), u.split("/api/v1")[0], u.split("/api/v1")[1][:45], r.text[:90].replace("\n"," "))
+                      d = r.json()
+                      if name == "ls-date":
+                          st = d.get("Stages", [])
+                          info = "stages=%d " % len(st) + " | ".join(sorted(set((s.get("Cnm","")+":"+s.get("Snm","")) for s in st if s.get("Cnm") in ("Turkey","Germany")))[:20])
+                      elif name.startswith("ls-stage") or name == "ls-live":
+                          st = d.get("Stages", [])
+                          s0 = st[0] if st else {}
+                          ev = s0.get("Events", []) if st else []
+                          lt = s0.get("LeagueTable") or {}
+                          e0 = ev[0] if ev else {}
+                          info = "stages=%d events=%d table=%s ex=%s %s-%s %s" % (len(st), len(ev), bool(lt), e0.get("Eps"), (e0.get("T1") or [{}])[0].get("Nm"), (e0.get("T2") or [{}])[0].get("Nm"), e0.get("Tr1"))
+                      else:
+                          info = txt[:120].replace("\n", " ")
                   except Exception as e:
-                      print("::notice::RESULT", name, "ERR", e, u)
+                      info = "keinJSON " + txt[:80].replace("\n", " ")
+                  print("::notice::RESULT", name, r.status_code, len(r.content), info)
+              except Exception as e:
+                  print("::notice::RESULT", name, "ERR", str(e)[:100])
           PY
