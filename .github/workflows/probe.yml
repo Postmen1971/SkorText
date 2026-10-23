@@ -29,7 +29,7 @@ jobs:
               for name, fn in (("requests", lambda u: requests.get(u, headers=H, timeout=20)),
                                ("curl_cffi", lambda u: cr.get(u, impersonate="chrome", timeout=20))):
                   try:
-                      r = fn(u); print("RESULT", name, r.status_code, len(r.content), u.split("/api/v1")[0], u.split("/api/v1")[1][:45], r.text[:90].replace("\n"," "))
+                      r = fn(u); print("::notice::RESULT", name, r.status_code, len(r.content), u.split("/api/v1")[0], u.split("/api/v1")[1][:45], r.text[:90].replace("\n"," "))
                   except Exception as e:
-                      print("RESULT", name, "ERR", e, u)
+                      print("::notice::RESULT", name, "ERR", e, u)
           PY
