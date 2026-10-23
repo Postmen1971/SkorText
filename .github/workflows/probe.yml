@@ -19,51 +19,35 @@ jobs:
       - name: Quellen testen
         run: |
           python - <<'PY'
-          import requests, json
-          H = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36", "Accept": "application/json"}
-          import datetime
-          OUT = []
-          def print_(*a): return ' '.join(str(x) for x in a)
-          import os
-          os.makedirs("samples", exist_ok=True)
           import re
-          seen = {}
-          days = ["20261003","20261004","20261010","20261011","20261017","20261018","20261024","20261025"]
-          for d in days:
+          U = [
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/standing",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/standings",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/rounds",
+            "https://api.fupa.net/v2/competitions/verbandsliga-wuerttemberg",
+            "https://www.fupa.net/league/verbandsliga-wuerttemberg",
+            "https://www.fupa.net/league/verbandsliga-wuerttemberg/standing",
+            "https://api.fupa.net/v1/teams/1-goppinger-sv-m1-2026-27",
+            "https://api.fupa.net/v1/clubs/1-goppinger-sv",
+            "https://www.kicker.de/verbandsliga-wuerttemberg/tabelle",
+            "https://www.kicker.de/verbandsliga-wuerttemberg/spieltag",
+            "https://www.kicker.de/1-goeppinger-sv/info",
+          ]
+          for u in U:
               try:
-                  r = requests.get("https://prod-public-api.livescore.com/v1/api/app/date/soccer/%s/0?MD=1" % d, headers=H, timeout=20)
-                  for st in r.json().get("Stages", []):
-                      if st.get("Ccd") in ("germany", "turkey"):
-                          k = st.get("Ccd") + "/" + st.get("Scd")
-                          seen.setdefault(k, [st.get("Snm"), st.get("CompN"), 0])
-                          seen[k][2] += len(st.get("Events", []))
-                      for e in st.get("Events", []):
-                          for t in (e.get("T1", []) + e.get("T2", [])):
-                              if re.search("pping|Goepp|Goppingen|Göpp", t.get("Nm", "")):
-                                  OUT.append(print_("GOEPP", d, st.get("Ccd"), st.get("Scd"), t.get("Nm")))
+                  r = requests.get(u, headers=H, timeout=20)
+                  t = r.text
+                  OUT.append(print_("SRC", r.status_code, len(t), u))
+                  OUT.append("   " + re.sub(r"\s+", " ", t[:500]))
+                  i = t.find("pping")
+                  if i >= 0: OUT.append("   GOEPP@" + str(i) + ": " + re.sub(r"\s+", " ", t[max(0,i-200):i+200]))
+                  if r.status_code == 200:
+                      fn = "samples/" + re.sub(r"[^a-z0-9]+", "_", u.split("//")[1])[:80] + (".json" if t.lstrip().startswith(("{","[")) else ".html")
+                      open(fn, "w").write(t)
               except Exception as ex:
-                  OUT.append(print_("DERR", d, ex))
-          for k in sorted(seen):
-              OUT.append(print_("STAGE", k, seen[k]))
-          # Ersatzquellen fuer Verbandsliga
-          for name, u, hd in [
-              ("fotmob", "https://www.fotmob.com/api/search/suggest?term=Goppinger", {}),
-              ("fotmob2", "https://www.fotmob.com/api/search/suggest?term=Verbandsliga", {}),
-              ("sofa", "https://api.sofascore.com/api/v1/unique-tournament/32338/seasons", {}),
-              ("sofa2", "https://www.sofascore.com/api/v1/unique-tournament/32338/seasons", {}),
-              ("fussballde", "https://www.fussball.de/spieltagsuebersicht/verbandsliga-wuerttemberg-wuerttemberg-verbandsliga-herren-saison2627-wuerttemberg/-/staffel/", {}),
-              ("ls_search", "https://search-api.livescore.com/api/v2/search/soccer/goppinger?locale=en", {}),
-              ("ls_search2", "https://prod-public-api.livescore.com/v1/api/app/search/soccer/goppinger?locale=en", {}),
-          ]:
-              try:
-                  h = dict(H); h.update(hd)
-                  r = requests.get(u, headers=h, timeout=20)
-                  OUT.append(print_("SRC", name, r.status_code, len(r.text), r.text[:300].replace("\n", " ")))
-              except Exception as ex:
-                  OUT.append(print_("SRCERR", name, ex))
-          for sl in ["verbandsliga-wurttemberg","verbandsliga-wuerttemberg","oberliga-wurttemberg","verbandsliga"]:
-              r = requests.get("https://prod-public-api.livescore.com/v1/api/app/stage/soccer/germany/%s/0?MD=1" % sl, headers=H, timeout=20)
-              OUT.append(print_("TRY", sl, r.status_code, len(r.text)))
+                  OUT.append(print_("SRCERR", u, ex))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
