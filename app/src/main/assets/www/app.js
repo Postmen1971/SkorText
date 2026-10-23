@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "2.0";
+var VERSION = "2.1";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -12,7 +12,7 @@ var TXT = {
   stand:"Stand",cDE:"DEUTSCHLAND",cTR:"TÜRKEI",cEU:"EUROPA",cNEWS:"HABERLER",openHint:"▲▼◄► wählen · OK öffnen · ZURÜCK beenden",
   home:"ZURÜCK = Übersicht",exitAgain:"Übersicht · ZURÜCK nochmal = beenden",setHint:"▲▼ wählen · ◄► ändern · ZURÜCK zurück",
   loading:"Lade Daten …",noData:"Keine Daten erreichbar.",noData2:"Internetverbindung prüfen.",noGames:"Keine Spiele gefunden.",
-  noTable:"Keine Tabelle verfügbar.",source:"Daten: LiveScore",mdNow:"(aktuell)",mdBrowse:"Spieltag",
+  noTable:"Keine Tabelle verfügbar.",source:"Daten: LiveScore, FuPa",mdNow:"(aktuell)",mdBrowse:"Spieltag",
   noMore:"Kein weiterer Spieltag",newsHint:"▲▼ wählen · OK lesen · ◄► Rubrik",articleHint:"▲▼ / ◄► nächste Meldung · OK / ZURÜCK",
   resHint:"◄► Liga · OK Tabelle",tabHint:"◄► Liga · OK Ergebnisse",
   helpRows:[["◄ ►","Liga wechseln"],["OK","Ergebnisse ⇄ Tabelle"],["▲ ▼","Ergebnisse: Spieltag vor/zurück"],["▲ ▼","Tabelle: Unterseite"],
@@ -25,7 +25,7 @@ var TXT = {
   stand:"Güncel",cDE:"ALMANYA",cTR:"TÜRKİYE",cEU:"AVRUPA",cNEWS:"HABERLER",openHint:"▲▼◄► seç · OK aç · GERİ çık",
   home:"GERİ = Genel Bakış",exitAgain:"Genel Bakış · tekrar GERİ = çık",setHint:"▲▼ seç · ◄► değiştir · GERİ",
   loading:"Veriler yükleniyor …",noData:"Veri alınamadı.",noData2:"İnternet bağlantısını kontrol et.",noGames:"Maç bulunamadı.",
-  noTable:"Puan durumu yok.",source:"Veri: LiveScore",mdNow:"(güncel)",mdBrowse:"Hafta",
+  noTable:"Puan durumu yok.",source:"Veri: LiveScore, FuPa",mdNow:"(güncel)",mdBrowse:"Hafta",
   noMore:"Başka hafta yok",newsHint:"▲▼ seç · OK oku · ◄► kategori",articleHint:"▲▼ / ◄► sonraki haber · OK / GERİ",
   resHint:"◄► Lig · OK Puan",tabHint:"◄► Lig · OK Sonuçlar",
   helpRows:[["◄ ►","Lig değiştir"],["OK","Sonuçlar ⇄ Puan Durumu"],["▲ ▼","Sonuçlar: önceki/sonraki hafta"],["▲ ▼","Puan durumu: alt sayfa"],
@@ -93,6 +93,7 @@ var LEAGUES_DEF = [
  [250,"de","germany","regionalliga-bayern","Regionalliga Bayern","Regionalliga Bavyera",""],[260,"de","germany","regionalliga-nord","Regionalliga Nord","Regionalliga Kuzey",""],
  [270,"de","germany","regionalliga-nordost","Regionalliga Nordost","Regionalliga Kuzeydoğu",""],
  [280,"de","germany","oberliga-baden-wurttemberg","Oberliga Baden-Württemberg","Oberliga Baden-Württemberg",""],
+ [290,"de","fupa","verbandsliga-wuerttemberg","Verbandsliga Württemberg","Verbandsliga Württemberg",""],
  [300,"tr","turkey","super-lig","Trendyol Süper Lig","Trendyol Süper Lig",""],[310,"tr","turkey","1st-lig","Trendyol 1. Lig (2. Liga)","Trendyol 1. Lig",""],
  [320,"tr","turkey","2nd-lig-white-group","2. Lig (3. Liga) · Beyaz Grup","Nesine 2. Lig · Beyaz Grup",""],
  [322,"tr","turkey","2nd-lig-red-group","2. Lig (3. Liga) · Kırmızı Grup","Nesine 2. Lig · Kırmızı Grup",""],
@@ -185,12 +186,24 @@ League.prototype.eventsOfRound = function (n) {
   if (n === null || n === undefined) return [];
   return this.allEvents.filter(function (e) { return e.round === n; });
 };
+League.prototype.liveCount = function () { return this.events.filter(function (e) { return e.state === "in" || e.state === "ht"; }).length; };
 League.prototype.load = function () {
   var self = this;
+  if (self.ccd === "fupa") return self.loadFupa();
   return getJSON(BASE + "/stage/soccer/" + self.ccd + "/" + self.scd + "/0?MD=1").then(function (d) {
     var st = (d.Stages || [])[0];
     if (!st) throw new Error("404 keine Daten");
     var evs = (st.Events || []).map(function (e) { return parseEvent(e, self.ut); });
+    self.setEvents(evs);
+    self.tables = parseTable(st);
+    if (self.scd === "league-stage") self.tables.forEach(function (t) {
+      if (t[1].every(function (r) { return !r.zone; })) t[1].forEach(function (r) { r.zone = r.pos <= 8 ? "g" : (r.pos <= 24 ? "c" : null); });
+    });
+    self.tLoad = Date.now() / 1000; self.error = null;
+  });
+};
+League.prototype.setEvents = function (evs) {
+  var self = this;
     evs.sort(function (x, y) { return x.ts - y.ts; });
     inferRounds(evs);
     self.allEvents = evs;
@@ -204,10 +217,56 @@ League.prototype.load = function () {
     self.events = cur ? self.eventsOfRound(cur) : evs.slice(-10);
     self.prevRound = cur && cur > 1 ? cur - 1 : null;
     self.prevEvents = self.prevRound ? self.eventsOfRound(self.prevRound) : [];
-    self.tables = parseTable(st);
-    if (self.scd === "league-stage") self.tables.forEach(function (t) {
-      if (t[1].every(function (r) { return !r.zone; })) t[1].forEach(function (r) { r.zone = r.pos <= 8 ? "g" : (r.pos <= 24 ? "c" : null); });
+};
+
+/* Amateurligen von FuPa (Verbandsliga Württemberg mit dem 1. Göppinger SV) */
+var FUPA = "https://api.fupa.net/v1";
+function isoTs(v) { var t = Date.parse(v || ""); return isNaN(t) ? 0 : t / 1000; }
+function fupaSeason() { var d = new Date(), y = d.getMonth() >= 6 ? d.getFullYear() : d.getFullYear() - 1; return y + "-" + ("0" + ((y + 1) % 100)).slice(-2); }
+function fupaName(t) { var n = (t || {}).name || {}; return [String(n.full || n.middle || "?").trim(), String(n.short || "").trim()]; }
+function ymd(d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+function parseFupaMatch(m, key) {
+  var sec = String(m.section || "").toUpperCase(), hs = m.homeGoal, as = m.awayGoal, state, minute = "";
+  if (hs === undefined) hs = null; if (as === undefined) as = null;
+  if (sec === "PRE") { state = "pre"; hs = as = null; }
+  else if (sec === "POST") state = hs !== null ? "post" : "pp";
+  else { state = "in"; minute = "live"; }
+  var h = fupaName(m.homeTeam), a = fupaName(m.awayTeam);
+  return {id: "fupa" + m.id, h: h[0], hsn: h[1], a: a[0], asn: a[1], hs: hs, as: as, state: state, min: minute,
+    ts: isoTs(m.kickoff), round: (m.round || {}).number || null, group: "", ut: key, goal_at: 0, goal_by: null};
+}
+League.prototype.loadFupa = function () {
+  var self = this, season = fupaSeason(), base = FUPA + "/competitions/" + self.scd + "/seasons/" + season + "/matches", now = Date.now();
+  var p;
+  if (!self.allEvents.length || now - (self.tFull || 0) > 3 * 3600 * 1000) {
+    var raw = [];
+    var page = function (n) {
+      return getJSON(base + "?limit=100&page=" + n).then(function (part) {
+        part = part || []; raw = raw.concat(part);
+        if (part.length >= 100 && n < 5) return page(n + 1);
+      });
+    };
+    p = page(1).then(function () { self.tFull = now; return raw.map(function (m) { return parseFupaMatch(m, self.ut); }); });
+  } else {
+    var f = ymd(new Date(now - 4 * 86400000)), t = ymd(new Date(now + 8 * 86400000));
+    p = getJSON(base + "?from=" + f + "&to=" + t).then(function (list) {
+      var fresh = {}; (list || []).forEach(function (m) { var e = parseFupaMatch(m, self.ut); fresh[e.id] = e; });
+      var out = self.allEvents.map(function (e) { var n = fresh[e.id]; delete fresh[e.id]; return n || e; });
+      for (var k in fresh) out.push(fresh[k]);
+      return out;
     });
+  }
+  return p.then(function (evs) {
+    self.setEvents(evs);
+    return getJSON(FUPA + "/standings?competition=" + self.scd + "&season=" + season);
+  }).then(function (d) {
+    var marks = {up1: "g", up2: "c", down1: "y", down2: "r"};
+    var rows = ((d || {}).standings || []).map(function (r) {
+      var nm = fupaName(r.team), mk = r.mark || "", z = marks[mk] || (mk.indexOf("up") === 0 ? "c" : (mk.indexOf("down") === 0 ? "r" : null));
+      return {pos: r.rank || 0, tm: nm[0], short: nm[1], p: r.matches || 0, w: r.wins || 0, d: r.draws || 0, l: r.defeats || 0,
+        gf: r.ownGoals || 0, ga: r.againstGoals || 0, pts: r.points || 0, zone: z};
+    });
+    self.tables = rows.length ? [["", rows]] : [];
     self.tLoad = Date.now() / 1000; self.error = null;
   });
 };
@@ -359,7 +418,7 @@ function message(s, secs) { S.msg = s; S.msgUntil = Date.now() + (secs || 2.2) *
 /* ---- Laden ---- */
 function needLeague(lg) {
   if (lg.loading) return;
-  var age = Date.now() / 1000 - lg.tLoad, limit = STORE.liveCount(lg) ? +cfg("refresh") : 600;
+  var age = Date.now() / 1000 - lg.tLoad, limit = (STORE.liveCount(lg) || lg.liveCount()) ? +cfg("refresh") : 600;
   if (lg.tLoad && age <= limit) return;
   lg.loading = true;
   lg.load().then(function () { lg.loading = false; draw(); }, function (e) {
@@ -392,9 +451,10 @@ function go(p) {
   if (pageType(p) === null) { message(fmt(T("notfound"), p)); return; }
   var a = STORE.leagueByPage(S.page), b = STORE.leagueByPage(p);
   if (!a || a !== b) S.md = null;
+  var old = S.page;
   S.page = p; S.sub = 0; S.lastRot = Date.now(); S.newsSel = 0; S.newsOpen = null;
   var f = feedByPage(p); if (f) needFeed(f);
-  if (p === 100) S.idx = [0, 1];
+  if (p === 100) idxMark(old);
   var lg = STORE.leagueByPage(p); if (lg) needLeague(lg);
 }
 function shownRound(lg) {
@@ -460,6 +520,17 @@ function newsKey(k) {
     if (S.newsOpen !== null && n) { S.newsOpen = (S.newsOpen + dd + n) % n; S.newsSel = S.newsOpen; }
     else { var i = FEEDS.indexOf(f); go(FEEDS[(i + dd + FEEDS.length) % FEEDS.length].page); }
   }
+}
+function idxMark(old) {
+  // in der Übersicht dort stehen bleiben, wo man zuletzt hineingegangen ist
+  try {
+    var lg = STORE.leagueByPage(old), target = lg ? lg.page : (old >= 600 && old < 700 ? 600 : old), cols = idxCols();
+    for (var c = 0; c < cols.length; c++) for (var r = 0; r < cols[c].length; r++) {
+      var it = cols[c][r]; if (it && it.page === target) { S.idx = [c, r]; return; }
+    }
+    var cur = cols[S.idx[0]] && cols[S.idx[0]][S.idx[1]];
+    if (!cur || !cur.page) S.idx = [0, 1];
+  } catch (e) { S.idx = [0, 1]; }
 }
 function idxCols() {
   var lang = cfg("lang");
