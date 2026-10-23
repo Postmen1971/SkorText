@@ -1,35 +1,38 @@
-TRY stage/soccer/champions-league/league-stage/0 200 265621 True
-TRY stage/soccer/champions-league/league-phase/0 410 0 False
-TRY stage/soccer/champions-league/group-stage/0 410 0 False
-TRY stage/soccer/champions-league/0 404 53 False
-TRY stage/soccer/europa-league/league-stage/0 200 200109 True
-TRY stage/soccer/europa-league/league-phase/0 410 0 False
-TRY stage/soccer/europa-league/group-stage/0 410 0 False
-TRY stage/soccer/europa-league/0 404 53 False
-TRY stage/soccer/conference-league/league-stage/0 200 139651 True
-TRY stage/soccer/conference-league/league-phase/0 410 0 False
-TRY stage/soccer/conference-league/group-stage/0 410 0 False
-TRY stage/soccer/conference-league/0 404 53 False
-TRY stage/soccer/europa-conference-league/league-stage/0 410 0 False
-TRY stage/soccer/europa-conference-league/league-phase/0 410 0 False
-TRY stage/soccer/europa-conference-league/group-stage/0 410 0 False
-TRY stage/soccer/europa-conference-league/0 404 53 False
-TRY stage/soccer/uefa-champions-league/league-stage/0 410 0 False
-TRY stage/soccer/uefa-champions-league/league-phase/0 410 0 False
-TRY stage/soccer/uefa-champions-league/group-stage/0 410 0 False
-TRY stage/soccer/uefa-champions-league/0 404 53 False
-TRY stage/soccer/uefa-europa-league/league-stage/0 410 0 False
-TRY stage/soccer/uefa-europa-league/league-phase/0 410 0 False
-TRY stage/soccer/uefa-europa-league/group-stage/0 410 0 False
-TRY stage/soccer/uefa-europa-league/0 404 53 False
-TRY stage/soccer/uefa-conference-league/league-stage/0 410 0 False
-TRY stage/soccer/uefa-conference-league/league-phase/0 410 0 False
-TRY stage/soccer/uefa-conference-league/group-stage/0 410 0 False
-TRY stage/soccer/uefa-conference-league/0 404 53 False
-DATE 20261021 champions-league league-stage Champions League League Stage 60 9
-DATE 20261021 africa caf-champions-league-qualification Africa CAF Champions League: Qualification 223 2
-DATE 20261021 uefa-youth-league champions-league-path-2024 UEFA Youth League Champions League Path 109 9
-DATE 20261022 europa-league league-stage Europa League League Stage 36 18
-DATE 20261022 conference-league league-stage Conference League League Stage 62 18
-DATE 20261023 england championship England Championship 70 1
-DATE 20261023 africa caf-champions-league-qualification Africa CAF Champions League: Qualification 223 4
+STAGE germany/2-bundesliga ['2. Bundesliga', '2. Bundesliga', 21]
+STAGE germany/3-liga ['3. Liga', '3. Liga', 27]
+STAGE germany/bundesliga ['Bundesliga', 'Bundesliga', 24]
+STAGE germany/bundesliga-women ['Frauen-Bundesliga', None, 16]
+STAGE germany/oberliga-baden-wurttemberg ['Oberliga: Baden-Wurttemberg', None, 31]
+STAGE germany/oberliga-bayern-north ['Oberliga: Bayern North', None, 24]
+STAGE germany/oberliga-bayern-south ['Oberliga: Bayern South', None, 25]
+STAGE germany/oberliga-bremen ['Oberliga: Bremen', None, 19]
+STAGE germany/oberliga-flens ['Oberliga: Flens', None, 30]
+STAGE germany/oberliga-hamburg ['Oberliga: Hamburg', None, 18]
+STAGE germany/oberliga-hessen ['Oberliga: Hessen', None, 35]
+STAGE germany/oberliga-mittelrhein ['Oberliga: Mittelrhein', None, 29]
+STAGE germany/oberliga-niederrhein ['Oberliga: Niederrhein', None, 23]
+STAGE germany/oberliga-niedersachsen ['Oberliga: Niedersachsen', None, 20]
+STAGE germany/oberliga-nofv-nord-25-26 ['Oberliga NOFV Nord 25/26', None, 21]
+STAGE germany/oberliga-nofv-sud ['Oberliga: NOFV-Sud', None, 23]
+STAGE germany/oberliga-rheinland-pfalz-saar ['Oberliga: Rheinland-Pfalz/Saar', None, 31]
+STAGE germany/oberliga-westfalen ['Oberliga: Westfalen', None, 34]
+STAGE germany/regionalliga-bayern ['Regionalliga Bayern', None, 28]
+STAGE germany/regionalliga-nord ['Regionalliga Nord', None, 28]
+STAGE germany/regionalliga-nordost ['Regionalliga Nordost', None, 18]
+STAGE germany/regionalliga-sudwest ['Regionalliga Südwest', None, 29]
+STAGE germany/regionalliga-west ['Regionalliga West', None, 27]
+STAGE turkey/1st-lig ['1st Lig', '1st Lig', 20]
+STAGE turkey/2nd-lig-red-group ['2nd Lig: Red Group', None, 32]
+STAGE turkey/2nd-lig-white-group ['2nd Lig: White Group', None, 34]
+STAGE turkey/super-lig ['Süper Lig', 'Süper Lig', 19]
+SRC fotmob 404 214357 <!DOCTYPE html><html lang="en" dir="ltr"><head><meta charSet="utf-8" data-next-head=""/><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" data-next-head=""/><meta name="apple-itunes-app" content="app-id=488575683" data-next-head=""/><link rel="alternate" href="
+SRC fotmob2 404 214357 <!DOCTYPE html><html lang="en" dir="ltr"><head><meta charSet="utf-8" data-next-head=""/><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" data-next-head=""/><meta name="apple-itunes-app" content="app-id=488575683" data-next-head=""/><link rel="alternate" href="
+SRC sofa 403 48 {"error": {"code": 403, "reason": "Forbidden" }}
+SRC sofa2 403 48 {"error": {"code": 403, "reason": "Forbidden" }}
+SRC fussballde 404 18573 <!doctype html> <html> 	<head> 		<meta charset="UTF-8"> 		<title>?¯\_(?)_/¯?</title> 		<style>  			img { 				display: block; 				margin: 0 auto; 				max-width: 100%; 				padding-top: 150px; 				width: "600px"; 			}  			p { 				width: 100%; 				font-size: 22px; 				font-family: Arial; 				line-height
+SRCERR ls_search HTTPSConnectionPool(host='search-api.livescore.com', port=443): Max retries exceeded with url: /api/v2/search/soccer/goppinger?locale=en (Caused by NameResolutionError("HTTPSConnection(host='search-api.livescore.com', port=443): Failed to resolve 'search-api.livescore.com' ([Errno -2] Name or service not known)"))
+SRC ls_search2 404 53 <html><body><h1>Resource not found</h1></body></html>
+TRY verbandsliga-wurttemberg 410 0
+TRY verbandsliga-wuerttemberg 410 0
+TRY oberliga-wurttemberg 410 0
+TRY verbandsliga 410 0
