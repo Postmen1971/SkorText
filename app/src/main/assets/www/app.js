@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "1.0";
+var VERSION = "1.1";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -67,7 +67,13 @@ window.__skorRes = function (id, ok, status, text) {
   var p = pending[id]; delete pending[id]; if (!p) return;
   if (ok && status >= 200 && status < 300) p.res(text); else p.rej(new Error(ok ? "HTTP " + status : String(text)));
 };
+var SAME_ORIGIN = location.hostname === "api.sofascore.com";
 function httpGet(url) {
+  if (SAME_ORIGIN && url.indexOf("https://api.sofascore.com/") === 0) {
+    // Abruf durch den eingebauten Chrome selbst (gleiche Adresse, mit Cookies) - wird nicht gesperrt
+    return fetch(url.replace("https://api.sofascore.com", ""), {credentials: "include", headers: {"Accept": "application/json"}})
+      .then(function (r) { return r.ok ? r.text() : Promise.reject(new Error("HTTP " + r.status)); });
+  }
   return new Promise(function (res, rej) {
     if (window.SkorBridge && SkorBridge.get) { var id = ++reqId; pending[id] = {res: res, rej: rej}; SkorBridge.get(id, url); }
     else fetch(url).then(function (r) { return r.ok ? r.text() : Promise.reject(new Error("HTTP " + r.status)); }).then(res, rej);

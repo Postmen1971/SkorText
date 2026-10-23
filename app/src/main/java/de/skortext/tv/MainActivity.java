@@ -7,7 +7,13 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
+import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -15,7 +21,9 @@ import android.webkit.WebViewClient;
 
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -29,6 +37,12 @@ import java.util.zip.GZIPInputStream;
 public class MainActivity extends Activity {
 	private WebView web;
 	private SharedPreferences prefs;
+	// Die App-Seite wird unter der Sofascore-Adresse ausgeliefert (aus den eingebauten Dateien).
+	// So holt der eingebaute Chrome die Daten selbst - wie bei einem normalen Webseitenbesuch.
+	private static final String HOST = "api.sofascore.com";
+	private static final String APP_URL = "https://" + HOST + "/skortext/index.html";
+	private static final String WARM_URL = "https://" + HOST + "/api/v1/sport/football/events/live";
+	private boolean appLoaded = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +59,55 @@ public class MainActivity extends Activity {
 		s.setAllowFileAccess(true);
 		s.setTextZoom(100);
 		web.addJavascriptInterface(new Bridge(), "SkorBridge");
-		web.setWebViewClient(new WebViewClient());
+		CookieManager cm = CookieManager.getInstance();
+		cm.setAcceptCookie(true);
+		if (android.os.Build.VERSION.SDK_INT >= 21) cm.setAcceptThirdPartyCookies(web, true);
+		web.setWebViewClient(new WebViewClient() {
+			@Override
+			public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest req) {
+				Uri u = req.getUrl();
+				String path = u.getPath();
+				if (HOST.equals(u.getHost()) && path != null && path.startsWith("/skortext/")) {
+					String asset = "www/" + path.substring("/skortext/".length());
+					try {
+						return new WebResourceResponse(mime(asset), "utf-8", getAssets().open(asset));
+					} catch (IOException e) {
+						return new WebResourceResponse("text/plain", "utf-8", 404, "Not Found", null, new ByteArrayInputStream(new byte[0]));
+					}
+				}
+				return null;
+			}
+
+			@Override
+			public void onPageFinished(WebView view, String url) {
+				// Erst ein normaler Seitenbesuch bei Sofascore (Cookies/Pruefung), dann die App laden
+				if (!appLoaded && url != null && url.startsWith(WARM_URL)) {
+					appLoaded = true;
+					new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+						@Override
+						public void run() { web.loadUrl(APP_URL); }
+					}, 1200);
+				}
+			}
+		});
 		setContentView(web);
-		web.loadUrl("file:///android_asset/www/index.html");
+		web.loadUrl(WARM_URL);
+		new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (!appLoaded) { appLoaded = true; web.loadUrl(APP_URL); }
+			}
+		}, 8000);
 		web.requestFocus(View.FOCUS_DOWN);
+	}
+
+	private static String mime(String name) {
+		if (name.endsWith(".html")) return "text/html";
+		if (name.endsWith(".js")) return "application/javascript";
+		if (name.endsWith(".css")) return "text/css";
+		if (name.endsWith(".ttf")) return "font/ttf";
+		if (name.endsWith(".png")) return "image/png";
+		return "application/octet-stream";
 	}
 
 	private static String mapKey(int code) {
@@ -89,6 +148,7 @@ public class MainActivity extends Activity {
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		String k = mapKey(event.getKeyCode());
 		if (k == null) return super.dispatchKeyEvent(event);
+		if (!appLoaded) return true;
 		if (event.getAction() == KeyEvent.ACTION_DOWN) {
 			web.evaluateJavascript("window.skorKey ? window.skorKey('" + k + "') : ''", new ValueCallback<String>() {
 				@Override
