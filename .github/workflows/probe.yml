@@ -9,6 +9,8 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/setup-python@v5
         with:
@@ -20,6 +22,8 @@ jobs:
           import requests, json
           H = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36", "Accept": "application/json"}
           import datetime
+          OUT = []
+          def print_(*a): return ' '.join(str(x) for x in a)
           seen = {}
           for off in range(-6, 3):
               d = (datetime.date(2026,10,24) + datetime.timedelta(days=off)).strftime("%Y%m%d")
@@ -29,14 +33,22 @@ jobs:
                       k = (st.get("Ccd"), st.get("Scd"))
                       seen[k] = (st.get("Cnm"), st.get("Snm"), st.get("Sid"), st.get("CompId"), st.get("CompN"))
           for k, v in sorted(seen.items()):
-              print("::notice::STAGE", k[0], k[1], "|", v[1], "| Sid", v[2], "| Comp", v[3], v[4])
+              OUT.append(print_("STAGE", k[0], k[1], "|", v[1], "| Sid", v[2], "| Comp", v[3], v[4]))
           r = requests.get("https://prod-public-api.livescore.com/v1/api/app/stage/soccer/turkey/super-lig/1?MD=1", headers=H, timeout=20).json()
           st = r["Stages"][0]
-          print("::notice::STAGEKEYS", sorted(st.keys()))
+          OUT.append(print_("STAGEKEYS", sorted(st.keys())))
           ev = st["Events"]
-          print("::notice::EVENTKEYS", sorted(ev[0].keys()))
-          print("::notice::EVENT0", json.dumps({k: ev[0][k] for k in ev[0] if k not in ("T1","T2")}, ensure_ascii=False)[:900])
-          print("::notice::TEAM", json.dumps(ev[0]["T1"][0], ensure_ascii=False)[:300])
+          OUT.append(print_("EVENTKEYS", sorted(ev[0].keys())))
+          OUT.append(print_("EVENT0", json.dumps({k: ev[0][k] for k in ev[0] if k not in ("T1","T2")}, ensure_ascii=False)[:900]))
+          OUT.append(print_("TEAM", json.dumps(ev[0]["T1"][0], ensure_ascii=False)[:300]))
           lt = st["LeagueTable"]
-          print("::notice::TABLE", json.dumps(lt, ensure_ascii=False)[:1200])
+          OUT.append(print_("TABLE", json.dumps(lt, ensure_ascii=False)[:1200]))
+          open('probe-result.txt','w').write('\n'.join(OUT))
           PY
+      - uses: actions/checkout@v4
+        with:
+          path: repo
+      - run: |
+          cp probe-result.txt repo/probe-result.txt
+          cd repo && git config user.name Claude && git config user.email noreply@anthropic.com
+          git add probe-result.txt && git commit -m 'Testergebnis [skip ci]' && git push
