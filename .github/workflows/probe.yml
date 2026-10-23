@@ -25,24 +25,31 @@ jobs:
           OUT = []
           def print_(*a): return ' '.join(str(x) for x in a)
           seen = {}
-          for off in range(-6, 3):
+          for off in range(-8, 3):
               d = (datetime.date(2026,10,24) + datetime.timedelta(days=off)).strftime("%Y%m%d")
-              r = requests.get("https://prod-public-api.livescore.com/v1/api/app/date/soccer/%s/1?MD=1" % d, headers=H, timeout=20)
+              r = requests.get("https://prod-public-api.livescore.com/v1/api/app/date/soccer/%s/0?MD=1" % d, headers=H, timeout=20)
               for st in r.json().get("Stages", []):
-                  if st.get("Cnm") in ("Turkey", "Germany", "England", "Spain", "Italy", "France"):
+                  c = st.get("Cnm") or ""
+                  if c.startswith("Turk") or "erbandsliga" in (st.get("Snm") or "") or "rttemberg" in (st.get("Snm") or ""):
                       k = (st.get("Ccd"), st.get("Scd"))
-                      seen[k] = (st.get("Cnm"), st.get("Snm"), st.get("Sid"), st.get("CompId"), st.get("CompN"))
+                      seen[k] = (c, st.get("Snm"), st.get("Sid"), st.get("CompId"), st.get("CompN"))
           for k, v in sorted(seen.items()):
-              OUT.append(print_("STAGE", k[0], k[1], "|", v[1], "| Sid", v[2], "| Comp", v[3], v[4]))
-          r = requests.get("https://prod-public-api.livescore.com/v1/api/app/stage/soccer/turkey/super-lig/1?MD=1", headers=H, timeout=20).json()
-          st = r["Stages"][0]
-          OUT.append(print_("STAGEKEYS", sorted(st.keys())))
-          ev = st["Events"]
-          OUT.append(print_("EVENTKEYS", sorted(ev[0].keys())))
-          OUT.append(print_("EVENT0", json.dumps({k: ev[0][k] for k in ev[0] if k not in ("T1","T2")}, ensure_ascii=False)[:900]))
-          OUT.append(print_("TEAM", json.dumps(ev[0]["T1"][0], ensure_ascii=False)[:300]))
-          lt = st["LeagueTable"]
-          OUT.append(print_("TABLE", json.dumps(lt, ensure_ascii=False)[:1200]))
+              OUT.append(print_("STAGE", k[0], k[1], "|", v[0], "|", v[1], "| Sid", v[2], "| Comp", v[3], v[4]))
+          for ccd, scd in sorted(seen.keys())[:12]:
+              try:
+                  rr = requests.get("https://prod-public-api.livescore.com/v1/api/app/stage/soccer/%s/%s/0?MD=1" % (ccd, scd), headers=H, timeout=20)
+                  j = rr.json(); st = j["Stages"][0]; ev = st.get("Events", []); lt = st.get("LeagueTable") or {}
+                  tabs = (lt.get("L") or [{}])[0].get("Tables", [])
+                  rnds = sorted(set(e.get("ErnInf") for e in ev), key=lambda x: (len(str(x)), str(x)))
+                  OUT.append(print_("DETAIL", ccd, scd, rr.status_code, "events", len(ev), "tables", len(tabs), "rounds", rnds[:3], rnds[-3:], "eps", sorted(set(e.get("Eps") for e in ev))[:12]))
+                  if tabs: OUT.append(print_("TABKEYS", scd, sorted(k for k in tabs[0].keys() if k != "team"), json.dumps({k: tabs[0][k] for k in tabs[0] if k != "team"}, ensure_ascii=False)[:400]))
+              except Exception as e:
+                  OUT.append(print_("DETAIL", ccd, scd, "ERR", str(e)[:80]))
+          rr = requests.get("https://prod-public-api.livescore.com/v1/api/app/stage/soccer/germany/bundesliga/0?MD=1", headers=H, timeout=20).json()
+          lt = rr["Stages"][0].get("LeagueTable") or {}
+          OUT.append(print_("BL1TABLEMETA", json.dumps({k: v for k, v in lt.items() if k != "L"}, ensure_ascii=False)[:600]))
+          t0 = lt["L"][0]["Tables"][0]
+          OUT.append(print_("BL1PHRX", json.dumps(t0.get("phrX"), ensure_ascii=False)[:800]))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
