@@ -26,30 +26,29 @@ jobs:
           os.makedirs("samples", exist_ok=True)
           import re
           U = [
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?round=10",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?round=11",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?limit=400",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?page=2",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?offset=25",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/standing",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/standings?type=total",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/table",
-            "https://api.fupa.net/v1/standings?competitionSeasonId=172160",
-            "https://api.fupa.net/v1/competition-seasons/172160/standings",
-            "https://api.fupa.net/v1/standings/172160",
-            "https://api.fupa.net/v1/competitionseasons/172160/standing",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/rounds/11/matches",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?section=PRE",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?sort=desc",
-            "https://api.fupa.net/v1/leagues/verbandsliga-wuerttemberg",
+            "https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg&season=2026-27",
+            "https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg&season=2026-27&type=total",
+            "https://api.fupa.net/v1/standings?competition=2052&season=2026-27",
+            "https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?roundNumber=11",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?round_number=11",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?roundSlug=11",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?rounds=11",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?matchday=11",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?limit=100&page=1",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?from=2026-10-20&to=2026-10-27",
+            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?date=2026-10-24",
           ]
           for u in U:
               try:
                   r = requests.get(u, headers=H, timeout=20)
                   t = r.text
                   OUT.append(print_("SRC", r.status_code, len(t), u))
-                  OUT.append("   " + re.sub(r"\s+", " ", t[:350]))
+                  OUT.append("   " + re.sub(r"\s+", " ", t[:250]))
+                  try:
+                      j = json.loads(t)
+                      if isinstance(j, list): OUT.append("   LIST %d rounds %s" % (len(j), sorted(set((x.get("round") or {}).get("number") for x in j if isinstance(x, dict)))))
+                  except Exception: pass
                   i = t.find("pping")
                   if i >= 0: OUT.append("   GOEPP@" + str(i) + ": " + re.sub(r"\s+", " ", t[max(0,i-200):i+200]))
                   if r.status_code == 200:
