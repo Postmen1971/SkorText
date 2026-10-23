@@ -1,0 +1,45 @@
+plugins {
+    id 'com.android.application'
+}
+
+def runNumber = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInteger()
+
+android {
+    namespace 'de.skortext.tv'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'de.skortext.tv'
+        minSdk 21
+        targetSdk 34
+        versionCode runNumber
+        versionName "1.0." + runNumber
+    }
+
+    signingConfigs {
+        release {
+            // Fester Schluessel, damit Updates ohne Deinstallieren gehen (nur fuer privaten Gebrauch)
+            storeFile file('skortext.keystore')
+            storePassword 'skortext'
+            keyAlias 'skortext'
+            keyPassword 'skortext'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
