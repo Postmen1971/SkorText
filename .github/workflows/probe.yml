@@ -26,18 +26,33 @@ jobs:
           def print_(*a): return ' '.join(str(x) for x in a)
           import os
           os.makedirs("samples", exist_ok=True)
-          for name, u in [("stage_super-lig", "stage/soccer/turkey/super-lig/0"), ("stage_white", "stage/soccer/turkey/2nd-lig-white-group/0"),
-                          ("stage_bl1", "stage/soccer/germany/bundesliga/0"), ("stage_rlsw", "stage/soccer/germany/regionalliga-sudwest/0"),
-                          ("live", "live/soccer/0")]:
-              r = requests.get("https://prod-public-api.livescore.com/v1/api/app/%s?MD=1" % u, headers=H, timeout=20)
-              open("samples/%s.json" % name, "w").write(r.text)
-              OUT.append(print_("SAVED", name, r.status_code, len(r.text)))
+          C = ["champions-league","europa-league","conference-league","europa-conference-league","uefa-champions-league","uefa-europa-league","uefa-conference-league"]
+          S = ["league-stage","league-phase","group-stage","",]
+          for c in C:
+              for sc in S:
+                  u = "stage/soccer/%s/%s/0" % (c, sc) if sc else "stage/soccer/%s/0" % c
+                  try:
+                      r = requests.get("https://prod-public-api.livescore.com/v1/api/app/%s?MD=1" % u, headers=H, timeout=20)
+                      ok = r.status_code == 200 and '"Events"' in r.text
+                      OUT.append(print_("TRY", u, r.status_code, len(r.text), ok))
+                      if ok:
+                          open("samples/uefa_%s_%s.json" % (c, sc or "x"), "w").write(r.text)
+                  except Exception as ex:
+                      OUT.append(print_("ERR", u, ex))
+          for d in ["20261021","20261022","20261023"]:
+              r = requests.get("https://prod-public-api.livescore.com/v1/api/app/date/soccer/%s/0?MD=1" % d, headers=H, timeout=20)
+              try:
+                  for st in r.json().get("Stages", []):
+                      if any(k in (st.get("Ccd","")+st.get("Cnm","")+st.get("CompN","")).lower() for k in ["champ","europa","confer","uefa"]):
+                          OUT.append(print_("DATE", d, st.get("Ccd"), st.get("Scd"), st.get("Cnm"), st.get("Snm"), st.get("CompId"), len(st.get("Events",[]))))
+              except Exception as ex:
+                  OUT.append(print_("DERR", d, r.status_code, ex))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
         with:
           path: repo
       - run: |
-          cp probe-result.txt repo/probe-result.txt && mkdir -p repo/samples && cp samples/*.json repo/samples/
+          cp probe-result.txt repo/probe-result.txt && mkdir -p repo/samples && (cp samples/*.json repo/samples/ || true)
           cd repo && git config user.name Claude && git config user.email noreply@anthropic.com
           git add probe-result.txt samples && git commit -m 'Testergebnis [skip ci]' && git push
