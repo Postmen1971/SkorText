@@ -1,38 +1,28 @@
-STAGE germany/2-bundesliga ['2. Bundesliga', '2. Bundesliga', 21]
-STAGE germany/3-liga ['3. Liga', '3. Liga', 27]
-STAGE germany/bundesliga ['Bundesliga', 'Bundesliga', 24]
-STAGE germany/bundesliga-women ['Frauen-Bundesliga', None, 16]
-STAGE germany/oberliga-baden-wurttemberg ['Oberliga: Baden-Wurttemberg', None, 31]
-STAGE germany/oberliga-bayern-north ['Oberliga: Bayern North', None, 24]
-STAGE germany/oberliga-bayern-south ['Oberliga: Bayern South', None, 25]
-STAGE germany/oberliga-bremen ['Oberliga: Bremen', None, 19]
-STAGE germany/oberliga-flens ['Oberliga: Flens', None, 30]
-STAGE germany/oberliga-hamburg ['Oberliga: Hamburg', None, 18]
-STAGE germany/oberliga-hessen ['Oberliga: Hessen', None, 35]
-STAGE germany/oberliga-mittelrhein ['Oberliga: Mittelrhein', None, 29]
-STAGE germany/oberliga-niederrhein ['Oberliga: Niederrhein', None, 23]
-STAGE germany/oberliga-niedersachsen ['Oberliga: Niedersachsen', None, 20]
-STAGE germany/oberliga-nofv-nord-25-26 ['Oberliga NOFV Nord 25/26', None, 21]
-STAGE germany/oberliga-nofv-sud ['Oberliga: NOFV-Sud', None, 23]
-STAGE germany/oberliga-rheinland-pfalz-saar ['Oberliga: Rheinland-Pfalz/Saar', None, 31]
-STAGE germany/oberliga-westfalen ['Oberliga: Westfalen', None, 34]
-STAGE germany/regionalliga-bayern ['Regionalliga Bayern', None, 28]
-STAGE germany/regionalliga-nord ['Regionalliga Nord', None, 28]
-STAGE germany/regionalliga-nordost ['Regionalliga Nordost', None, 18]
-STAGE germany/regionalliga-sudwest ['Regionalliga Südwest', None, 29]
-STAGE germany/regionalliga-west ['Regionalliga West', None, 27]
-STAGE turkey/1st-lig ['1st Lig', '1st Lig', 20]
-STAGE turkey/2nd-lig-red-group ['2nd Lig: Red Group', None, 32]
-STAGE turkey/2nd-lig-white-group ['2nd Lig: White Group', None, 34]
-STAGE turkey/super-lig ['Süper Lig', 'Süper Lig', 19]
-SRC fotmob 404 214357 <!DOCTYPE html><html lang="en" dir="ltr"><head><meta charSet="utf-8" data-next-head=""/><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" data-next-head=""/><meta name="apple-itunes-app" content="app-id=488575683" data-next-head=""/><link rel="alternate" href="
-SRC fotmob2 404 214357 <!DOCTYPE html><html lang="en" dir="ltr"><head><meta charSet="utf-8" data-next-head=""/><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" data-next-head=""/><meta name="apple-itunes-app" content="app-id=488575683" data-next-head=""/><link rel="alternate" href="
-SRC sofa 403 48 {"error": {"code": 403, "reason": "Forbidden" }}
-SRC sofa2 403 48 {"error": {"code": 403, "reason": "Forbidden" }}
-SRC fussballde 404 18573 <!doctype html> <html> 	<head> 		<meta charset="UTF-8"> 		<title>?¯\_(?)_/¯?</title> 		<style>  			img { 				display: block; 				margin: 0 auto; 				max-width: 100%; 				padding-top: 150px; 				width: "600px"; 			}  			p { 				width: 100%; 				font-size: 22px; 				font-family: Arial; 				line-height
-SRCERR ls_search HTTPSConnectionPool(host='search-api.livescore.com', port=443): Max retries exceeded with url: /api/v2/search/soccer/goppinger?locale=en (Caused by NameResolutionError("HTTPSConnection(host='search-api.livescore.com', port=443): Failed to resolve 'search-api.livescore.com' ([Errno -2] Name or service not known)"))
-SRC ls_search2 404 53 <html><body><h1>Resource not found</h1></body></html>
-TRY verbandsliga-wurttemberg 410 0
-TRY verbandsliga-wuerttemberg 410 0
-TRY oberliga-wurttemberg 410 0
-TRY verbandsliga 410 0
+SRC 404 205 https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg
+   {"error":{"code":404,"message":"The route v1\/competitions\/verbandsliga-wuerttemberg could not be found.","translated_message":"The route v1\/competitions\/verbandsliga-wuerttemberg could not be found."}}
+SRC 404 261 https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/standing
+   {"error":{"code":404,"message":"The route v1\/competitions\/verbandsliga-wuerttemberg\/seasons\/2026-27\/standing could not be found.","translated_message":"The route v1\/competitions\/verbandsliga-wuerttemberg\/seasons\/2026-27\/standing could not be found."}}
+SRC 404 263 https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/standings
+   {"error":{"code":404,"message":"The route v1\/competitions\/verbandsliga-wuerttemberg\/seasons\/2026-27\/standings could not be found.","translated_message":"The route v1\/competitions\/verbandsliga-wuerttemberg\/seasons\/2026-27\/standings could not be found."}}
+SRC 200 46225 https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches
+   [{"id":14995524,"slug":"tsv-ehningen-m1-tsg-balingen-m2-260815","homeTeam":{"id":1466599,"teamId":19699,"slug":"tsv-ehningen-m1-2026-27","name":{"full":"TSV Ehningen","middle":"TSV Ehningen","short":"EHN"},"image":{"path":"https:\/\/image.fupa.net\/team\/XAkyah1ty5Ro\/","description":null,"source":null,"svg":false},"origin":"up","ageGroup":{"slug":"m","name":"Herren"},"linkUrl":"\/team\/tsv-ehningen-m1-2026-27","level":1,"clubSlug":"tsv-ehningen","club":{"id":17919,"name":"TSV Ehningen","middleN
+   GOEPP@11235: ,"spectators":200,"updatedAt":1792071420,"streamUpdatedAt":1792484094,"refereeAlias":null,"gallery":null,"category":"league","tickerReservableUntil":null},{"id":14995528,"slug":"skv-rutesheim-m1-1-goeppinger-sv-m1-260815","homeTeam":{"id":1466620,"teamId":19989,"slug":"skv-rutesheim-m1-2026-27","name":{"full":"SKV Rutesheim","middle":"SKV Rutesheim","short":"SKV Rutesheim"},"image":{"path":"https:
+SRC 404 257 https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/rounds
+   {"error":{"code":404,"message":"The route v1\/competitions\/verbandsliga-wuerttemberg\/seasons\/2026-27\/rounds could not be found.","translated_message":"The route v1\/competitions\/verbandsliga-wuerttemberg\/seasons\/2026-27\/rounds could not be found."}}
+SRC 404 205 https://api.fupa.net/v2/competitions/verbandsliga-wuerttemberg
+   {"error":{"code":404,"message":"The route v2\/competitions\/verbandsliga-wuerttemberg could not be found.","translated_message":"The route v2\/competitions\/verbandsliga-wuerttemberg could not be found."}}
+SRC 200 194814 https://www.fupa.net/league/verbandsliga-wuerttemberg
+   <!DOCTYPE html> <html lang="de"> <head> <meta charset="utf-8"> <title data-rh="true">Verbandsliga Württemberg - Württemberg - FuPa</title> <meta data-rh="true" name="robots" content="index, follow"/><meta data-rh="true" name="description" content="Alle Spiele, Fußball-News, Ergebnisse, Tabellen, Liveticker und die Elf der Woche zur Verbandsliga Württemberg - Kreis Württemberg."/> <meta data-rh="true"> <meta name="theme-color" content="#003C69"> <meta name="msapplication-TileImage" content="/ico
+SRC 200 128607 https://www.fupa.net/league/verbandsliga-wuerttemberg/standing
+   <!DOCTYPE html> <html lang="de"> <head> <meta charset="utf-8"> <title data-rh="true">Tabelle - Verbandsliga Württemberg - Württemberg - FuPa</title> <meta data-rh="true" name="robots" content="index, follow"/><meta data-rh="true" name="description" content="Die ausführliche Tabelle mit allen detaillierten Informationen zur Hin- und Rückrunde der Liga Verbandsliga Württemberg - Kreis Württemberg."/> <meta data-rh="true"> <meta name="theme-color" content="#003C69"> <meta name="msapplication-TileI
+   GOEPP@71261: >23</span></div></div></a><span class="sc-ajygix-0 eXpEkp"></span></div><div class="sc-1d797lr-6 dXFwex"><a rel="nofollow" data-google-interstitial="false" class="sc-vaom57-0 ijGXeu" href="/team/1-goeppinger-sv-m1-2026-27"><div class="sc-1d797lr-7 hcUrfc"><div class="sc-1d797lr-1 sc-1d797lr-2 DVUUt ePEtYR"><span class="sc-lhxcmh-0 jOiTFY">4<!-- -->.</span></div><div class="sc-1d797lr-1 sc-1d797lr-
+SRC 404 179 https://api.fupa.net/v1/teams/1-goppinger-sv-m1-2026-27
+   {"error":{"code":404,"message":"No teamseason for the specified request found.","translated_message":"Die angefragte Ressource existiert nicht oder wurde bereits gel\u00f6scht."}}
+SRC 404 173 https://api.fupa.net/v1/clubs/1-goppinger-sv
+   {"error":{"code":404,"message":"No club for the specified request found.","translated_message":"Die angefragte Ressource existiert nicht oder wurde bereits gel\u00f6scht."}}
+SRC 202 0 https://www.kicker.de/verbandsliga-wuerttemberg/tabelle
+   
+SRC 202 0 https://www.kicker.de/verbandsliga-wuerttemberg/spieltag
+   
+SRC 202 0 https://www.kicker.de/1-goeppinger-sv/info
+   
