@@ -1,86 +1,17 @@
-STAGE england baller-league-uk | Baller League UK | Sid 26592 | Comp 757 Baller League UK
-STAGE england championship | Championship | Sid 25615 | Comp 70 Championship
-STAGE england fa-cup-qualification | FA Cup: Qualification | Sid 26243 | Comp 113 FA Cup
-STAGE england fa-trophy | FA Trophy | Sid 26540 | Comp None None
-STAGE england fa-women-s-super-league | FA Women’s Super League | Sid 25978 | Comp 103 FA Women's Super League
-STAGE england isthmian-league | Isthmian League Premier Division | Sid 25857 | Comp 572 Isthmian League Premier Division
-STAGE england isthmian-league-north-division | Isthmian League: North Division | Sid 26046 | Comp 1224 Isthmian League Northern Division
-STAGE england isthmian-league-south-central-division | Isthmian League: South Central Division | Sid 26050 | Comp None None
-STAGE england isthmian-league-south-east-division | Isthmian League: South East Division | Sid 26051 | Comp None None
-STAGE england league-1 | League 1 | Sid 25616 | Comp 71 League 1
-STAGE england league-2 | League 2 | Sid 25617 | Comp 72 League 2
-STAGE england national-league | National League | Sid 25767 | Comp 123 National League
-STAGE england national-league-cup-group-a | National League Cup: Group A | Sid 26060 | Comp None None
-STAGE england national-league-cup-group-c | National League Cup: Group C | Sid 26062 | Comp None None
-STAGE england national-league-north | National League: North | Sid 25766 | Comp 568 National League North
-STAGE england national-league-south | National League: South | Sid 25768 | Comp 569 National League South
-STAGE england northern-premier-division | Northern Premier League | Sid 25858 | Comp 571 Northern Premier League
-STAGE england northern-premier-league-east-division | Northern Premier League: East Division | Sid 26047 | Comp None None
-STAGE england northern-premier-league-midlands-division | Northern Premier League: Midlands Division | Sid 26048 | Comp None None
-STAGE england northern-premier-league-west-division | Northern Premier League: West Division | Sid 26049 | Comp None None
-STAGE england premier-league | Premier League | Sid 25545 | Comp 65 Premier League
-STAGE england premier-league-2 | Premier League 2 | Sid 26144 | Comp None None
-STAGE england premier-league-u18 | Premier League U18 | Sid 26134 | Comp None None
-STAGE england southern-league-central-division | Southern League: Central Divison | Sid 26052 | Comp None None
-STAGE england southern-premier-division-central | Southern League Premier: Central | Sid 25883 | Comp 574 Southern League Premier: Central
-STAGE england southern-premier-division-south | Southern League Premier: South | Sid 25882 | Comp 573 Southern League Premier: South
-STAGE england womens-league-cup | Women's League Cup | Sid 26138 | Comp None None
-STAGE england wsl-2-2025 | WSL 2 | Sid 25984 | Comp None None
-STAGE france coupe-de-france | Coupe de France | Sid 26635 | Comp 426 Coupe de France
-STAGE france division-1-women | Premiere Ligue Femenine | Sid 25757 | Comp 711 Premiere Ligue Femenine
-STAGE france ligue-1 | Ligue 1 | Sid 25561 | Comp 68 Ligue 1
-STAGE france ligue-2 | Ligue 2 | Sid 25562 | Comp 100 Ligue 2
-STAGE germany 2-bundesliga | 2. Bundesliga | Sid 25709 | Comp 91 2. Bundesliga
-STAGE germany 3-liga | 3. Liga | Sid 25765 | Comp 687 3. Liga
-STAGE germany bundesliga | Bundesliga | Sid 25705 | Comp 67 Bundesliga
-STAGE germany bundesliga-women | Frauen-Bundesliga | Sid 25826 | Comp None None
-STAGE germany oberliga-baden-wurttemberg | Oberliga: Baden-Wurttemberg | Sid 25794 | Comp None None
-STAGE germany oberliga-bayern-north | Oberliga: Bayern North | Sid 25790 | Comp None None
-STAGE germany oberliga-bayern-south | Oberliga: Bayern South | Sid 25789 | Comp None None
-STAGE germany oberliga-bremen | Oberliga: Bremen | Sid 25947 | Comp None None
-STAGE germany oberliga-flens | Oberliga: Flens | Sid 25787 | Comp None None
-STAGE germany oberliga-hamburg | Oberliga: Hamburg | Sid 25788 | Comp None None
-STAGE germany oberliga-hessen | Oberliga: Hessen | Sid 25791 | Comp None None
-STAGE germany oberliga-mittelrhein | Oberliga: Mittelrhein | Sid 26258 | Comp None None
-STAGE germany oberliga-niederrhein | Oberliga: Niederrhein | Sid 25893 | Comp None None
-STAGE germany oberliga-niedersachsen | Oberliga: Niedersachsen | Sid 25804 | Comp None None
-STAGE germany oberliga-nofv-nord-25-26 | Oberliga NOFV Nord 25/26 | Sid 25792 | Comp None None
-STAGE germany oberliga-nofv-sud | Oberliga: NOFV-Sud | Sid 25793 | Comp None None
-STAGE germany oberliga-rheinland-pfalz-saar | Oberliga: Rheinland-Pfalz/Saar | Sid 25889 | Comp None None
-STAGE germany oberliga-westfalen | Oberliga: Westfalen | Sid 25892 | Comp None None
-STAGE germany regionalliga-bayern | Regionalliga Bayern | Sid 25783 | Comp None None
-STAGE germany regionalliga-nord | Regionalliga Nord | Sid 25786 | Comp None None
-STAGE germany regionalliga-nordost | Regionalliga Nordost | Sid 25784 | Comp None None
-STAGE germany regionalliga-sudwest | Regionalliga Südwest | Sid 25805 | Comp None None
-STAGE germany regionalliga-west | Regionalliga West | Sid 25785 | Comp None None
-STAGE italy campionato-primavera-1 | Campionato Primavera 1 | Sid 26219 | Comp None None
-STAGE italy serie-a | Serie A | Sid 25458 | Comp 77 Serie A
-STAGE italy serie-a-women | Women's Serie A | Sid 25963 | Comp 219 Women's Serie A
-STAGE italy serie-b | Serie B | Sid 25917 | Comp 110 Serie B
-STAGE italy serie-c-group-a | Serie C: Group A | Sid 26022 | Comp 198 Serie C
-STAGE italy serie-c-group-b-2025 | Serie C: Group B | Sid 26023 | Comp 198 Serie C
-STAGE italy serie-c-group-c-2025 | Serie C: Group C | Sid 26024 | Comp 198 Serie C
-STAGE italy serie-d-group-a | Serie D: Group A | Sid 26082 | Comp 576 Serie D: Group A
-STAGE italy serie-d-group-b | Serie D: Group B | Sid 26083 | Comp 577 Serie D: Group B
-STAGE italy serie-d-group-c | Serie D: Group C | Sid 26084 | Comp 578 Serie D: Group C
-STAGE italy serie-d-group-d | Serie D: Group D | Sid 26090 | Comp 579 Serie D: Group D
-STAGE italy serie-d-group-e | Serie D: Group E | Sid 26089 | Comp None None
-STAGE italy serie-d-group-f | Serie D: Group F | Sid 26091 | Comp None None
-STAGE italy serie-d-group-g | Serie D: Group G | Sid 26092 | Comp None None
-STAGE italy serie-d-group-h | Serie D: Group H | Sid 26094 | Comp None None
-STAGE italy serie-d-group-i | Serie D: Group I | Sid 26093 | Comp None None
-STAGE spain laliga | LaLiga | Sid 25695 | Comp 75 LaLiga
-STAGE spain laliga-2 | LaLiga 2 | Sid 25696 | Comp 406 LaLiga 2
-STAGE spain primera-division-rfef-group-1 | Primera Division RFEF: Group 1 | Sid 25710 | Comp None None
-STAGE spain primera-division-rfef-group-2 | Primera Division RFEF: Group 2 | Sid 25713 | Comp None None
-STAGE spain primera-division-women | Liga F | Sid 25711 | Comp 564 Liga F
-STAGE spain segunda-division-rfef-group-1 | Segunda Division RFEF: Group 1 | Sid 25715 | Comp None None
-STAGE spain segunda-division-rfef-group-2 | Segunda Division RFEF: Group 2 | Sid 25714 | Comp None None
-STAGE spain segunda-division-rfef-group-3 | Segunda Division RFEF: Group 3 | Sid 25716 | Comp None None
-STAGE spain segunda-division-rfef-group-4 | Segunda Division RFEF: Group 4 | Sid 25717 | Comp None None
-STAGE spain segunda-division-rfef-group-5 | Segunda Division RFEF: Group 5 | Sid 25718 | Comp None None
-STAGEKEYS ['Ccd', 'Chi', 'Cid', 'Cnm', 'CnmT', 'CompD', 'CompId', 'CompN', 'CompST', 'CompUrlName', 'Csnm', 'Events', 'Feed', 'LeagueTable', 'Scd', 'Scu', 'Sds', 'Shi', 'Sid', 'Snm', 'badgeUrl', 'firstColor', 'hasDraw']
-EVENTKEYS ['EO', 'EOX', 'Ecov', 'Edf', 'Ehid', 'Eid', 'Epr', 'Eps', 'ErnInf', 'Esd', 'Esid', 'Et', 'Ewt', 'LuUT', 'Media', 'Pid', 'Pids', 'Sids', 'Spid', 'T1', 'T2', 'Tr1', 'Tr2']
-EVENT0 {"Eid": "1821283", "Pids": {"8": "1821283"}, "Sids": {"112": "SBTC3_41090"}, "Media": {"8": [{"type": "YoutubeHighlights", "allowedCountries": ["LR", "TZ", "LS", "UG", "MF", "MG", "YT", "ID", "ML", "EH", "MQ", "MR", "ZA", "MU", "MW", "ER", "MZ", "AO", "ET", "RE", "NA", "NC", "NE", "NG", "BF", "BI", "BJ", "BL", "FR", "WF", "SC", "SD", "BW", "SH", "SL", "GA", "KE", "SO", "GF", "SS", "GH", "KM", "CF", "GM", "GN", "GP", "CM", "GW", "TD", "TF", "TG", "PF", "PH", "TL", "PM"]}]}, "Tr1": "2", "Tr2": "2", "Eps": "FT", "Esid": 6, "Epr": 2, "Ecov": 0, "ErnInf": "1", "Ewt": 0, "Et": 1, "Esd": 20260814193000, "LuUT": 20260814194709, "Edf": 20260814212940, "EO": 270189437, "EOX": 270189437, "Ehid": 0, "Spid": 1, "Pid": 8}
-TEAM {"Nm": "Galatasaray", "ID": "189", "Img": "teambadge/galatasaray.png", "NewsTag": "/team/galatasaray-2022062716001253418-515/", "Abr": "GAL", "tbd": 0, "Gd": 1, "Pids": {"6": ["3061"], "8": ["189"]}, "CoNm": "Turkiye", "CoId": "TUR", "HasVideo": true}
-TABLE {"L": [{"Tables": [{"LTT": 1, "team": [{"rnk": 1, "Tid": "189", "win": 6, "winn": "6", "wot": 0, "Tnm": "Galatasaray", "Sbid": "SBTP_2_1000000053", "lst": 1, "lstn": "1", "lreg": 1, "lot": 0, "lap": 0, "drw": 1, "drwn": "1", "gf": 17, "ga": 11, "gd": 6, "ptsn": "19", "phr": [20], "Ipr": 0, "Img": "teambadge/galatasaray.png", "pts": 19, "pld": 8}, {"rnk": 2, "Tid": "3707", "win": 5, "winn": "5", "wot": 0, "Tnm": "Amed Sportif", "Sbid": "SBTP_2_1004437345", "lst": 1, "lstn": "1", "lreg": 1, "lot": 0, "lap": 0, "drw": 2, "drwn": "2", "gf": 18, "ga": 9, "gd": 9, "ptsn": "17", "phr": [21], "Ipr": 0, "Img": "enet/96498.png", "pts": 17, "pld": 8}, {"rnk": 3, "Tid": "4452", "win": 5, "winn": "5", "wot": 0, "Tnm": "Fenerbahçe", "Sbid": "SBTP_2_1000000205", "lst": 2, "lstn": "2", "lreg": 2, "lot": 0, "lap": 0, "drw": 1, "drwn": "1", "gf": 22, "ga": 6, "gd": 16, "ptsn": "16", "phr": [26], "Ipr": 0, "Img": "teambadge/fenerbahce-120-years.png", "pts": 16, "pld": 8}, {"rnk": 4, "Tid": "378", "win": 5, "winn": "5", "wot": 0, "Tnm": "Trabzonspor", "Sbid": "SBTP_2_1000015518", "lst": 2, "lstn": "2", "lreg": 2, "lot": 0, "lap": 0, "drw": 1, "drwn": "1", "gf": 18, "ga": 5, "gd": 13, "ptsn": "16", "ph
+STAGE germany oberliga-baden-wurttemberg | Germany | Oberliga: Baden-Wurttemberg | Sid 25794 | Comp None None
+STAGE turkey 1st-lig | Turkiye | 1st Lig | Sid 25779 | Comp 165 1st Lig
+STAGE turkey 2nd-lig-red-group | Turkiye | 2nd Lig: Red Group | Sid 25822 | Comp None None
+STAGE turkey 2nd-lig-white-group | Turkiye | 2nd Lig: White Group | Sid 25823 | Comp None None
+STAGE turkey super-lig | Turkiye | Süper Lig | Sid 25764 | Comp 32 Süper Lig
+DETAIL germany oberliga-baden-wurttemberg 200 events 306 tables 3 rounds ['1', '2', '3'] ['32', '33', '34'] eps ['FT', 'NS']
+TABKEYS oberliga-baden-wurttemberg ['LTT', 'phrX'] {"LTT": 1, "phrX": []}
+DETAIL turkey 1st-lig 200 events 380 tables 3 rounds ['1', '2', '3'] ['37', '38', 'Regular Season'] eps ['FT', 'Int.', 'NS']
+TABKEYS 1st-lig ['LTT', 'phrC', 'phrX'] {"LTT": 1, "phrX": [], "phrC": {"1001": "Seed 3 qualifies for the Playoff Final"}}
+DETAIL turkey 2nd-lig-red-group 200 events 272 tables 3 rounds ['1', '2', '3'] ['33', '34', 'Kırmızı'] eps ['FT', 'NS']
+TABKEYS 2nd-lig-red-group ['LTT', 'phrX'] {"LTT": 1, "phrX": []}
+DETAIL turkey 2nd-lig-white-group 200 events 306 tables 3 rounds ['1', '2', '3'] ['33', '34', 'Beyaz'] eps ['FT', 'NS']
+TABKEYS 2nd-lig-white-group ['LTT', 'phrX'] {"LTT": 1, "phrX": []}
+DETAIL turkey super-lig 200 events 306 tables 3 rounds ['1', '2', '3'] ['33', '34', 'Regular Season'] eps ['FT', 'NS']
+TABKEYS super-lig ['LTT', 'phrX'] {"LTT": 1, "phrX": [{"V": 151, "D": 1}]}
+BL1TABLEMETA {}
+BL1PHRX [{"V": 150, "D": 1}]
