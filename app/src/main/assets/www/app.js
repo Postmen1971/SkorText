@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "1.1";
+var VERSION = "1.2";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -67,12 +67,16 @@ window.__skorRes = function (id, ok, status, text) {
   var p = pending[id]; delete pending[id]; if (!p) return;
   if (ok && status >= 200 && status < 300) p.res(text); else p.rej(new Error(ok ? "HTTP " + status : String(text)));
 };
-var SAME_ORIGIN = location.hostname === "api.sofascore.com";
+var SAME_ORIGIN = /sofascore\.com$/.test(location.hostname);
 function httpGet(url) {
   if (SAME_ORIGIN && url.indexOf("https://api.sofascore.com/") === 0) {
-    // Abruf durch den eingebauten Chrome selbst (gleiche Adresse, mit Cookies) - wird nicht gesperrt
-    return fetch(url.replace("https://api.sofascore.com", ""), {credentials: "include", headers: {"Accept": "application/json"}})
-      .then(function (r) { return r.ok ? r.text() : Promise.reject(new Error("HTTP " + r.status)); });
+    // Abruf durch den eingebauten Chrome selbst, auf demselben Weg wie die Sofascore-Webseite (www.sofascore.com/api/v1)
+    return fetch(url.replace("https://api.sofascore.com", ""), {credentials: "include", headers: {"Accept": "*/*"}})
+      .then(function (r) {
+        if (r.ok) return r.text();
+        return r.text().then(function (t) { return Promise.reject(new Error("HTTP " + r.status + " " + t.replace(/\s+/g, " ").slice(0, 70))); },
+          function () { return Promise.reject(new Error("HTTP " + r.status)); });
+      });
   }
   return new Promise(function (res, rej) {
     if (window.SkorBridge && SkorBridge.get) { var id = ++reqId; pending[id] = {res: res, rej: rej}; SkorBridge.get(id, url); }
@@ -84,7 +88,7 @@ var BASE = "https://api.sofascore.com/api/v1";
 function sofa(path) { return getJSON(BASE + path); }
 function niceError(e) {
   var s = String(e && e.message || e);
-  if (s.indexOf("403") >= 0) return "Datenquelle sperrt den Zugriff (HTTP 403)";
+  if (s.indexOf("403") >= 0) return "Gesperrt (403): " + s.replace(/^.*?403\s*/, "").slice(0, 60);
   if (s.indexOf("404") >= 0) return "Daten nicht gefunden (HTTP 404)";
   if (/timeout|timed out/i.test(s)) return "Zeitüberschreitung – Internet langsam oder weg";
   if (/unknownhost|unable to resolve|dns/i.test(s)) return "Keine Internetverbindung";

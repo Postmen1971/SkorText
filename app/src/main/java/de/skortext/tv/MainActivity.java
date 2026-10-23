@@ -39,9 +39,9 @@ public class MainActivity extends Activity {
 	private SharedPreferences prefs;
 	// Die App-Seite wird unter der Sofascore-Adresse ausgeliefert (aus den eingebauten Dateien).
 	// So holt der eingebaute Chrome die Daten selbst - wie bei einem normalen Webseitenbesuch.
-	private static final String HOST = "api.sofascore.com";
+	private static final String HOST = "www.sofascore.com";
 	private static final String APP_URL = "https://" + HOST + "/skortext/index.html";
-	private static final String WARM_URL = "https://" + HOST + "/api/v1/sport/football/events/live";
+	private static final String WARM_URL = "https://" + HOST + "/";
 	private boolean appLoaded = false;
 
 	@Override
@@ -81,12 +81,12 @@ public class MainActivity extends Activity {
 			@Override
 			public void onPageFinished(WebView view, String url) {
 				// Erst ein normaler Seitenbesuch bei Sofascore (Cookies/Pruefung), dann die App laden
-				if (!appLoaded && url != null && url.startsWith(WARM_URL)) {
+				if (!appLoaded && url != null && url.startsWith(WARM_URL) && !url.contains("/skortext/")) {
 					appLoaded = true;
 					new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
 						@Override
 						public void run() { web.loadUrl(APP_URL); }
-					}, 1200);
+					}, 2500);
 				}
 			}
 		});
@@ -97,7 +97,7 @@ public class MainActivity extends Activity {
 			public void run() {
 				if (!appLoaded) { appLoaded = true; web.loadUrl(APP_URL); }
 			}
-		}, 8000);
+		}, 12000);
 		web.requestFocus(View.FOCUS_DOWN);
 	}
 
