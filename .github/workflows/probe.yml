@@ -25,37 +25,20 @@ jobs:
           def print_(*a): return ' '.join(str(x) for x in a)
           os.makedirs("samples", exist_ok=True)
           import re
-          U = [
-            "https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg&season=2026-27",
-            "https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg&season=2026-27&type=total",
-            "https://api.fupa.net/v1/standings?competition=2052&season=2026-27",
-            "https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?roundNumber=11",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?round_number=11",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?roundSlug=11",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?rounds=11",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?matchday=11",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?limit=100&page=1",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?from=2026-10-20&to=2026-10-27",
-            "https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?date=2026-10-24",
-          ]
-          for u in U:
-              try:
-                  r = requests.get(u, headers=H, timeout=20)
-                  t = r.text
-                  OUT.append(print_("SRC", r.status_code, len(t), u))
-                  OUT.append("   " + re.sub(r"\s+", " ", t[:250]))
+          for u in ["https://prod-public-api.livescore.com/v1/api/app/live/soccer/0?MD=1",
+                    "https://prod-public-api.livescore.com/v1/api/app/stage/soccer/turkey/super-lig/0?MD=1",
+                    "https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg&season=2026-27",
+                    "https://api.frankfurter.dev/v1/latest?from=EUR&to=TRY",
+                    "https://www.trthaber.com/manset_articles.rss",
+                    "https://www.aa.com.tr/tr/rss/default?cat=guncel"]:
+              for org in ["https://claude.ai", "https://example.github.io"]:
                   try:
-                      j = json.loads(t)
-                      if isinstance(j, list): OUT.append("   LIST %d rounds %s" % (len(j), sorted(set((x.get("round") or {}).get("number") for x in j if isinstance(x, dict)))))
-                  except Exception: pass
-                  i = t.find("pping")
-                  if i >= 0: OUT.append("   GOEPP@" + str(i) + ": " + re.sub(r"\s+", " ", t[max(0,i-200):i+200]))
-                  if r.status_code == 200:
-                      fn = "samples/" + re.sub(r"[^a-z0-9]+", "_", u.split("//")[1])[:80] + (".json" if t.lstrip().startswith(("{","[")) else ".html")
-                      open(fn, "w").write(t)
-              except Exception as ex:
-                  OUT.append(print_("SRCERR", u, ex))
+                      h = dict(H); h["Origin"] = org
+                      r = requests.get(u, headers=h, timeout=20)
+                      o = requests.options(u, headers={"Origin": org, "Access-Control-Request-Method": "GET"}, timeout=20)
+                      OUT.append(print_("CORS", r.status_code, "ACAO=", r.headers.get("Access-Control-Allow-Origin"), "| OPT", o.status_code, o.headers.get("Access-Control-Allow-Origin"), "|", org, u))
+                  except Exception as ex:
+                      OUT.append(print_("ERR", u, ex))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
