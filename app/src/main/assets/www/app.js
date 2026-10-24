@@ -20,13 +20,13 @@ var TXT = {
   last:"Letzte Spiele",next:"Nächste Spiele",noFav:"Kein Lieblingsverein gewählt.",noFav2:"Unter Einstellungen (900) auswählen.",place:"Platz",
   scorers:"Torschützen",detHint:"OK = Tabelle · ▲▼ blättern",t_detHint:"Titel antippen = Tabelle · wischen ▲▼",pen:"E",og:"ET",
   rkFifa:"FIFA-Weltrangliste",rkUefa:"UEFA-Länderwertung",rkClub:"UEFA-Klubwertung",points:"Punkte",season:"Saison",nation:"Land",asOf:"Stand",
-  noMatches:"Keine Spiele an diesem Tag.",nlHint:"◄► ▲▼ nächste Gruppe",t_nlHint:"wischen = nächste Gruppe",helpOpen:"OK = öffnen",t_helpOpen:"antippen = öffnen",
+  noMatches:"Keine Spiele an diesem Tag.",nlHint:"◄► ▲▼ nächste Gruppe",natEU:"Länderspiele Europa",t_nlHint:"wischen = nächste Gruppe",helpOpen:"OK = öffnen",t_helpOpen:"antippen = öffnen",
   helpInfo:"Alle Tasten und Seiten auf einen Blick.",
   t_openHint:"Antippen = öffnen · ZURÜCK beenden",t_home:"◄ Übersicht (hier tippen)",t_resHint:"wischen ◄► Liga · Titel antippen = Tabelle",
   t_tabHint:"wischen ◄► Liga · Titel antippen = Ergebnisse",t_setHint:"Antippen = ändern · ZURÜCK zurück",
   t_newsHint:"Antippen = lesen · wischen ◄► Rubrik",t_articleHint:"wischen = nächste Meldung · Titel antippen = zurück",t_mdArrows:"wischen ▲▼",
   helpRows:[["◄ ►","Liga wechseln"],["OK","Ergebnisse ⇄ Tabelle"],["▲ ▼","Ergebnisse: Spieltag vor/zurück"],["▲ ▼","Tabelle: Unterseite"],
-   ["ZURÜCK","Übersicht, nochmal = App beenden"],["Übersicht","▲▼◄► wählen, OK öffnet"],["440–460","Champions / Europa / Conference League"],["295 / 305","DFB-Pokal / Türkiye Kupası"],["510","Heute (◄► Tag)"],["110","Mein Verein"],["470","Nations League: alle Gruppen"],["480–484","Ranglisten FIFA / UEFA"],["500","Alle Live-Spiele"],["600","Haberler (Nachrichten)"],
+   ["ZURÜCK","Übersicht, nochmal = App beenden"],["Übersicht","▲▼◄► wählen, OK öffnet"],["440–460","Champions / Europa / Conference League"],["295 / 305","DFB-Pokal / Türkiye Kupası"],["510","Heute (◄► Tag)"],["110","Mein Verein"],["470","Länderspiele Europa: NL / EM- / WM-Quali"],["480–484","Ranglisten FIFA / UEFA"],["500","Alle Live-Spiele"],["600","Haberler (Nachrichten)"],
    ["900","Einstellungen (Stil, Sprache …)"],["Farbtasten","falls vorhanden: DE / TR / Europa / Live"],["0–9","falls vorhanden: Seitennummer"],["Tablet","antippen = öffnen · Titel = Tabelle · oben = Übersicht"],["Wischen","◄► Liga wechseln · ▲▼ Spieltag / Unterseite"]]},
  tr: {overview:"Genel Bakış",results:"Sonuçlar",table:"Puan Durumu",liveTable:"Canlı Puan Durumu",md:"%d. Hafta",live:"Canlı",
   allLive:"Tüm Canlı Maçlar",help:"Kullanım",settings:"Ayarlar",noLive:"Şu an canlı maç yok",ht:"İY",ft:"MS",
@@ -43,13 +43,13 @@ var TXT = {
   last:"Son maçlar",next:"Sıradaki maçlar",noFav:"Favori takım seçilmedi.",noFav2:"Ayarlar (900) altından seç.",place:"Sıra",
   scorers:"Goller",detHint:"OK = Puan durumu · ▲▼ sayfa",t_detHint:"başlığa dokun = Puan · kaydır ▲▼",pen:"P",og:"KK",
   rkFifa:"FIFA Dünya Sıralaması",rkUefa:"UEFA Ülke Puanı",rkClub:"UEFA Kulüp Puanı",points:"Puan",season:"Sezon",nation:"Ülke",asOf:"Güncel",
-  noMatches:"Bu gün maç yok.",nlHint:"◄► ▲▼ sonraki grup",t_nlHint:"kaydır = sonraki grup",helpOpen:"OK = aç",t_helpOpen:"dokun = aç",
+  noMatches:"Bu gün maç yok.",nlHint:"◄► ▲▼ sonraki grup",natEU:"Avrupa milli maçları",t_nlHint:"kaydır = sonraki grup",helpOpen:"OK = aç",t_helpOpen:"dokun = aç",
   helpInfo:"Tüm tuşlar ve sayfalar.",
   t_openHint:"Dokun = aç · GERİ çık",t_home:"◄ Genel Bakış (dokun)",t_resHint:"kaydır ◄► Lig · başlığa dokun = Puan",
   t_tabHint:"kaydır ◄► Lig · başlığa dokun = Sonuçlar",t_setHint:"Dokun = değiştir · GERİ",
   t_newsHint:"Dokun = oku · kaydır ◄► kategori",t_articleHint:"kaydır = sonraki haber · başlığa dokun = geri",t_mdArrows:"kaydır ▲▼",
   helpRows:[["◄ ►","Lig değiştir"],["OK","Sonuçlar ⇄ Puan Durumu"],["▲ ▼","Sonuçlar: önceki/sonraki hafta"],["▲ ▼","Puan durumu: alt sayfa"],
-   ["GERİ","Genel Bakış, tekrar = uygulamadan çık"],["Genel Bakış","▲▼◄► seç, OK aç"],["440–460","Şampiyonlar / Avrupa / Konferans Ligi"],["295 / 305","Almanya Kupası / Türkiye Kupası"],["510","Bugün (◄► gün)"],["110","Takımım"],["470","Uluslar Ligi: tüm gruplar"],["480–484","Sıralamalar FIFA / UEFA"],["500","Tüm canlı maçlar"],["600","Haberler"],
+   ["GERİ","Genel Bakış, tekrar = uygulamadan çık"],["Genel Bakış","▲▼◄► seç, OK aç"],["440–460","Şampiyonlar / Avrupa / Konferans Ligi"],["295 / 305","Almanya Kupası / Türkiye Kupası"],["510","Bugün (◄► gün)"],["110","Takımım"],["470","Avrupa milli maçlar: UL / EURO / DK eleme"],["480–484","Sıralamalar FIFA / UEFA"],["500","Tüm canlı maçlar"],["600","Haberler"],
    ["900","Ayarlar (görünüm, dil …)"],["Renk tuşları","varsa: DE / TR / Avrupa / Canlı"],["0–9","varsa: sayfa numarası"],["Tablet","dokun = aç · başlık = Puan · üst = Genel Bakış"],["Kaydır","◄► lig değiştir · ▲▼ hafta / alt sayfa"]]}
 };
 var SETTINGS = [
@@ -125,10 +125,7 @@ var LEAGUES_DEF = [
  [450,"eu","europa-league","league-stage","Europa League","Avrupa Ligi",""],
  [460,"eu","conference-league","league-stage","Conference League","Konferans Ligi",""],
 ];
-[["a", 4], ["b", 4], ["c", 4], ["d", 2]].forEach(function (x) {
-  for (var g = 1; g <= x[1]; g++) LEAGUES_DEF.push([470, "nlg", "uefa-nations-league", "league-" + x[0] + "-group-" + g,
-    "Nations League · Liga " + x[0].toUpperCase() + " · Gruppe " + g, "Uluslar Ligi · " + x[0].toUpperCase() + " Ligi · " + g + ". Grup", ""]);
-});
+
 var NAME_FIX = [["FC Cologne","1. FC Köln"],["Cologne","Köln"],["Bayern Munich","Bayern München"],["Munich 1860","TSV 1860 München"],["Nuremberg","Nürnberg"],["Monchengladbach","Mönchengladbach"],["Dusseldorf","Düsseldorf"],["Furth","Fürth"],["Munster","Münster"],["Osnabruck","Osnabrück"],["Saarbrucken","Saarbrücken"],["Wurzburg","Würzburg"],["Gottingen","Göttingen"],["Goppingen","Göppingen"],["Lubeck","Lübeck"],["Grossaspach","Großaspach"],["Koln","Köln"],["Gutersloh","Gütersloh"],["Rodinghausen","Rödinghausen"],["Wiedenbruck","Wiedenbrück"],["Gmund","Gmünd"],["Nottingen","Nöttingen"],["Turkgucu","Türkgücü"],["Turkspor","Türkspor"],["Preussen","Preußen"],["Muenster","Münster"],["1860 Munich","TSV 1860 München"],["Luneburger","Lüneburger"],["Teutonia St. Toenis","Teutonia St. Tönis"],["Zweibrucken","Zweibrücken"],["Volklingen","Völklingen"],["Bodoe/Glimt","Bodø/Glimt"],["Slavia Prague","SK Slavia Prag"],["Sparta Prague","AC Sparta Prag"],["Atletico Madrid","Atlético Madrid"],["Ferencvaros","Ferencváros"],["Viktoria Plzen","Viktoria Pilsen"],["Lech Poznan","Lech Posen"],["Lillestroem","Lillestrøm"],["Mjaellby","Mjällby"],["FC Nordsjaelland","FC Nordsjælland"],["FC Copenhagen","FC Kopenhagen"],["FC Salzburg","RB Salzburg"],["Union St.Gilloise","Union Saint-Gilloise"],["Turkiye","Türkiye"],["Besiktas","Beşiktaş"],["Fenerbahce","Fenerbahçe"],["Basaksehir","Başakşehir"],["Kasimpasa","Kasımpaşa"],["Eyupspor","Eyüpspor"],["Goztepe","Göztepe"],["Caykur","Çaykur"],["Genclerbirligi","Gençlerbirliği"],["Karagumruk","Karagümrük"],["Igdir","Iğdır"],["Corum","Çorum"],["Bandirmaspor","Bandırmaspor"],["Umraniyespor","Ümraniyespor"],["Keciorengucu","Keçiörengücü"],["Istanbulspor","İstanbulspor"],["Sariyer","Sarıyer"],["Sanliurfaspor","Şanlıurfaspor"],["Arnavutkoy","Arnavutköy"],["Mus Spor","Muşspor"],["Musspor","Muşspor"],["Elazigspor","Elazığspor"],["Corluspor","Çorluspor"],["Genclik","Gençlik"],["Kirklarelispor","Kırklarelispor"],["Inegolspor","İnegölspor"],["Altinordu","Altınordu"],["Usakspor","Uşakspor"],["Kahramanmaras","Kahramanmaraş"],["Istiklalspor","İstiklalspor"],["Yildirimspor","Yıldırımspor"],["Aliaga","Aliağa"],["Karsiyaka","Karşıyaka"],["Mugla","Muğla"],["Duzce","Düzce"],["Guzide","Güzide"],["Kucukcekmece","Küçükçekmece"],["Beyoglu","Beyoğlu"],["Carsi","Çarşı"],["Iskenderun","İskenderun"],["Sile","Şile"],["Bursa Yildirim","Bursa Yıldırım"],["Igdir FK","Iğdır FK"],["Eskisehir","Eskişehir"],["Kutahya","Kütahya"],["Balikesir","Balıkesir"],["Canakkale","Çanakkale"],["Diyarbakir","Diyarbakır"],["Kirsehir","Kırşehir"],["Nevsehir","Nevşehir"],["Nigde","Niğde"],["Kirikkale","Kırıkkale"],["Inegol","İnegöl"],["gucu","gücü"],["Ayvalik","Ayvalık"],["Kulubu","Kulübü"],["Yesilyurt","Yeşilyurt"],["Sumerbey","Sümerbey"],["Mazidagi","Mazıdağı"],["Bingol","Bingöl"],["Universitesi","Üniversitesi"],["Dernegi","Derneği"],["Agri ","Ağrı "],["Akcaabat","Akçaabat"],["Carsamba","Çarşamba"]];
 function fixName(n) {
   n = String(n || "").replace(/i\u0307/g, "i").trim();
@@ -359,6 +356,73 @@ STORE.byUt = {}; STORE.leagues.forEach(function (l) { STORE.byUt[l.ut] = l; });
 STORE.allViews = function () { var out = []; this.leagues.forEach(function (lg) { lg.views().forEach(function (v) { out.push([lg, v[0], v[1]]); }); }); return out; };
 STORE.view = function (p) { var v = this.allViews(); for (var i = 0; i < v.length; i++) { if (p === v[i][1]) return [v[i][0], v[i][2], "res"]; if (p === v[i][1] + 1) return [v[i][0], v[i][2], "tab"]; } return null; };
 STORE.nlGroups = function () { return this.leagues.filter(function (l) { return l.c === "nlg"; }); };
+STORE.setNat = function (groups) {
+  this.leagues = this.leagues.filter(function (l) { return l.c !== "nlg"; }).concat(groups);
+  var by = {}; this.leagues.forEach(function (l) { by[l.ut] = l; }); this.byUt = by;
+};
+/* Europäische Länderspiele (Seite 470): automatisch EM-Quali, WM-Quali (UEFA) oder Nations League */
+var NAT_TITLES = {euro: ["EM-Qualifikation", "EURO Elemeleri"], wc: ["WM-Qualifikation", "Dünya Kupası Elemeleri"], nl: ["Nations League", "Uluslar Ligi"]};
+function natStageName(snm, lang) {
+  var out = [];
+  String(snm || "").replace(/;/g, ":").split(":").map(function (x) { return x.trim(); }).filter(function (x) { return x; }).forEach(function (p) {
+    var m = /^league ([a-d])$/i.exec(p);
+    if (m) { out.push(lang === "tr" ? m[1].toUpperCase() + " Ligi" : "Liga " + m[1].toUpperCase()); return; }
+    m = /^group ([a-z0-9]+)/i.exec(p);
+    if (m) { var g = m[1].toUpperCase(); out.push(lang === "tr" ? (/^\d+$/.test(g) ? g + ". Grup" : "Grup " + g) : "Gruppe " + g); return; }
+    if (/play-?off/i.test(p)) out.push("Play-off");
+    else if (/final/i.test(p)) out.push(lang === "tr" ? "Final" : "Finale");
+    else if (/semi/i.test(p)) out.push(lang === "tr" ? "Yarı Final" : "Halbfinale");
+    else if (/quarter/i.test(p)) out.push(lang === "tr" ? "Çeyrek Final" : "Viertelfinale");
+  });
+  return out.join(" · ") || snm;
+}
+var NAT = {kind: "nl", groups: [], tDisc: 0, tLoad: 0, loading: false, error: null,
+  title: function (lang) { return NAT_TITLES[this.kind][lang === "tr" ? 1 : 0]; }};
+function natCandidates() {
+  var y = new Date().getFullYear(), out = [];
+  for (var yy = y; yy < y + 6; yy++) if (yy % 4 === 0) out.push(["euro", "euro-" + yy + "-qualification"]);
+  return out.concat([["wc", "world-cup-qualification"], ["nl", "uefa-nations-league"]]);
+}
+function natDiscover() {
+  var now = Date.now() / 1000, D = 86400;
+  return Promise.all(natCandidates().map(function (c) {
+    return getJSON(BASE + "/category/soccer/" + c[1] + "/0?MD=1").then(function (cat) {
+      var stages = [];
+      (cat.Stages || []).forEach(function (st) {
+        var scd = st.Scd || ""; if (c[0] === "wc" && scd.indexOf("uefa") < 0) return;
+        var ts = (st.Events || []).map(function (e) { return esdTs(e.Esd); }).filter(function (t) { return Math.abs(t - now) < 270 * D; });
+        if (ts.length) stages.push([scd, st.Snm || scd, Math.min.apply(null, ts), Math.max.apply(null, ts)]);
+      });
+      if (!stages.length) return null;
+      var near = Math.min.apply(null, stages.map(function (x) { return Math.min(Math.abs(x[2] - now), Math.abs(x[3] - now)); }));
+      var active = stages.some(function (x) { return (x[2] - 21 * D <= now && now <= x[3] + 120 * D) || (now <= x[2] && x[2] <= now + 120 * D); });
+      return [active ? 0 : 1, c[0], c[1], stages, near];
+    }, function () { return null; });
+  })).then(function (found) {
+    found = found.filter(function (f) { return f; });
+    if (!found.length) return false;
+    var prio = {euro: 0, wc: 1, nl: 2};
+    found.sort(function (a, b) { return a[0] - b[0] || (a[0] === 0 ? prio[a[1]] - prio[b[1]] : a[4] - b[4]); });
+    var f = found[0];
+    f[3].sort(function (a, b) { var ga = a[0].indexOf("group") < 0 ? 1 : 0, gb = b[0].indexOf("group") < 0 ? 1 : 0; return ga - gb || (a[0] < b[0] ? -1 : 1); });
+    NAT.kind = f[1];
+    NAT.groups = f[3].map(function (x) {
+      var lg = new League([470, "nlg", f[2], x[0], "", "", ""]); lg.snm = x[1]; lg.kind = f[1];
+      lg.name = function (lang) { return NAT_TITLES[this.kind][lang === "tr" ? 1 : 0] + " · " + natStageName(this.snm, lang); };
+      return lg;
+    });
+    NAT.tDisc = Date.now() / 1000;
+    STORE.setNat(NAT.groups);
+    return true;
+  });
+}
+function natLoad() {
+  var p = (!NAT.groups.length || Date.now() / 1000 - NAT.tDisc > 6 * 3600) ? natDiscover() : Promise.resolve(true);
+  return p.then(function (ok) {
+    if (!ok && !NAT.groups.length) throw new Error("Keine Länderspiele gefunden");
+    return Promise.all(NAT.groups.map(function (lg) { return lg.load().then(function () {}, function (e) { lg.error = niceError(e); }); }));
+  }).then(function () { NAT.tLoad = Date.now() / 1000; NAT.error = null; });
+}
 STORE.leagueByPage = function (p) { var v = this.view(p); return v ? v[0] : null; };
 STORE.liveCount = function (lg) { var n = 0; for (var k in this.live) if (!lg || this.live[k].ut === lg.ut) n++; return n; };
 STORE.liveCountView = function (lg) { return this.liveCount(lg); };
@@ -611,6 +675,14 @@ function needDay() {
   STORE.fetchDay(key).then(function () { STORE.days[key].loading = false; draw(); },
     function (e) { var x = STORE.days[key]; x.loading = false; x.t = Date.now() / 1000; x.error = niceError(e); draw(); });
 }
+function needNat() {
+  if (NAT.loading) return;
+  var now = Date.now() / 1000, live = NAT.groups.some(function (lg) { return lg.events.some(function (e) { return e.state === "in" || e.state === "ht"; }); });
+  if (NAT.tLoad && now - NAT.tLoad < (live ? +cfg("refresh") : 600)) return;
+  if (NAT.error && now - NAT.tLoad < 30) return;
+  NAT.loading = true;
+  natLoad().then(function () { NAT.loading = false; draw(); }, function (e) { NAT.loading = false; NAT.error = niceError(e); NAT.tLoad = Date.now() / 1000; draw(); });
+}
 function needRank(rk) {
   if (!rk || rk.loading) return;
   var now = Date.now() / 1000;
@@ -649,10 +721,7 @@ function go(p) {
   var lg = STORE.leagueByPage(p); if (lg) needLeague(lg);
   var t = pageType(p);
   if (t === "fav") favLeagues().forEach(needLeague);
-  else if (t === "nl") {
-    var grs = STORE.nlGroups(); grs.forEach(needLeague);
-    if (old !== 470) { S.sub = 1; grs.forEach(function (l, i) { if (l.tables.some(function (tb) { return tb[1].some(function (r) { return r.tm === "Germany"; }); })) S.sub = i; }); }
-  }
+  else if (t === "nl") { needNat(); if (old !== 470) S.nlPick = true; }
   else if (t === "day") needDay();
   else if (t === "rank") needRank(rankingByPage(p));
 }
@@ -753,7 +822,7 @@ function idxCols() {
     {page: 110, lbl: T("fav") + (fav ? " · " + fav : "")}, {page: 510, lbl: T("today")}, {page: 500, lbl: T("allLive"), live: true},
     {page: 600, lbl: "Haberler · " + FEEDS.slice(0, 3).map(function (f) { return f.name; }).join(", ") + " …"}, {page: 900, lbl: T("settings")}]);
   var right = [{hdr: T("cTR"), bg: "g", fg: "k"}].concat(views("tr")).concat([{hdr: T("cEU"), bg: "y", fg: "k"}]).concat(views("eu"))
-    .concat([{hdr: T("cNAT"), bg: "c", fg: "k"}, {page: 470, lbl: "Nations League"}, {hdr: T("cRANK"), bg: "b", fg: "w"},
+    .concat([{hdr: T("cNAT"), bg: "c", fg: "k"}, {page: 470, lbl: NAT.groups.length ? NAT.title(lang) : T("natEU")}, {hdr: T("cRANK"), bg: "b", fg: "w"},
       {page: 480, lbl: T("rkFifa")}, {page: 482, lbl: T("rkUefa")}, {page: 484, lbl: T("rkClub")}]);
   var n = Math.max(left.length, right.length, IDX_ROWS);
   while (left.length < n) left.push(null);
@@ -1048,8 +1117,12 @@ function favSubpages() {
 }
 function nlSubpages() {
   var lang = cfg("lang"), subs = [];
-  STORE.nlGroups().forEach(function (lg) {
-    if (lg.error && !lg.allEvents.length) return;
+  var grs = NAT.groups.filter(function (lg) { return !(lg.error && !lg.allEvents.length); });
+  if (S.nlPick && grs.length && grs.every(function (lg) { return lg.tLoad || lg.error; })) {
+    S.nlPick = false;
+    grs.forEach(function (l, i) { if (l.tables.some(function (tb) { return tb[1].some(function (r) { return r.tm === "Germany"; }); })) S.sub = i; });
+  }
+  grs.forEach(function (lg) {
     var lines = [];
     if (!lg.allEvents.length && !lg.tables.length) lines = [blank(), text(T("loading"), "y")];
     else {
@@ -1065,7 +1138,9 @@ function nlSubpages() {
     }
     subs.push({ban: [up(lg.name(lang)), ""], bg: ["c", "k"], head: infoHead(T("nlHint")), lines: lines.slice(0, 20)});
   });
-  return subs.length ? subs : [{ban: ["NATIONS LEAGUE", ""], bg: ["c", "k"], head: blank(), lines: [blank(), text(T("loading"), "y")]}];
+  if (subs.length) return subs;
+  var msg = NAT.error && !NAT.loading ? [blank(), text(T("noData"), "r"), text(fit(NAT.error, G.cols), "d")] : [blank(), text(T("loading"), "y")];
+  return [{ban: [up(NAT.title(lang)), ""], bg: ["c", "k"], head: blank(), lines: msg}];
 }
 function daySubpages() {
   var lang = cfg("lang"), key = dayKey(), t0 = Date.now() / 1000 + S.dayOff * 86400;
@@ -1214,7 +1289,7 @@ function tick() {
   var lg = STORE.leagueByPage(S.page); if (lg) { needLeague(lg); if (S.det) needDetails(lg); }
   var tt = pageType(S.page);
   if (tt === "fav") favLeagues().forEach(needLeague);
-  else if (tt === "nl") STORE.nlGroups().forEach(needLeague);
+  else if (tt === "nl") needNat();
   else if (tt === "day") needDay();
   else if (tt === "rank") needRank(rankingByPage(S.page));
   var f = feedByPage(S.page); if (f) needFeed(f);
