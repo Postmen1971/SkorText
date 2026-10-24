@@ -28,19 +28,21 @@ jobs:
           B = "https://prod-public-api.livescore.com/v1/api/app"
           def get(u):
               return requests.get(u, headers=H, timeout=25)
-          for name, u in [
-              ("v1rs", "https://api.fifa.com/api/v1/fifarankings/rankings/rankingsbyschedule?rankingScheduleId=FRS_Male_Football_20260720&language=en"),
-              ("v3rs", "https://api.fifa.com/api/v3/fifarankings/rankings/rankingsbyschedule?rankingScheduleId=FRS_Male_Football_20260720&language=en"),
-              ("v1rs_de", "https://api.fifa.com/api/v1/fifarankings/rankings/rankingsbyschedule?rankingScheduleId=FRS_Male_Football_20260720&language=de"),
-              ("ov_type", "https://inside.fifa.com/api/ranking-overview?locale=en&dateId=FRS_Male_Football_20260720&rankingType=football"),
-              ("ov_old", "https://inside.fifa.com/api/ranking-overview?locale=en&dateId=id14870"),
-          ]:
+          for c in ["uefa-nations-league", "world-cup-qualification", "euro-2024-qualification", "euro-2028-qualification", "uefa-nations-league-2022-2023"]:
               try:
-                  r = get(u); t = r.text
-                  OUT.append(print_("API", name, r.status_code, len(t), t[:600].replace("\n", " ")))
-                  if r.status_code == 200 and len(t) > 100: open("samples/x_%s.json" % name, "w").write(t)
+                  r = get("%s/category/soccer/%s/0?MD=1" % (B, c))
+                  OUT.append(print_("CAT", c, r.status_code, len(r.text)))
+                  if r.status_code == 200:
+                      for st in r.json().get("Stages", []):
+                          ev = st.get("Events", [])
+                          OUT.append(print_("   ", st.get("Scd"), "|", st.get("Snm"), "|", st.get("CompN"), "| n", len(ev), "|", min([e.get("Esd") for e in ev] or [0]), max([e.get("Esd") for e in ev] or [0]), "| LT" if st.get("LeagueTable") else ""))
               except Exception as ex:
-                  OUT.append(print_("APIERR", name, ex))
+                  OUT.append(print_("ERR", c, ex))
+          for u in ["stage/soccer/world-cup-qualification/uefa-group-a/0", "stage/soccer/euro-2024-qualification/group-a/0"]:
+              try:
+                  r = get("%s/%s?MD=1" % (B, u)); OUT.append(print_("ST", u, r.status_code, len(r.text)))
+              except Exception as ex:
+                  OUT.append(print_("ERR", u, ex))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
