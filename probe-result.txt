@@ -1,43 +1,12 @@
-SRC 200 13572 https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg&season=2026-27
-   {"standings":[{"rank":1,"matches":10,"wins":8,"draws":2,"defeats":0,"ownGoals":29,"againstGoals":6,"goalDifference":23,"points":26,"penaltyPoints":0,"team":{"id":1466569,"teamId":20400,"slug":"tsv-berg-m1-2026-27","name":{"full":"TSV Berg","middle":"
-   GOEPP@2571: l,"live":false},{"rank":4,"matches":10,"wins":7,"draws":2,"defeats":1,"ownGoals":23,"againstGoals":6,"goalDifference":17,"points":23,"penaltyPoints":0,"team":{"id":1466559,"teamId":20450,"slug":"1-goeppinger-sv-m1-2026-27","name":{"full":"1. G\u00f6ppinger SV","middle":"1. G\u00f6ppinger SV","short":"1. G\u00f6ppinger SV"},"image":{"path":"https:\/\/image.fupa.net\/club\/LtjZFgR7USel\/","descripti
-SRC 200 13572 https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg&season=2026-27&type=total
-   {"standings":[{"rank":1,"matches":10,"wins":8,"draws":2,"defeats":0,"ownGoals":29,"againstGoals":6,"goalDifference":23,"points":26,"penaltyPoints":0,"team":{"id":1466569,"teamId":20400,"slug":"tsv-berg-m1-2026-27","name":{"full":"TSV Berg","middle":"
-   GOEPP@2571: l,"live":false},{"rank":4,"matches":10,"wins":7,"draws":2,"defeats":1,"ownGoals":23,"againstGoals":6,"goalDifference":17,"points":23,"penaltyPoints":0,"team":{"id":1466559,"teamId":20450,"slug":"1-goeppinger-sv-m1-2026-27","name":{"full":"1. G\u00f6ppinger SV","middle":"1. G\u00f6ppinger SV","short":"1. G\u00f6ppinger SV"},"image":{"path":"https:\/\/image.fupa.net\/club\/LtjZFgR7USel\/","descripti
-SRC 404 180 https://api.fupa.net/v1/standings?competition=2052&season=2026-27
-   {"error":{"code":404,"message":"No competition for the specified request found.","translated_message":"Die angefragte Ressource existiert nicht oder wurde bereits gel\u00f6scht."}}
-SRC 200 13572 https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg
-   {"standings":[{"rank":1,"matches":10,"wins":8,"draws":2,"defeats":0,"ownGoals":29,"againstGoals":6,"goalDifference":23,"points":26,"penaltyPoints":0,"team":{"id":1466569,"teamId":20400,"slug":"tsv-berg-m1-2026-27","name":{"full":"TSV Berg","middle":"
-   GOEPP@2571: l,"live":false},{"rank":4,"matches":10,"wins":7,"draws":2,"defeats":1,"ownGoals":23,"againstGoals":6,"goalDifference":17,"points":23,"penaltyPoints":0,"team":{"id":1466559,"teamId":20450,"slug":"1-goeppinger-sv-m1-2026-27","name":{"full":"1. G\u00f6ppinger SV","middle":"1. G\u00f6ppinger SV","short":"1. G\u00f6ppinger SV"},"image":{"path":"https:\/\/image.fupa.net\/club\/LtjZFgR7USel\/","descripti
-SRC 200 46225 https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?roundNumber=11
-   [{"id":14995524,"slug":"tsv-ehningen-m1-tsg-balingen-m2-260815","homeTeam":{"id":1466599,"teamId":19699,"slug":"tsv-ehningen-m1-2026-27","name":{"full":"TSV Ehningen","middle":"TSV Ehningen","short":"EHN"},"image":{"path":"https:\/\/image.fupa.net\/t
-   LIST 25 rounds [1, 2, 3, 4]
-   GOEPP@11235: ,"spectators":200,"updatedAt":1792071420,"streamUpdatedAt":1792484094,"refereeAlias":null,"gallery":null,"category":"league","tickerReservableUntil":null},{"id":14995528,"slug":"skv-rutesheim-m1-1-goeppinger-sv-m1-260815","homeTeam":{"id":1466620,"teamId":19989,"slug":"skv-rutesheim-m1-2026-27","name":{"full":"SKV Rutesheim","middle":"SKV Rutesheim","short":"SKV Rutesheim"},"image":{"path":"https:
-SRC 200 46225 https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?round_number=11
-   [{"id":14995524,"slug":"tsv-ehningen-m1-tsg-balingen-m2-260815","homeTeam":{"id":1466599,"teamId":19699,"slug":"tsv-ehningen-m1-2026-27","name":{"full":"TSV Ehningen","middle":"TSV Ehningen","short":"EHN"},"image":{"path":"https:\/\/image.fupa.net\/t
-   LIST 25 rounds [1, 2, 3, 4]
-   GOEPP@11235: ,"spectators":200,"updatedAt":1792071420,"streamUpdatedAt":1792484094,"refereeAlias":null,"gallery":null,"category":"league","tickerReservableUntil":null},{"id":14995528,"slug":"skv-rutesheim-m1-1-goeppinger-sv-m1-260815","homeTeam":{"id":1466620,"teamId":19989,"slug":"skv-rutesheim-m1-2026-27","name":{"full":"SKV Rutesheim","middle":"SKV Rutesheim","short":"SKV Rutesheim"},"image":{"path":"https:
-SRC 200 46225 https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?roundSlug=11
-   [{"id":14995524,"slug":"tsv-ehningen-m1-tsg-balingen-m2-260815","homeTeam":{"id":1466599,"teamId":19699,"slug":"tsv-ehningen-m1-2026-27","name":{"full":"TSV Ehningen","middle":"TSV Ehningen","short":"EHN"},"image":{"path":"https:\/\/image.fupa.net\/t
-   LIST 25 rounds [1, 2, 3, 4]
-   GOEPP@11235: ,"spectators":200,"updatedAt":1792071420,"streamUpdatedAt":1792484094,"refereeAlias":null,"gallery":null,"category":"league","tickerReservableUntil":null},{"id":14995528,"slug":"skv-rutesheim-m1-1-goeppinger-sv-m1-260815","homeTeam":{"id":1466620,"teamId":19989,"slug":"skv-rutesheim-m1-2026-27","name":{"full":"SKV Rutesheim","middle":"SKV Rutesheim","short":"SKV Rutesheim"},"image":{"path":"https:
-SRC 200 46225 https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?rounds=11
-   [{"id":14995524,"slug":"tsv-ehningen-m1-tsg-balingen-m2-260815","homeTeam":{"id":1466599,"teamId":19699,"slug":"tsv-ehningen-m1-2026-27","name":{"full":"TSV Ehningen","middle":"TSV Ehningen","short":"EHN"},"image":{"path":"https:\/\/image.fupa.net\/t
-   LIST 25 rounds [1, 2, 3, 4]
-   GOEPP@11235: ,"spectators":200,"updatedAt":1792071420,"streamUpdatedAt":1792484094,"refereeAlias":null,"gallery":null,"category":"league","tickerReservableUntil":null},{"id":14995528,"slug":"skv-rutesheim-m1-1-goeppinger-sv-m1-260815","homeTeam":{"id":1466620,"teamId":19989,"slug":"skv-rutesheim-m1-2026-27","name":{"full":"SKV Rutesheim","middle":"SKV Rutesheim","short":"SKV Rutesheim"},"image":{"path":"https:
-SRC 200 46225 https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?matchday=11
-   [{"id":14995524,"slug":"tsv-ehningen-m1-tsg-balingen-m2-260815","homeTeam":{"id":1466599,"teamId":19699,"slug":"tsv-ehningen-m1-2026-27","name":{"full":"TSV Ehningen","middle":"TSV Ehningen","short":"EHN"},"image":{"path":"https:\/\/image.fupa.net\/t
-   LIST 25 rounds [1, 2, 3, 4]
-   GOEPP@11235: ,"spectators":200,"updatedAt":1792071420,"streamUpdatedAt":1792484094,"refereeAlias":null,"gallery":null,"category":"league","tickerReservableUntil":null},{"id":14995528,"slug":"skv-rutesheim-m1-1-goeppinger-sv-m1-260815","homeTeam":{"id":1466620,"teamId":19989,"slug":"skv-rutesheim-m1-2026-27","name":{"full":"SKV Rutesheim","middle":"SKV Rutesheim","short":"SKV Rutesheim"},"image":{"path":"https:
-SRC 200 182189 https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?limit=100&page=1
-   [{"id":14995524,"slug":"tsv-ehningen-m1-tsg-balingen-m2-260815","homeTeam":{"id":1466599,"teamId":19699,"slug":"tsv-ehningen-m1-2026-27","name":{"full":"TSV Ehningen","middle":"TSV Ehningen","short":"EHN"},"image":{"path":"https:\/\/image.fupa.net\/t
-   LIST 100 rounds [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-   GOEPP@11235: ,"spectators":200,"updatedAt":1792071420,"streamUpdatedAt":1792484094,"refereeAlias":null,"gallery":null,"category":"league","tickerReservableUntil":null},{"id":14995528,"slug":"skv-rutesheim-m1-1-goeppinger-sv-m1-260815","homeTeam":{"id":1466620,"teamId":19989,"slug":"skv-rutesheim-m1-2026-27","name":{"full":"SKV Rutesheim","middle":"SKV Rutesheim","short":"SKV Rutesheim"},"image":{"path":"https:
-SRC 200 14049 https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?from=2026-10-20&to=2026-10-27
-   [{"id":14995609,"slug":"tsv-oberensingen-m1-skv-rutesheim-m1-261023","homeTeam":{"id":1466575,"teamId":16693,"slug":"tsv-oberensingen-m1-2026-27","name":{"full":"TSV Oberensingen","middle":"TSV Oberensingen","short":"TSV Oberensingen"},"image":{"path
-   LIST 8 rounds [11]
-   GOEPP@7221: ctators":null,"updatedAt":1792785527,"streamUpdatedAt":1792785527,"refereeAlias":null,"gallery":null,"category":"league","tickerReservableUntil":null},{"id":14995605,"slug":"tuerkspor-neu-ulm-m1-1-goeppinger-sv-m1-261024","homeTeam":{"id":1466607,"teamId":14680,"slug":"tuerkspor-neu-ulm-m1-2026-27","name":{"full":"T\u00fcrkspor Neu-Ulm","middle":"T\u00fcrkspor Neu-Ulm","short":"T\u00fcrkspor Neu-U
-SRC 200 46225 https://api.fupa.net/v1/competitions/verbandsliga-wuerttemberg/seasons/2026-27/matches?date=2026-10-24
-   [{"id":14995524,"slug":"tsv-ehningen-m1-tsg-balingen-m2-260815","homeTeam":{"id":1466599,"teamId":19699,"slug":"tsv-ehningen-m1-2026-27","name":{"full":"TSV Ehningen","middle":"TSV Ehningen","short":"EHN"},"image":{"path":"https:\/\/image.fupa.net\/t
-   LIST 25 rounds [1, 2, 3, 4]
-   GOEPP@11235: ,"spectators":200,"updatedAt":1792071420,"streamUpdatedAt":1792484094,"refereeAlias":null,"gallery":null,"category":"league","tickerReservableUntil":null},{"id":14995528,"slug":"skv-rutesheim-m1-1-goeppinger-sv-m1-260815","homeTeam":{"id":1466620,"teamId":19989,"slug":"skv-rutesheim-m1-2026-27","name":{"full":"SKV Rutesheim","middle":"SKV Rutesheim","short":"SKV Rutesheim"},"image":{"path":"https:
+CORS 403 ACAO= None | OPT 403 None | https://claude.ai https://prod-public-api.livescore.com/v1/api/app/live/soccer/0?MD=1
+CORS 403 ACAO= None | OPT 403 None | https://example.github.io https://prod-public-api.livescore.com/v1/api/app/live/soccer/0?MD=1
+CORS 200 ACAO= * | OPT 204 * | https://claude.ai https://prod-public-api.livescore.com/v1/api/app/stage/soccer/turkey/super-lig/0?MD=1
+CORS 200 ACAO= * | OPT 204 * | https://example.github.io https://prod-public-api.livescore.com/v1/api/app/stage/soccer/turkey/super-lig/0?MD=1
+CORS 200 ACAO= None | OPT 204 None | https://claude.ai https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg&season=2026-27
+CORS 200 ACAO= None | OPT 204 None | https://example.github.io https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg&season=2026-27
+CORS 200 ACAO= * | OPT 200 * | https://claude.ai https://api.frankfurter.dev/v1/latest?from=EUR&to=TRY
+CORS 200 ACAO= * | OPT 200 * | https://example.github.io https://api.frankfurter.dev/v1/latest?from=EUR&to=TRY
+CORS 200 ACAO= None | OPT 200 None | https://claude.ai https://www.trthaber.com/manset_articles.rss
+CORS 200 ACAO= None | OPT 200 None | https://example.github.io https://www.trthaber.com/manset_articles.rss
+CORS 200 ACAO= None | OPT 204 * | https://claude.ai https://www.aa.com.tr/tr/rss/default?cat=guncel
+CORS 200 ACAO= None | OPT 204 * | https://example.github.io https://www.aa.com.tr/tr/rss/default?cat=guncel
