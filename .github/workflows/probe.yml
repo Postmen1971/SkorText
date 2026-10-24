@@ -25,20 +25,56 @@ jobs:
           def print_(*a): return ' '.join(str(x) for x in a)
           os.makedirs("samples", exist_ok=True)
           import re
-          for u in ["https://prod-public-api.livescore.com/v1/api/app/live/soccer/0?MD=1",
-                    "https://prod-public-api.livescore.com/v1/api/app/stage/soccer/turkey/super-lig/0?MD=1",
-                    "https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg&season=2026-27",
-                    "https://api.frankfurter.dev/v1/latest?from=EUR&to=TRY",
-                    "https://www.trthaber.com/manset_articles.rss",
-                    "https://www.aa.com.tr/tr/rss/default?cat=guncel"]:
-              for org in ["https://claude.ai", "https://example.github.io"]:
-                  try:
-                      h = dict(H); h["Origin"] = org
-                      r = requests.get(u, headers=h, timeout=20)
-                      o = requests.options(u, headers={"Origin": org, "Access-Control-Request-Method": "GET"}, timeout=20)
-                      OUT.append(print_("CORS", r.status_code, "ACAO=", r.headers.get("Access-Control-Allow-Origin"), "| OPT", o.status_code, o.headers.get("Access-Control-Allow-Origin"), "|", org, u))
-                  except Exception as ex:
-                      OUT.append(print_("ERR", u, ex))
+          import re, gzip
+          B = "https://prod-public-api.livescore.com/v1/api/app"
+          seen = {}
+          days = ["20260905","20260908","20260909","20260912","20261009","20261010","20261012","20261013","20261028","20261029","20261030","20261114","20261117","20261118"]
+          for d in days:
+              try:
+                  r = requests.get("%s/date/soccer/%s/0?MD=1" % (B, d), headers=H, timeout=25)
+                  j = r.json()
+                  OUT.append(print_("DATE", d, r.status_code, len(r.text), "stages", len(j.get("Stages", []))))
+                  if d == "20261028": open("samples/date_20261028.json", "w").write(r.text)
+                  for st in j.get("Stages", []):
+                      k = st.get("Ccd","") + "/" + st.get("Scd","")
+                      txt = (k + " " + str(st.get("Cnm")) + " " + str(st.get("Snm")) + " " + str(st.get("CompN"))).lower()
+                      if re.search(r"nation|friendl|world|euro|qualif|pokal|cup|kupa|international", txt) and not re.search(r"women|u1\d|u2\d|youth|futsal", txt):
+                          seen.setdefault(k, [st.get("Cnm"), st.get("Snm"), st.get("CompN"), st.get("Sid"), 0, set()])
+                          seen[k][4] += len(st.get("Events", []))
+                          for e in st.get("Events", []):
+                              for t in e.get("T1", []) + e.get("T2", []):
+                                  if t.get("Nm") in ("Germany", "Turkey", "Türkiye", "Turkiye", "VfB Stuttgart", "Galatasaray", "Fenerbahce", "Besiktas", "Fenerbahçe", "Beşiktaş"):
+                                      seen[k][5].add(t.get("Nm"))
+              except Exception as ex:
+                  OUT.append(print_("DERR", d, ex))
+          for k in sorted(seen):
+              v = seen[k]; OUT.append(print_("ST", k, v[0], "|", v[1], "|", v[2], "| n", v[4], sorted(v[5])))
+          # Spieldetails
+          lj = json.load(open("samples/date_20261028.json")) if os.path.exists("samples/date_20261028.json") else {}
+          eid = None
+          try:
+              d = requests.get(B + "/stage/soccer/germany/bundesliga/0?MD=1", headers=H, timeout=25).json()
+              evs = [e for e in d["Stages"][0]["Events"] if e.get("Eps") == "FT"]
+              eid = evs[-1]["Eid"]; tid = evs[-1]["T1"][0].get("ID")
+              OUT.append(print_("EID", eid, evs[-1]["T1"][0].get("Nm"), evs[-1]["T2"][0].get("Nm"), "TEAMID", tid))
+          except Exception as ex:
+              OUT.append(print_("EERR", ex)); tid = None
+          for name, u in [("incidents", "%s/incidents/soccer/%s?locale=en" % (B, eid)), ("scoreboard", "%s/scoreboard/soccer/%s?locale=en" % (B, eid)),
+                          ("event", "%s/event/soccer/%s?locale=en" % (B, eid)), ("summary", "%s/summary/soccer/%s?locale=en" % (B, eid)),
+                          ("cdnscoreboard", "https://prod-cdn-public-api.livescore.com/v1/api/app/scoreboard/soccer/%s?locale=en" % eid),
+                          ("cdnincidents", "https://prod-cdn-public-api.livescore.com/v1/api/app/incidents/soccer/%s?locale=en" % eid),
+                          ("team", "%s/team/%s/0/details?locale=en" % (B, tid)), ("teamfix", "%s/team/%s/0/fixtures?locale=en" % (B, tid)),
+                          ("teamres", "%s/team/%s/0/results?locale=en" % (B, tid)),
+                          ("stats1", "%s/stats/soccer/germany/bundesliga?locale=en" % B), ("stats2", "%s/competition/soccer/germany/bundesliga/stats?locale=en" % B),
+                          ("stats3", "https://prod-cdn-mev-api.livescore.com/v1/api/app/stats/soccer/germany/bundesliga?locale=en"),
+                          ("stats4", "%s/stage/soccer/germany/bundesliga/0/stats?locale=en" % B),
+                          ("pokal1", "%s/stage/soccer/germany/dfb-pokal/0?MD=1" % B), ("pokal2", "%s/stage/soccer/turkey/turkish-cup/0?MD=1" % B)]:
+              try:
+                  r = requests.get(u, headers=H, timeout=25)
+                  OUT.append(print_("API", name, r.status_code, len(r.text), r.text[:400].replace("\n", " ")))
+                  if r.status_code == 200 and len(r.text) > 100: open("samples/api_%s.json" % name, "w").write(r.text)
+              except Exception as ex:
+                  OUT.append(print_("APIERR", name, ex))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
