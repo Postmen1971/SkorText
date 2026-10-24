@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "2.3";
+var VERSION = "2.4";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -587,7 +587,7 @@ function resRow(e) {
 }
 function zebra(row, i) {
   // Videotext: jede zweite Zeile türkis statt weiß – besser lesbar
-  if (modern() || i % 2 === 0) return row;
+  if (i % 2 === 0) return row;
   return [row[0], row[1].map(function (s) { var c = s.slice(); if (c[3] === "w") c[3] = "c"; return c; })];
 }
 function resultLines(events) {
