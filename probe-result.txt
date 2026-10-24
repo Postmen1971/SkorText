@@ -1,93 +1,40 @@
-DATE 20260905 200 546709 stages 255
-DATE 20260908 200 121803 stages 55
-DATE 20260909 200 105605 stages 63
-DATE 20260912 200 574965 stages 261
-DATE 20261009 200 167814 stages 123
-DATE 20261010 200 529142 stages 246
-DATE 20261012 200 107485 stages 82
-DATE 20261013 200 154644 stages 72
-DATE 20261028 200 129430 stages 75
-DATE 20261029 200 64233 stages 52
-DATE 20261030 200 104661 stages 108
-DATE 20261114 200 210149 stages 111
-DATE 20261117 200 52950 stages 48
-DATE 20261118 200 25436 stages 14
-ST africa/caf-champions-league-qualification Africa | CAF Champions League: Qualification | CAF Champions League | n 27 []
-ST australia/australia-cup Australia | Australia Cup | None | n 2 []
-ST australia/npl-new-south-wales-qualification Australia | NPL New South Wales: Qualification | None | n 2 []
-ST australia/npl-northern-nsw-qualification Australia | NPL Northern NSW: Qualification | None | n 1 []
-ST australia/npl-western-australia-qualification Australia | NPL Western Australia: Qualification | None | n 4 []
-ST austria/ofb-cup Austria | OFB Cup | None | n 12 []
-ST belgium/national-division-1-acff Belgium | National Division 1 ACFF | None | n 14 []
-ST belgium/national-division-1-vv Belgium | National Division 1 VV | None | n 14 []
-ST bulgaria/super-cup Bulgaria | Super Cup | None | n 1 []
-ST concacaf-nations-league/league-a-quarter-finals CONCACAF Nations League | League A: Quarter Finals | None | n 5 []
-ST concacaf-nations-league/play-in CONCACAF Nations League | Play-In | CONCACAF Nations League | n 5 []
-ST concacaf/concacaf-central-american-cup-play-in CONCACAF | CONCACAF Central American Cup: Play-In | None | n 2 []
-ST croatia/cup Croatia | Cup | Cup | n 3 []
-ST cyprus/cypriot-cup Cyprus | Cypriot Cup | None | n 2 []
-ST czech-republic/cup Czech Republic | Cup | None | n 7 []
-ST denmark/dbu-pokalen Denmark | DBU Pokalen | DBU Pokalen | n 10 []
-ST england/efl-cup-round-3-2025-2026 England | EFL Cup: Round 3 | EFL Cup | n 6 []
-ST england/efl-cup-round-4-2025-2026 England | EFL Cup: Round 4 | EFL Cup | n 6 []
-ST england/fa-cup-qualification England | FA Cup: Qualification | FA Cup | n 131 []
-ST england/fa-trophy-qualification England | FA Trophy: Qualification | None | n 39 []
-ST england/national-league England | National League | National League | n 50 []
-ST england/national-league-cup-group-a England | National League Cup: Group A | None | n 7 []
-ST england/national-league-cup-group-b England | National League Cup: Group B | None | n 7 []
-ST england/national-league-cup-group-c England | National League Cup: Group C | None | n 6 []
-ST england/national-league-cup-group-d England | National League Cup: Group D | None | n 8 []
-ST england/national-league-north England | National League: North | National League North | n 53 []
-ST england/national-league-south England | National League: South | National League South | n 50 []
-ST faroe-islands/cup Faroe Islands | Cup | None | n 1 []
-ST finland/cup Finland | Cup | None | n 1 []
-ST france/national-1-group-a France | National 1: Group A | None | n 15 []
-ST france/national-1-group-b France | National 1: Group B | None | n 9 []
-ST france/national-1-group-c France | National 1: Group C | None | n 16 []
-ST germany/dfb-cup-round-2-2024-2025 Germany | DFB Cup: Round 2 | DFB Cup | n 8 ['VfB Stuttgart']
-ST gibraltar/national-league Gibraltar | National League | None | n 9 []
-ST greece/greece-cup-group-stage Greece | Greece Cup: Group Stage | None | n 9 []
-ST international-friendlies/friendlies International Friendlies | Friendlies | International Friendlies | n 3 []
-ST intl/central-american-cup-knockout-stage International | Central American Cup: Knockout Stage | None | n 2 []
-ST intl/concacaf-caribbean-cup-playoff International | CONCACAF Caribbean Cup Playoff | None | n 1 []
-ST ireland/fai-cup Ireland | FAI Cup | None | n 3 []
-ST israel/state-cup Israel | State Cup | None | n 25 []
-ST israel/toto-cup-knockout-stage Israel | Toto Cup Al: Knockout Stage | None | n 1 []
-ST japan/league-cup Japan | J.League Cup | None | n 11 []
-ST luxembourg/national-division Luxembourg | National Division | None | n 5 []
-ST new-zealand/national-league-championship New Zealand | National League Championship | National League | n 6 []
-ST norway/cup-round-2-2024 Norway | NM Cup: Round 2 | None | n 3 []
-ST norway/cup-round-3-2024 Norway | NM Cup: Round 3 | None | n 13 []
-ST poland/cup Poland | Cup | None | n 13 []
-ST portugal/league-cup-quarter-finals Portugal | League Cup: Quarter-Finals | League Cup | n 3 []
-ST romania/romania-cup-group-a Romania | Romanian Cup: Group A | Romanian Cup | n 1 []
-ST romania/romania-cup-group-b Romania | Romanian Cup: Group B | Romanian Cup | n 2 []
-ST romania/romania-cup-group-c Romania | Romanian Cup: Group C | Romanian Cup | n 2 []
-ST romania/romania-cup-group-d Romania | Romanian Cup: Group D | Romanian Cup | n 3 []
-ST scotland/challenge-cup Scotland | Challenge Cup | Challenge Cup | n 39 []
-ST scotland/scottish-league-cup-quarter-finals Scotland | Scottish League Cup: Quarter-Finals | Scottish League Cup | n 2 []
-ST slovakia/cup Slovakia | Slovak Cup | None | n 11 []
-ST turkey/turkiye-cup-qualification Turkiye | Turkiye Cup: Qualification | None | n 24 []
-ST uefa-nations-league/league-a-group-4 UEFA Nations League | League A: Group 4 | UEFA Nations League | n 4 []
-ST uefa-nations-league/league-b-group-2 UEFA Nations League | League B: Group 2 | UEFA Nations League | n 4 []
-ST uefa-nations-league/league-b-group-3 UEFA Nations League | League B: Group 3 | UEFA Nations League | n 4 []
-ST uefa-nations-league/league-b-group-4 UEFA Nations League | League B: Group 4 | UEFA Nations League | n 4 []
-ST ukraine/cup Ukraine | Cup | None | n 4 []
-ST ukraine/cup-25-26 Ukraine | Cup | None | n 5 []
-ST usa/USL-cup-final-stage-2025 USA | USL Cup Final Stage | None | n 2 []
-EID 1812711 Borussia Dortmund Eintracht Frankfurt TEAMID 448
-API incidents 200 812 {"Eid":"1812711","Tr1":"1","Tr2":"0","Trh1":"0","Trh2":"0","Tr1OR":"1","Tr2OR":"0","Incs":{"1":[],"2":[{"Min":58,"Nm":2,"PosA":2,"Aid":"61158","ID":"61158","Fn":"Nnamdi","Ln":"Collins","Pnt":"nnamdi-collins","Pnum":34,"Pn":"Nnamdi Collins","IT":43,"NoP":false,"Sor":2},{"Min":63,"Nm":2,"PosA":3,"Aid":"3033","ID":"3033","Fn":"Fares","Ln":"Chaibi","Pnt":"fares-chaibi","Pnum":8,"Pn":"Fares Chaibi","IT
-API scoreboard 200 4391 {"Eid":"1812711","Pids":{"1":"5881198","101":"1812711","102":"1812711","103":"1812711","104":"1812711","112":"SBTE_2_1028230642","28":"1220771043","33":"5ju4n8wsoc85fnut62uav3i8k","36":"5ju4n8wsoc85fnut62uav3i8k","37":"2026-10-24-16-30-00-BorussiaDortmund-EintrachtFrankfurt","8":"1812711"},"Sids":{"1":"938769","112":"SBTC3_40481","28":"1218691197","33":"8i5orjey48pnf7hcy0ptvxwk4","36":"6by3h89i2ey
-API event 404 53 <html><body><h1>Resource not found</h1></body></html>
-API summary 404 53 <html><body><h1>Resource not found</h1></body></html>
-API cdnscoreboard 200 4391 {"Eid":"1812711","Pids":{"1":"5881198","101":"1812711","102":"1812711","103":"1812711","104":"1812711","112":"SBTE_2_1028230642","28":"1220771043","33":"5ju4n8wsoc85fnut62uav3i8k","36":"5ju4n8wsoc85fnut62uav3i8k","37":"2026-10-24-16-30-00-BorussiaDortmund-EintrachtFrankfurt","8":"1812711"},"Sids":{"1":"938769","112":"SBTC3_40481","28":"1218691197","33":"8i5orjey48pnf7hcy0ptvxwk4","36":"6by3h89i2ey
-API cdnincidents 200 812 {"Eid":"1812711","Tr1":"1","Tr2":"0","Trh1":"0","Trh2":"0","Tr1OR":"1","Tr2OR":"0","Incs":{"1":[],"2":[{"Min":58,"Nm":2,"PosA":2,"Aid":"61158","ID":"61158","Fn":"Nnamdi","Ln":"Collins","Pnt":"nnamdi-collins","Pnum":34,"Pn":"Nnamdi Collins","IT":43,"NoP":false,"Sor":2},{"Min":63,"Nm":2,"PosA":3,"Aid":"3033","ID":"3033","Fn":"Fares","Ln":"Chaibi","Pnt":"fares-chaibi","Pnum":8,"Pn":"Fares Chaibi","IT
-API team 404 53 <html><body><h1>Resource not found</h1></body></html>
-API teamfix 404 53 <html><body><h1>Resource not found</h1></body></html>
-API teamres 404 53 <html><body><h1>Resource not found</h1></body></html>
-API stats1 404 53 <html><body><h1>Resource not found</h1></body></html>
-API stats2 404 53 <html><body><h1>Resource not found</h1></body></html>
-API stats3 404 9 Not Found
-API stats4 404 53 <html><body><h1>Resource not found</h1></body></html>
-API pokal1 410 0 
-API pokal2 410 0 
+NL a 1 16550 League A: Group 1 ['Belgium', 'France', 'Italy', 'Turkiye'] [20260925184500, 20260925184500]
+NL a 2 15643 League A: Group 2 ['Germany', 'Greece', 'Netherlands', 'Serbia'] [20260924184500, 20260924184500]
+NL a 3 18444 League A: Group 3 ['Croatia', 'Czechia', 'England', 'Spain'] [20260926184500, 20260926184500]
+NL a 4 17877 League A: Group 4 ['Denmark', 'Norway', 'Portugal', 'Wales'] [20260924184500, 20260924184500]
+NL b 1 17006 League B: Group 1 ['North Macedonia', 'Scotland', 'Slovenia', 'Switzerland'] [20260926130000, 20260926184500]
+NL b 2 17042 League B: Group 2 ['Georgia', 'Hungary', 'Northern Ireland', 'Ukraine'] [20260925160000, 20260925184500]
+NL b 3 15629 League B: Group 3 ['Austria', 'Ireland', 'Israel', 'Kosovo'] [20260924184500, 20260924184500]
+NL b 4 15646 League B: Group 4 ['Bosnia and Herzegovina', 'Poland', 'Romania', 'Sweden'] [20260925184500, 20260925184500]
+NL c 1 14564 League C: Group 1 ['Albania', 'Belarus', 'Finland', 'San Marino'] [20260926160000, 20260926184500]
+NL c 2 14949 League C: Group 2 ['Armenia', 'Cyprus', 'Latvia', 'Montenegro'] [20260925160000, 20260925184500]
+NL c 3 14075 League C: Group 3 ['Faroe Islands', 'Kazakhstan', 'Moldova', 'Slovakia'] [20260926160000, 20260926184500]
+NL c 4 14954 League C: Group 4 ['Bulgaria', 'Estonia', 'Iceland', 'Luxembourg'] [20260926160000, 20260926160000]
+API comp_dfb 404 53 <html><body><h1>Resource not found</h1></body></html>
+API comp2 404 53 <html><body><h1>Resource not found</h1></body></html>
+API stage_r2 200 13190 {"Stages":[{"Sid":"25460","Snm":"DFB Cup: Round 2","Scd":"dfb-cup-round-2-2024-2025","badgeUrl":"2023-germany-dfb-cup.png","firstColor":"d20515","Cid":"137","Cnm":"Germany","CnmT":"germany","Csnm":"Germany","Ccd":"germany","CompId":"97","CompN":"DFB Cup","CompD":"Germany","CompUrlName":"dfb-cup","Sc
+API stage_r2b 410 0 
+API stage_r1 200 20744 {"Stages":[{"Sid":"18011","Snm":"DFB Cup: Round 1 24/25","Scd":"dfb-cup-round-1-2024-2025","badgeUrl":"2023-germany-dfb-cup.png","Cid":"137","Cnm":"Germany","CnmT":"germany","Csnm":"Germany","Ccd":"germany","CompId":"873","CompN":"DFB Cup 24/25","CompD":"Germany","CompUrlName":"dfb-cup-24-25","Scu":
+API tr_q 200 19295 {"Stages":[{"Sid":"26603","Snm":"Turkiye Cup: Qualification","Scd":"turkiye-cup-qualification","Cid":"45","Cnm":"Turkiye","CnmT":"turkiye","Csnm":"Turkiye","Ccd":"turkey","Scu":1,"Chi":0,"Shi":0,"hasDraw":false,"Events":[{"Eid":"1905404","Pids":{"8":"1905404"},"T1":[{"Nm":"Agri 1970 Spor","ID":"3564
+API tr_g 410 0 
+API cat_de 200 169368 {"Stages":[{"Sid":"25705","Snm":"Bundesliga","Scd":"bundesliga","badgeUrl":"2023-bundesliga.png","firstColor":"d20515","Cid":"137","Cnm":"Germany","CnmT":"germany","Csnm":"Germany","Ccd":"germany","CompId":"67","CompN":"Bundesliga","CompD":"Germany","CompUrlName":"bundesliga","CompST":"Germany","Scu
+API cats 200 216223 {"Ccg":[{"Cid":"472","Cnml":{"de":"African Nations Championship","sv":"Afrikanska mästerskapen i fotboll","pt":"Campeonato das Nações Africanas","bg":"Купа на Африканските Нации","ms":"Kejohanan Negara-Negara Afrika","en":"African Nations Championship","es-es":"Campeonato Africano de Naciones","it":
+API nlcomp 404 53 <html><body><h1>Resource not found</h1></body></html>
+API friendlies 200 237712 {"Stages":[{"Sid":"24073","Snm":"Friendlies","Scd":"friendlies","Cid":"576","Cnm":"International Friendlies","CnmT":"international-friendlies","Ccd":"international-friendlies","CompId":"537","CompN":"International Friendlies","CompD":"2026","CompUrlName":"friendlies","CompST":"2026","Scu":1,"Chi":0,
+API wcq 410 0 
+ITCOUNT {43: 90, 36: 78, 63: 60, 62: 4, 39: 1, 44: 2, 38: 2, 37: 5, 45: 2}
+IT 36 {"Min": 29, "Nm": 1, "PosA": 3, "Aid": "72735", "ID": "72735", "Fn": "Santiago", "Ln": "Castaneda", "Pnt": "santiago-castaneda", "Pnum": 5, "Pn": "Santiago Castaneda", "IT": 36, "Sc": [1, 0], "Sor": 5}
+IT 37 {"MinEx": 9, "Min": 45, "Nm": 2, "PosA": 3, "Aid": "12433", "ID": "12433", "Fn": "Fabian", "Ln": "Rieder", "Pnt": "fabian-rieder", "Pnum": 32, "Pn": "Fabian Rieder", "IT": 37, "IR": "VAR", "Sc": [3, 1], "Sor": 44}
+IT 38 {"Min": 4, "Nm": 1, "PosA": 3, "Aid": "15151", "ID": "15151", "Fn": "Lukas", "Ln": "Petkov", "Pnt": "lukas-petkov", "Pnum": 25, "Pn": "Lukas Petkov", "IT": 38, "IR": "VAR", "Sc": [0, 0], "Sor": 2}
+IT 39 {"MinEx": 6, "Min": 45, "Nm": 1, "PosA": 2, "Aid": "13775", "ID": "13775", "Fn": "Sebastiaan", "Ln": "Bornauw", "Pnt": "sebastiaan-bornauw", "Pnum": 33, "Pn": "Sebastiaan Bornauw", "IT": 39, "Sc": [1, 1], "Sor": 29}
+IT 43 {"Min": 26, "Nm": 2, "PosA": 3, "Aid": "37484", "ID": "37484", "Fn": "Felix", "Ln": "Keidel", "Pnt": "felix-keidel", "Pnum": 43, "Pn": "Felix Keidel", "IT": 43, "NoP": false, "Sor": 4}
+IT 44 {"Min": 65, "Nm": 1, "PosA": 2, "Aid": "6473", "ID": "6473", "Ln": "Bernardo", "Snm": "Bernardo", "Pnt": "bernardo", "Pnum": 13, "Pn": "Bernardo", "IT": 44, "NoP": false, "Sor": 6}
+IT 45 {"Min": 19, "Nm": 2, "PosA": 2, "Aid": "15264", "ID": "15264", "Fn": "Felix", "Ln": "Uduokhai", "Pnt": "felix-uduokhai", "Pnum": 2, "Pn": "Felix Uduokhai", "IT": 45, "NoP": false, "Sor": 1}
+IT 62 {"Min": 51, "Nm": 2, "PosA": 3, "Aid": "31499", "ID": "31499", "Fn": "Luis", "Ln": "D\u00edaz", "Pnt": "luis-diaz", "Pnum": 14, "Pn": "Luis Diaz", "IT": 62, "IR": "VAR:disallowed_offside", "Sc": [1, 0], "Sor": 0}
+IT 63 {"Min": 43, "Nm": 1, "Aid": "72365", "ID": "72365", "Fn": "Laurin", "Ln": "Curda", "Snm": "Larin Curda", "Pnt": "laurin-curda", "Pn": "Laurin Curda", "IT": 63, "Sc": [2, 0], "Sor": 0}
+RANK fifa1 200 15 {"rankings":[]}
+RANK fifa2 404 69 {"Message":"No HTTP resource was found that matches the request URI"}
+RANK fifa3 200 218440 <!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><title>FIFA/Coca-Cola Men&#x27;s World Ranking</title><meta id="elastic-search" content="{&quot;id&quot;:&quot;x2mWBtpdYTxq6KKGP6mI1&quot;,&quot;title&quot;:&quot;FIFA/Coca-Cola Men&#x27;s World Ranking&quot;,&quot;contentDate&quot;:&quot;2026-07-28T04:50:26.236Z&quot;,&quot;description&quot;:&quot;See latest status of the FIFA-Coca Cola 
+RANK uefa_assoc 200 121635 {"data":{"lastUpdateDate":"2026-10-22T20:57:26+0000","members":[{"member":{"associationId":200039,"associationLogoUrl":"https://img.uefa.com/imgml/uefacom/elements/logos/ma/ENG.svg","bigLogoUrl":"https://img.uefa.com/imgml/flags/700x700/ENG.png","countryCode":"ENG","countryName":"England","displayName":"England","displayNameShort":"England","displayOfficialName":"England","displayTeamCode":"ENG","
+RANK uefa_club 200 110290 {"data":{"lastUpdateDate":"2026-10-22T20:57:27+0000","members":[{"competition":{"age":"ADULT","displayName":"UEFA Champions League","id":"1","region":"CONTINENTAL","sex":"MALE","sportsType":"FOOTBALL","type":"CUP"},"member":{"associationId":200047,"associationLogoUrl":"https://img.uefa.com/imgml/uefacom/elements/logos/ma/GER.svg","bigLogoUrl":"https://img.uefa.com/imgml/TP/teams/logos/700x700/5003
+RANK uefa_club26 200 110694 {"data":{"lastUpdateDate":"2026-07-03T14:22:35+0000","members":[{"competition":{"age":"ADULT","displayName":"UEFA Champions League","id":"1","region":"CONTINENTAL","sex":"MALE","sportsType":"FOOTBALL","type":"CUP"},"member":{"associationId":200047,"associationLogoUrl":"https://img.uefa.com/imgml/uefacom/elements/logos/ma/GER.svg","bigLogoUrl":"https://img.uefa.com/imgml/TP/teams/logos/700x700/5003
