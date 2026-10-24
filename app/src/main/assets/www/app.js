@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "3.0";
+var VERSION = "3.1";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -25,7 +25,7 @@ var TXT = {
   t_tabHint:"wischen ◄► Liga · Titel antippen = Ergebnisse",t_setHint:"Antippen = ändern · ZURÜCK zurück",
   t_newsHint:"Antippen = lesen · wischen ◄► Rubrik",t_articleHint:"wischen = nächste Meldung · Titel antippen = zurück",t_mdArrows:"wischen ▲▼",
   helpRows:[["◄ ►","Liga wechseln"],["OK","Ergebnisse → Torschützen → Tabelle"],["▲ ▼","Ergebnisse: Spieltag vor/zurück"],["▲ ▼","Tabelle: Unterseite"],
-   ["ZURÜCK","Übersicht, nochmal = App beenden"],["Übersicht","▲▼◄► wählen, OK öffnet"],["440–460","Champions / Europa / Conference League"],["295 / 305","DFB-Pokal / Türkiye Kupası"],["110","Mein Verein"],["510","Heute (◄► Tag)"],["470 / 472","Nations League DE / TR"],["480–484","Ranglisten FIFA / UEFA"],["500","Alle Live-Spiele"],["600","Haberler (Nachrichten)"],
+   ["ZURÜCK","Übersicht, nochmal = App beenden"],["Übersicht","▲▼◄► wählen, OK öffnet"],["440–460","Champions / Europa / Conference League"],["295 / 305","DFB-Pokal / Türkiye Kupası"],["510","Heute (◄► Tag)"],["470 / 472","Nations League DE / TR"],["480–484","Ranglisten FIFA / UEFA"],["500","Alle Live-Spiele"],["600","Haberler (Nachrichten)"],
    ["900","Einstellungen (Stil, Sprache …)"],["Farbtasten","falls vorhanden: DE / TR / Europa / Live"],["0–9","falls vorhanden: Seitennummer"],["Tablet","antippen = öffnen · Titel = Tabelle · oben = Übersicht"],["Wischen","◄► Liga wechseln · ▲▼ Spieltag / Unterseite"]]},
  tr: {overview:"Genel Bakış",results:"Sonuçlar",table:"Puan Durumu",liveTable:"Canlı Puan Durumu",md:"%d. Hafta",live:"Canlı",
   allLive:"Tüm Canlı Maçlar",help:"Kullanım",settings:"Ayarlar",noLive:"Şu an canlı maç yok",ht:"İY",ft:"MS",
@@ -47,7 +47,7 @@ var TXT = {
   t_tabHint:"kaydır ◄► Lig · başlığa dokun = Sonuçlar",t_setHint:"Dokun = değiştir · GERİ",
   t_newsHint:"Dokun = oku · kaydır ◄► kategori",t_articleHint:"kaydır = sonraki haber · başlığa dokun = geri",t_mdArrows:"kaydır ▲▼",
   helpRows:[["◄ ►","Lig değiştir"],["OK","Sonuçlar → Goller → Puan Durumu"],["▲ ▼","Sonuçlar: önceki/sonraki hafta"],["▲ ▼","Puan durumu: alt sayfa"],
-   ["GERİ","Genel Bakış, tekrar = uygulamadan çık"],["Genel Bakış","▲▼◄► seç, OK aç"],["440–460","Şampiyonlar / Avrupa / Konferans Ligi"],["295 / 305","Almanya Kupası / Türkiye Kupası"],["110","Takımım"],["510","Bugün (◄► gün)"],["470 / 472","Uluslar Ligi DE / TR"],["480–484","Sıralamalar FIFA / UEFA"],["500","Tüm canlı maçlar"],["600","Haberler"],
+   ["GERİ","Genel Bakış, tekrar = uygulamadan çık"],["Genel Bakış","▲▼◄► seç, OK aç"],["440–460","Şampiyonlar / Avrupa / Konferans Ligi"],["295 / 305","Almanya Kupası / Türkiye Kupası"],["510","Bugün (◄► gün)"],["470 / 472","Uluslar Ligi DE / TR"],["480–484","Sıralamalar FIFA / UEFA"],["500","Tüm canlı maçlar"],["600","Haberler"],
    ["900","Ayarlar (görünüm, dil …)"],["Renk tuşları","varsa: DE / TR / Avrupa / Canlı"],["0–9","varsa: sayfa numarası"],["Tablet","dokun = aç · başlık = Puan · üst = Genel Bakış"],["Kaydır","◄► lig değiştir · ▲▼ hafta / alt sayfa"]]}
 };
 var SETTINGS = [
@@ -532,7 +532,7 @@ var PAL_MOD = {w: "#eef2f7", y: "#ffd54a", c: "#7cc8ff", g: "#3ddc84", r: "#ff5a
 var COL = PAL_TT;
 var PAGE_BG = {black: "#000000", navy: "#06103a"};
 var COUNTRY_BG = {de: ["r", "w"], tr: ["g", "k"], eu: ["y", "k"], nat: ["c", "k"]};
-var IDX_ROWS = 19;
+var IDX_ROWS = 20;
 function isFavFirst(name) { return isFav(name) && !/\b(II|U ?2\d|U ?19|U ?17)\b/.test(name || ""); }
 function modern() { return cfg("style") === "modern"; }
 function seg(col, width, text, fg, bg, al, blink) { return [col, width, text, fg || "w", bg || null, al || "l", !!blink]; }
@@ -562,12 +562,12 @@ window.addEventListener("resize", function () { layout(); draw(); });
 
 function pageType(p) {
   if (p === 100) return "idx"; if (p === 190) return "help"; if (p === 500) return "live"; if (p === 900) return "set";
-  if (p === 110) return "fav"; if (p === 510) return "day"; if (rankingByPage(p)) return "rank";
+  if (p === 510) return "day"; if (rankingByPage(p)) return "rank";
   if (feedByPage(p)) return "news";
   var v = STORE.view(p); return v ? v[2] : null;
 }
 function allPages() {
-  var pages = [100, 110, 190]; STORE.allViews().forEach(function (v) { pages.push(v[1], v[1] + 1); });
+  var pages = [100, 190]; STORE.allViews().forEach(function (v) { pages.push(v[1], v[1] + 1); });
   return pages.concat([500, 510]).concat(RANKINGS.map(function (r) { return r.page; })).concat(FEEDS.map(function (f) { return f.page; })).concat([900]).sort(function (a, b) { return a - b; });
 }
 function up(s, country) {
@@ -739,18 +739,14 @@ function idxCols() {
     });
     return out;
   }
-  var fav = cfg("fav");
-  var left = [{hdr: T("cDE"), bg: "r", fg: "w"}].concat(views("de")).concat([null, {page: 110, lbl: T("fav") + (fav ? " · " + fav : "")}, {page: 510, lbl: T("today")},
-    {page: 500, lbl: T("allLive"), live: true}, {page: 900, lbl: T("settings")}]);
-  var right = [{hdr: T("cTR"), bg: "g", fg: "k"}].concat(views("tr")).concat([null, {hdr: T("cEU"), bg: "y", fg: "k"}]).concat(views("eu"))
-    .concat([null, {hdr: T("cNEWS"), bg: "m", fg: "k"}, {page: 600, lbl: "Haberler · " + FEEDS.slice(0, 3).map(function (f) { return f.name; }).join(", ") + " …"}]);
-  while (left.length < IDX_ROWS) left.push(null);
-  while (right.length < IDX_ROWS) right.push(null);
-  left = left.concat([{hdr: T("cNAT"), bg: "c", fg: "k"}]).concat(views("nat")).concat([null, {hdr: T("cRANK"), bg: "b", fg: "w"},
-    {page: 480, lbl: T("rkFifa")}, {page: 482, lbl: T("rkUefa")}, {page: 484, lbl: T("rkClub")}]);
-  right = right.concat([{hdr: T("cMORE"), bg: "w", fg: "k"}, {page: 190, lbl: T("help")}]);
-  while (left.length < right.length) left.push(null);
-  while (right.length < left.length) right.push(null);
+  var left = [{hdr: T("cDE"), bg: "r", fg: "w"}].concat(views("de")).concat([null, {hdr: T("cNAT"), bg: "c", fg: "k"}]).concat(views("nat"))
+    .concat([{hdr: T("cRANK"), bg: "b", fg: "w"}, {page: 480, lbl: T("rkFifa")}, {page: 482, lbl: T("rkUefa")}, {page: 484, lbl: T("rkClub")}]);
+  var right = [{hdr: T("cTR"), bg: "g", fg: "k"}].concat(views("tr")).concat([{hdr: T("cEU"), bg: "y", fg: "k"}]).concat(views("eu"))
+    .concat([{hdr: T("cMORE"), bg: "m", fg: "k"}, {page: 510, lbl: T("today")}, {page: 500, lbl: T("allLive"), live: true},
+      {page: 600, lbl: "Haberler · " + FEEDS.slice(0, 3).map(function (f) { return f.name; }).join(", ") + " …"}, {page: 900, lbl: T("settings")}, {page: 190, lbl: T("help")}]);
+  var n = Math.max(left.length, right.length, IDX_ROWS);
+  while (left.length < n) left.push(null);
+  while (right.length < n) right.push(null);
   return [left, right];
 }
 function moveIdx(dc, dr) {
@@ -871,9 +867,8 @@ function subpages() {
       lines.push([null, s]);
     }
     while (lines.length < IDX_ROWS) lines.push(blank());
-    if (win === 0 && nwin > 1) lines[IDX_ROWS - 1] = [null, lines[IDX_ROWS - 1][1].concat([seg(half, half - 1, T("more"), "c")])];
     lines.push(text(T("openHint"), "c"));
-    subs = [{ban: [up(T("overview")), "SkorText " + VERSION + (nwin > 1 ? "  " + (win + 1) + "/" + nwin : "")], bg: ["b", "w"], head: infoHead("LIVESCORE"), lines: lines}];
+    subs = [{ban: [up(T("overview")), "SkorText " + VERSION + (nwin > 1 ? "  " + (win + 1) + "/" + nwin : "")], bg: ["b", "w"], head: lines[0], lines: lines.slice(1)}];
   } else if (t === "res" || t === "tab") {
     var v = STORE.view(S.page), lg = v[0], gi = v[1], bgc = COUNTRY_BG[lg.c], title = up(lg.name(lang), lg.c), stl = statusLines(lg);
     var parts;
@@ -1162,7 +1157,7 @@ function draw() {
     el.innerHTML = html;
   }
   // Wechselkurs auf der Uebersicht
-  if (S.page === 100 && !S.entry && S.idx[1] < IDX_ROWS) {
+  if (false) {
     rateEl.style.display = "flex"; rateEl.style.fontFamily = scr.style.fontFamily;
     rateEl.firstChild.style.fontSize = Math.floor(G.fs * 1.3) + "px"; rateEl.lastChild.style.fontSize = G.fs + "px";
     rateEl.firstChild.style.color = COL.y; rateEl.lastChild.style.color = COL.d;
@@ -1187,7 +1182,6 @@ function tick() {
   else if (tt === "day") needDay();
   else if (tt === "rank") needRank(rankingByPage(S.page));
   var f = feedByPage(S.page); if (f) needFeed(f);
-  needRate();
   if (cfg("rotate") === "10" && !f && !(tt === "res" && !S.det) && Date.now() - S.lastRot > 10000) {
     S.lastRot = Date.now(); var n = subpages().length; if (n > 1) S.sub = (S.sub + 1) % n;
   }
