@@ -28,67 +28,18 @@ jobs:
           B = "https://prod-public-api.livescore.com/v1/api/app"
           def get(u):
               return requests.get(u, headers=H, timeout=25)
-          # 1) Nations League Gruppen
-          for lg in ["a", "b", "c"]:
-              for g in range(1, 5):
-                  u = "%s/stage/soccer/uefa-nations-league/league-%s-group-%d/0?MD=1" % (B, lg, g)
-                  try:
-                      r = get(u)
-                      if r.status_code != 200: OUT.append(print_("NL", lg, g, r.status_code)); continue
-                      st = r.json()["Stages"][0]
-                      teams = sorted(set(e["T1"][0]["Nm"] for e in st.get("Events", [])) | set(e["T2"][0]["Nm"] for e in st.get("Events", [])))
-                      OUT.append(print_("NL", lg, g, len(r.text), st.get("Snm"), teams, [e.get("Esd") for e in st.get("Events", [])][:2]))
-                      if "Germany" in teams or any("Turk" in t for t in teams): open("samples/nl_%s%d.json" % (lg, g), "w").write(r.text)
-                  except Exception as ex:
-                      OUT.append(print_("NLERR", lg, g, ex))
-          # 2) Pokale: Wettbewerbs-Endpunkte
-          for name, u in [("comp_dfb", B + "/competition/soccer/germany/dfb-cup/0?MD=1"), ("comp2", B + "/competition/soccer/dfb-cup?MD=1"),
-                          ("stage_r2", B + "/stage/soccer/germany/dfb-cup-round-2-2024-2025/0?MD=1"),
-                          ("stage_r2b", B + "/stage/soccer/germany/dfb-cup-round-2-2026-2027/0?MD=1"),
-                          ("stage_r1", B + "/stage/soccer/germany/dfb-cup-round-1-2024-2025/0?MD=1"),
-                          ("tr_q", B + "/stage/soccer/turkey/turkiye-cup-qualification/0?MD=1"),
-                          ("tr_g", B + "/stage/soccer/turkey/turkiye-cup-group-stage/0?MD=1"),
-                          ("cat_de", B + "/category/soccer/germany/0?MD=1"), ("cats", B + "/categories/soccer?locale=en"),
-                          ("nlcomp", B + "/competition/soccer/uefa-nations-league/0?MD=1"),
-                          ("friendlies", B + "/stage/soccer/international-friendlies/friendlies/0?MD=1"),
-                          ("wcq", B + "/stage/soccer/euro-2028-qualification/group-a/0?MD=1")]:
+          for name, u in [("fifa_api", "https://inside.fifa.com/api/ranking-overview?locale=en&dateId=FRS_Male_Football_20260720"),
+                          ("fifa_api_de", "https://inside.fifa.com/api/ranking-overview?locale=de&dateId=FRS_Male_Football_20260720"),
+                          ("cat_tr", B + "/category/soccer/turkey/0?MD=1"),
+                          ("nl_a2", B + "/stage/soccer/uefa-nations-league/league-a-group-2/0?MD=1"),
+                          ("dfb_r1", B + "/stage/soccer/germany/dfb-cup-round-1-2025-2026/0?MD=1"),
+                          ("date_today", B + "/date/soccer/20261024/0?MD=1")]:
               try:
                   r = get(u); t = r.text
-                  OUT.append(print_("API", name, r.status_code, len(t), t[:300].replace("\n", " ")))
-                  if r.status_code == 200 and len(t) > 100: open("samples/api_%s.json" % name, "w").write(t)
+                  OUT.append(print_("API", name, r.status_code, len(t), t[:500].replace("\n", " ")))
+                  if r.status_code == 200 and len(t) > 100: open("samples/x_%s.json" % name, "w").write(t)
               except Exception as ex:
                   OUT.append(print_("APIERR", name, ex))
-          # 3) Ereignis-Codes sammeln
-          cnt = collections.Counter(); ex1 = {}
-          try:
-              d = get(B + "/stage/soccer/germany/bundesliga/0?MD=1").json()
-              evs = [e for e in d["Stages"][0]["Events"] if e.get("Eps") == "FT"][-27:]
-              for e in evs:
-                  j = get("%s/incidents/soccer/%s?locale=en" % (B, e["Eid"])).json()
-                  for per, lst in (j.get("Incs") or {}).items():
-                      for it in lst:
-                          for x in [it] + (it.get("Incs") or []):
-                              if "IT" in x:
-                                  cnt[x["IT"]] += 1
-                                  ex1.setdefault(x["IT"], json.dumps(x)[:220])
-              OUT.append(print_("ITCOUNT", dict(cnt)))
-              for k, v in sorted(ex1.items()): OUT.append(print_("IT", k, v))
-          except Exception as ex:
-              OUT.append(print_("ITERR", ex))
-          # 4) Ranglisten
-          C = "https://comp.uefa.com/v2/coefficients"
-          for name, u in [("fifa1", "https://inside.fifa.com/api/ranking-overview?locale=en"),
-                          ("fifa2", "https://api.fifa.com/api/v3/ranking?gender=1&count=20&language=en"),
-                          ("fifa3", "https://inside.fifa.com/fifa-world-ranking/men"),
-                          ("uefa_assoc", C + "?coefficientRange=OVERALL&coefficientType=MEN_ASSOCIATION&language=EN&page=1&pagesize=60&seasonYear=2027"),
-                          ("uefa_club", C + "?coefficientRange=OVERALL&coefficientType=MEN_CLUB&language=EN&page=1&pagesize=50&seasonYear=2027"),
-                          ("uefa_club26", C + "?coefficientRange=OVERALL&coefficientType=MEN_CLUB&language=EN&page=1&pagesize=50&seasonYear=2026")]:
-              try:
-                  r = get(u); t = r.text
-                  OUT.append(print_("RANK", name, r.status_code, len(t), t[:400].replace("\n", " ")))
-                  if r.status_code == 200 and len(t) > 100: open("samples/rank_%s.%s" % (name, "json" if t.lstrip()[:1] in "{[" else "html"), "w").write(t)
-              except Exception as ex:
-                  OUT.append(print_("RANKERR", name, ex))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
