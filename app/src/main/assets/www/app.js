@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "2.1";
+var VERSION = "2.2";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -15,9 +15,12 @@ var TXT = {
   noTable:"Keine Tabelle verfügbar.",source:"Daten: LiveScore, FuPa",mdNow:"(aktuell)",mdBrowse:"Spieltag",
   noMore:"Kein weiterer Spieltag",newsHint:"▲▼ wählen · OK lesen · ◄► Rubrik",articleHint:"▲▼ / ◄► nächste Meldung · OK / ZURÜCK",
   resHint:"◄► Liga · OK Tabelle",tabHint:"◄► Liga · OK Ergebnisse",
+  t_openHint:"Antippen = öffnen · ZURÜCK beenden",t_home:"◄ Übersicht (hier tippen)",t_resHint:"wischen ◄► Liga · Titel antippen = Tabelle",
+  t_tabHint:"wischen ◄► Liga · Titel antippen = Ergebnisse",t_setHint:"Antippen = ändern · ZURÜCK zurück",
+  t_newsHint:"Antippen = lesen · wischen ◄► Rubrik",t_articleHint:"wischen = nächste Meldung · Titel antippen = zurück",t_mdArrows:"wischen ▲▼",
   helpRows:[["◄ ►","Liga wechseln"],["OK","Ergebnisse ⇄ Tabelle"],["▲ ▼","Ergebnisse: Spieltag vor/zurück"],["▲ ▼","Tabelle: Unterseite"],
    ["ZURÜCK","Übersicht, nochmal = App beenden"],["Übersicht","▲▼◄► wählen, OK öffnet"],["440–460","Champions / Europa / Conference League"],["500","Alle Live-Spiele"],["600","Haberler (Nachrichten)"],
-   ["900","Einstellungen (Stil, Sprache …)"],["Farbtasten","falls vorhanden: DE / TR / Europa / Live"],["0–9","falls vorhanden: Seitennummer"]]},
+   ["900","Einstellungen (Stil, Sprache …)"],["Farbtasten","falls vorhanden: DE / TR / Europa / Live"],["0–9","falls vorhanden: Seitennummer"],["Tablet","antippen = öffnen · Titel = Tabelle · oben = Übersicht"],["Wischen","◄► Liga wechseln · ▲▼ Spieltag / Unterseite"]]},
  tr: {overview:"Genel Bakış",results:"Sonuçlar",table:"Puan Durumu",liveTable:"Canlı Puan Durumu",md:"%d. Hafta",live:"Canlı",
   allLive:"Tüm Canlı Maçlar",help:"Kullanım",settings:"Ayarlar",noLive:"Şu an canlı maç yok",ht:"İY",ft:"MS",
   pp:"Ert.",goal:"GOL!",club:"Takım",pl:"S",sp:"O",w:"G",d:"B",l:"M",goals:"Gol",diff:"Av",pts:"P",
@@ -28,9 +31,12 @@ var TXT = {
   noTable:"Puan durumu yok.",source:"Veri: LiveScore, FuPa",mdNow:"(güncel)",mdBrowse:"Hafta",
   noMore:"Başka hafta yok",newsHint:"▲▼ seç · OK oku · ◄► kategori",articleHint:"▲▼ / ◄► sonraki haber · OK / GERİ",
   resHint:"◄► Lig · OK Puan",tabHint:"◄► Lig · OK Sonuçlar",
+  t_openHint:"Dokun = aç · GERİ çık",t_home:"◄ Genel Bakış (dokun)",t_resHint:"kaydır ◄► Lig · başlığa dokun = Puan",
+  t_tabHint:"kaydır ◄► Lig · başlığa dokun = Sonuçlar",t_setHint:"Dokun = değiştir · GERİ",
+  t_newsHint:"Dokun = oku · kaydır ◄► kategori",t_articleHint:"kaydır = sonraki haber · başlığa dokun = geri",t_mdArrows:"kaydır ▲▼",
   helpRows:[["◄ ►","Lig değiştir"],["OK","Sonuçlar ⇄ Puan Durumu"],["▲ ▼","Sonuçlar: önceki/sonraki hafta"],["▲ ▼","Puan durumu: alt sayfa"],
    ["GERİ","Genel Bakış, tekrar = uygulamadan çık"],["Genel Bakış","▲▼◄► seç, OK aç"],["440–460","Şampiyonlar / Avrupa / Konferans Ligi"],["500","Tüm canlı maçlar"],["600","Haberler"],
-   ["900","Ayarlar (görünüm, dil …)"],["Renk tuşları","varsa: DE / TR / Avrupa / Canlı"],["0–9","varsa: sayfa numarası"]]}
+   ["900","Ayarlar (görünüm, dil …)"],["Renk tuşları","varsa: DE / TR / Avrupa / Canlı"],["0–9","varsa: sayfa numarası"],["Tablet","dokun = aç · başlık = Puan · üst = Genel Bakış"],["Kaydır","◄► lig değiştir · ▲▼ hafta / alt sayfa"]]}
 };
 var SETTINGS = [
  ["style",["Stil / Optik","Görünüm"],[["tt","Videotext (klassisch)","Teletext (klasik)"],["modern","Modern (wie Webseite)","Modern (web sitesi gibi)"]],["Wird sofort umgeschaltet.","Hemen değişir."]],
@@ -58,7 +64,8 @@ function prefSet(k, v) {
 SETTINGS.forEach(function (s) { CFG[s[0]] = prefGet(s[0], s[2][0][0]); });
 function cfg(k) { return CFG[k]; }
 function setCfg(k, v) { CFG[k] = v; prefSet(k, v); }
-function T(k) { return TXT[cfg("lang")][k]; }
+var TOUCH = false;
+function T(k) { var t = TXT[cfg("lang")]; return (TOUCH && t["t_" + k] !== undefined) ? t["t_" + k] : t[k]; }
 function fmt(s, n) { return s.replace("%d", n); }
 
 /* ================= HTTP ================= */
@@ -679,7 +686,7 @@ function subpages() {
           if (evs === null) { needRound(lg, rnd); lines = [blank(), text(T("loading"), "y")]; }
           else { lines = resultLines(evs.filter(function (e) { return match(e.group); })); if (!lines.length) lines = [blank(), text(T("noGames"), "c")]; }
         }
-        var hint = rnd ? fmt(T("md"), rnd) + (rnd === lg.round ? "  " + T("mdNow") : "") + "   ▲▼ " + T("mdBrowse") + " · " + T("resHint") : T("resHint");
+        var hint = rnd ? fmt(T("md"), rnd) + (rnd === lg.round ? "  " + T("mdNow") : "") + "   " + (TOUCH ? T("mdArrows") : "▲▼") + " " + T("mdBrowse") + " · " + T("resHint") : T("resHint");
         chunk(lines).forEach(function (ch) { subs.push({ban: [gt, up(T("results"))], bg: bgc, head: infoHead(hint), lines: ch}); });
       } else {
         if (stl) lines = stl;
@@ -852,6 +859,67 @@ document.addEventListener("keydown", function (e) {
   var k = /^[0-9]$/.test(e.key) ? e.key : KB[e.key]; if (!k) return;
   e.preventDefault(); window.skorKey(k);
 });
+
+/* ================= Touch (Tablet) ================= */
+function touchTap(x, y) {
+  var r = scr.getBoundingClientRect(), row = Math.floor((y - r.top) / G.rowH), col = (x - r.left) / G.cw, t = pageType(S.page), C = G.cols;
+  if (row < 0 || row > 23) return;
+  if (row === 0) { if (S.page !== 100) key("back"); else draw(); return; }
+  if (row === 23) { var q = Math.floor(C / 4); key(["red", "green", "yellow", "blue"][Math.max(0, Math.min(3, Math.floor(col / q)))]); return; }
+  var bi = row - 3;
+  if (row === 1) {
+    if (t === "res" || t === "tab") key("ok");
+    else if (t === "news" && S.newsOpen !== null) key("back");
+    return;
+  }
+  if (t === "idx") {
+    var cols = idxCols(), ci = col < Math.floor(C / 2) ? 0 : 1, it = cols[ci][bi];
+    if (it && it.page) { S.idx = [ci, bi]; draw(); go(it.page); draw(); }
+    return;
+  }
+  if (t === "set") {
+    var si = bi - 1;
+    if (si >= 0 && si < SETTINGS.length) {
+      var half = Math.floor(C / 2);
+      if (S.setSel !== si) { S.setSel = si; if (col >= half) changeSetting(1); }
+      else changeSetting(col >= half && col < half + 3 ? -1 : 1);
+      draw();
+    }
+    return;
+  }
+  if (t === "news") {
+    var f = feedByPage(S.page);
+    if (S.newsOpen === null && f && bi >= 0 && bi < 18) {
+      var ni = S.sub * 18 + bi;
+      if (ni < f.items.length) { S.newsSel = ni; S.newsOpen = ni; draw(); }
+    } else if (S.newsOpen !== null) key("right");
+    return;
+  }
+  if (t === "res") key("ok");
+}
+function touchSwipe(dx, dy) {
+  var t = pageType(S.page);
+  if (Math.abs(dx) > Math.abs(dy)) { key(dx < 0 ? "right" : "left"); return; }
+  // nach unten wischen = zurück (früherer Spieltag / vorige Unterseite), nach oben = weiter
+  if (t === "res") key(dy > 0 ? "down" : "up");
+  else if (t === "idx" || t === "set") return;
+  else key(dy > 0 ? "up" : "down");
+}
+(function () {
+  var sx = 0, sy = 0, st = 0;
+  document.addEventListener("touchstart", function (e) {
+    if (!TOUCH) { TOUCH = true; draw(); }
+    var p = e.touches[0]; sx = p.clientX; sy = p.clientY; st = Date.now();
+  }, {passive: true});
+  document.addEventListener("touchend", function (e) {
+    var p = e.changedTouches[0], dx = p.clientX - sx, dy = p.clientY - sy, lim = Math.max(40, G.rowH * 2);
+    try {
+      if (Math.abs(dx) > lim || Math.abs(dy) > lim) touchSwipe(dx, dy);
+      else if (Date.now() - st < 800) touchTap(p.clientX, p.clientY);
+    } catch (err) {}
+    e.preventDefault();
+  }, {passive: false});
+})();
 
 layout();
 var sp0 = cfg("startpage"); S.page = /^\d+$/.test(sp0) ? +sp0 : 100;
