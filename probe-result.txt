@@ -1,12 +1,93 @@
-CORS 403 ACAO= None | OPT 403 None | https://claude.ai https://prod-public-api.livescore.com/v1/api/app/live/soccer/0?MD=1
-CORS 403 ACAO= None | OPT 403 None | https://example.github.io https://prod-public-api.livescore.com/v1/api/app/live/soccer/0?MD=1
-CORS 200 ACAO= * | OPT 204 * | https://claude.ai https://prod-public-api.livescore.com/v1/api/app/stage/soccer/turkey/super-lig/0?MD=1
-CORS 200 ACAO= * | OPT 204 * | https://example.github.io https://prod-public-api.livescore.com/v1/api/app/stage/soccer/turkey/super-lig/0?MD=1
-CORS 200 ACAO= None | OPT 204 None | https://claude.ai https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg&season=2026-27
-CORS 200 ACAO= None | OPT 204 None | https://example.github.io https://api.fupa.net/v1/standings?competition=verbandsliga-wuerttemberg&season=2026-27
-CORS 200 ACAO= * | OPT 200 * | https://claude.ai https://api.frankfurter.dev/v1/latest?from=EUR&to=TRY
-CORS 200 ACAO= * | OPT 200 * | https://example.github.io https://api.frankfurter.dev/v1/latest?from=EUR&to=TRY
-CORS 200 ACAO= None | OPT 200 None | https://claude.ai https://www.trthaber.com/manset_articles.rss
-CORS 200 ACAO= None | OPT 200 None | https://example.github.io https://www.trthaber.com/manset_articles.rss
-CORS 200 ACAO= None | OPT 204 * | https://claude.ai https://www.aa.com.tr/tr/rss/default?cat=guncel
-CORS 200 ACAO= None | OPT 204 * | https://example.github.io https://www.aa.com.tr/tr/rss/default?cat=guncel
+DATE 20260905 200 546709 stages 255
+DATE 20260908 200 121803 stages 55
+DATE 20260909 200 105605 stages 63
+DATE 20260912 200 574965 stages 261
+DATE 20261009 200 167814 stages 123
+DATE 20261010 200 529142 stages 246
+DATE 20261012 200 107485 stages 82
+DATE 20261013 200 154644 stages 72
+DATE 20261028 200 129430 stages 75
+DATE 20261029 200 64233 stages 52
+DATE 20261030 200 104661 stages 108
+DATE 20261114 200 210149 stages 111
+DATE 20261117 200 52950 stages 48
+DATE 20261118 200 25436 stages 14
+ST africa/caf-champions-league-qualification Africa | CAF Champions League: Qualification | CAF Champions League | n 27 []
+ST australia/australia-cup Australia | Australia Cup | None | n 2 []
+ST australia/npl-new-south-wales-qualification Australia | NPL New South Wales: Qualification | None | n 2 []
+ST australia/npl-northern-nsw-qualification Australia | NPL Northern NSW: Qualification | None | n 1 []
+ST australia/npl-western-australia-qualification Australia | NPL Western Australia: Qualification | None | n 4 []
+ST austria/ofb-cup Austria | OFB Cup | None | n 12 []
+ST belgium/national-division-1-acff Belgium | National Division 1 ACFF | None | n 14 []
+ST belgium/national-division-1-vv Belgium | National Division 1 VV | None | n 14 []
+ST bulgaria/super-cup Bulgaria | Super Cup | None | n 1 []
+ST concacaf-nations-league/league-a-quarter-finals CONCACAF Nations League | League A: Quarter Finals | None | n 5 []
+ST concacaf-nations-league/play-in CONCACAF Nations League | Play-In | CONCACAF Nations League | n 5 []
+ST concacaf/concacaf-central-american-cup-play-in CONCACAF | CONCACAF Central American Cup: Play-In | None | n 2 []
+ST croatia/cup Croatia | Cup | Cup | n 3 []
+ST cyprus/cypriot-cup Cyprus | Cypriot Cup | None | n 2 []
+ST czech-republic/cup Czech Republic | Cup | None | n 7 []
+ST denmark/dbu-pokalen Denmark | DBU Pokalen | DBU Pokalen | n 10 []
+ST england/efl-cup-round-3-2025-2026 England | EFL Cup: Round 3 | EFL Cup | n 6 []
+ST england/efl-cup-round-4-2025-2026 England | EFL Cup: Round 4 | EFL Cup | n 6 []
+ST england/fa-cup-qualification England | FA Cup: Qualification | FA Cup | n 131 []
+ST england/fa-trophy-qualification England | FA Trophy: Qualification | None | n 39 []
+ST england/national-league England | National League | National League | n 50 []
+ST england/national-league-cup-group-a England | National League Cup: Group A | None | n 7 []
+ST england/national-league-cup-group-b England | National League Cup: Group B | None | n 7 []
+ST england/national-league-cup-group-c England | National League Cup: Group C | None | n 6 []
+ST england/national-league-cup-group-d England | National League Cup: Group D | None | n 8 []
+ST england/national-league-north England | National League: North | National League North | n 53 []
+ST england/national-league-south England | National League: South | National League South | n 50 []
+ST faroe-islands/cup Faroe Islands | Cup | None | n 1 []
+ST finland/cup Finland | Cup | None | n 1 []
+ST france/national-1-group-a France | National 1: Group A | None | n 15 []
+ST france/national-1-group-b France | National 1: Group B | None | n 9 []
+ST france/national-1-group-c France | National 1: Group C | None | n 16 []
+ST germany/dfb-cup-round-2-2024-2025 Germany | DFB Cup: Round 2 | DFB Cup | n 8 ['VfB Stuttgart']
+ST gibraltar/national-league Gibraltar | National League | None | n 9 []
+ST greece/greece-cup-group-stage Greece | Greece Cup: Group Stage | None | n 9 []
+ST international-friendlies/friendlies International Friendlies | Friendlies | International Friendlies | n 3 []
+ST intl/central-american-cup-knockout-stage International | Central American Cup: Knockout Stage | None | n 2 []
+ST intl/concacaf-caribbean-cup-playoff International | CONCACAF Caribbean Cup Playoff | None | n 1 []
+ST ireland/fai-cup Ireland | FAI Cup | None | n 3 []
+ST israel/state-cup Israel | State Cup | None | n 25 []
+ST israel/toto-cup-knockout-stage Israel | Toto Cup Al: Knockout Stage | None | n 1 []
+ST japan/league-cup Japan | J.League Cup | None | n 11 []
+ST luxembourg/national-division Luxembourg | National Division | None | n 5 []
+ST new-zealand/national-league-championship New Zealand | National League Championship | National League | n 6 []
+ST norway/cup-round-2-2024 Norway | NM Cup: Round 2 | None | n 3 []
+ST norway/cup-round-3-2024 Norway | NM Cup: Round 3 | None | n 13 []
+ST poland/cup Poland | Cup | None | n 13 []
+ST portugal/league-cup-quarter-finals Portugal | League Cup: Quarter-Finals | League Cup | n 3 []
+ST romania/romania-cup-group-a Romania | Romanian Cup: Group A | Romanian Cup | n 1 []
+ST romania/romania-cup-group-b Romania | Romanian Cup: Group B | Romanian Cup | n 2 []
+ST romania/romania-cup-group-c Romania | Romanian Cup: Group C | Romanian Cup | n 2 []
+ST romania/romania-cup-group-d Romania | Romanian Cup: Group D | Romanian Cup | n 3 []
+ST scotland/challenge-cup Scotland | Challenge Cup | Challenge Cup | n 39 []
+ST scotland/scottish-league-cup-quarter-finals Scotland | Scottish League Cup: Quarter-Finals | Scottish League Cup | n 2 []
+ST slovakia/cup Slovakia | Slovak Cup | None | n 11 []
+ST turkey/turkiye-cup-qualification Turkiye | Turkiye Cup: Qualification | None | n 24 []
+ST uefa-nations-league/league-a-group-4 UEFA Nations League | League A: Group 4 | UEFA Nations League | n 4 []
+ST uefa-nations-league/league-b-group-2 UEFA Nations League | League B: Group 2 | UEFA Nations League | n 4 []
+ST uefa-nations-league/league-b-group-3 UEFA Nations League | League B: Group 3 | UEFA Nations League | n 4 []
+ST uefa-nations-league/league-b-group-4 UEFA Nations League | League B: Group 4 | UEFA Nations League | n 4 []
+ST ukraine/cup Ukraine | Cup | None | n 4 []
+ST ukraine/cup-25-26 Ukraine | Cup | None | n 5 []
+ST usa/USL-cup-final-stage-2025 USA | USL Cup Final Stage | None | n 2 []
+EID 1812711 Borussia Dortmund Eintracht Frankfurt TEAMID 448
+API incidents 200 812 {"Eid":"1812711","Tr1":"1","Tr2":"0","Trh1":"0","Trh2":"0","Tr1OR":"1","Tr2OR":"0","Incs":{"1":[],"2":[{"Min":58,"Nm":2,"PosA":2,"Aid":"61158","ID":"61158","Fn":"Nnamdi","Ln":"Collins","Pnt":"nnamdi-collins","Pnum":34,"Pn":"Nnamdi Collins","IT":43,"NoP":false,"Sor":2},{"Min":63,"Nm":2,"PosA":3,"Aid":"3033","ID":"3033","Fn":"Fares","Ln":"Chaibi","Pnt":"fares-chaibi","Pnum":8,"Pn":"Fares Chaibi","IT
+API scoreboard 200 4391 {"Eid":"1812711","Pids":{"1":"5881198","101":"1812711","102":"1812711","103":"1812711","104":"1812711","112":"SBTE_2_1028230642","28":"1220771043","33":"5ju4n8wsoc85fnut62uav3i8k","36":"5ju4n8wsoc85fnut62uav3i8k","37":"2026-10-24-16-30-00-BorussiaDortmund-EintrachtFrankfurt","8":"1812711"},"Sids":{"1":"938769","112":"SBTC3_40481","28":"1218691197","33":"8i5orjey48pnf7hcy0ptvxwk4","36":"6by3h89i2ey
+API event 404 53 <html><body><h1>Resource not found</h1></body></html>
+API summary 404 53 <html><body><h1>Resource not found</h1></body></html>
+API cdnscoreboard 200 4391 {"Eid":"1812711","Pids":{"1":"5881198","101":"1812711","102":"1812711","103":"1812711","104":"1812711","112":"SBTE_2_1028230642","28":"1220771043","33":"5ju4n8wsoc85fnut62uav3i8k","36":"5ju4n8wsoc85fnut62uav3i8k","37":"2026-10-24-16-30-00-BorussiaDortmund-EintrachtFrankfurt","8":"1812711"},"Sids":{"1":"938769","112":"SBTC3_40481","28":"1218691197","33":"8i5orjey48pnf7hcy0ptvxwk4","36":"6by3h89i2ey
+API cdnincidents 200 812 {"Eid":"1812711","Tr1":"1","Tr2":"0","Trh1":"0","Trh2":"0","Tr1OR":"1","Tr2OR":"0","Incs":{"1":[],"2":[{"Min":58,"Nm":2,"PosA":2,"Aid":"61158","ID":"61158","Fn":"Nnamdi","Ln":"Collins","Pnt":"nnamdi-collins","Pnum":34,"Pn":"Nnamdi Collins","IT":43,"NoP":false,"Sor":2},{"Min":63,"Nm":2,"PosA":3,"Aid":"3033","ID":"3033","Fn":"Fares","Ln":"Chaibi","Pnt":"fares-chaibi","Pnum":8,"Pn":"Fares Chaibi","IT
+API team 404 53 <html><body><h1>Resource not found</h1></body></html>
+API teamfix 404 53 <html><body><h1>Resource not found</h1></body></html>
+API teamres 404 53 <html><body><h1>Resource not found</h1></body></html>
+API stats1 404 53 <html><body><h1>Resource not found</h1></body></html>
+API stats2 404 53 <html><body><h1>Resource not found</h1></body></html>
+API stats3 404 9 Not Found
+API stats4 404 53 <html><body><h1>Resource not found</h1></body></html>
+API pokal1 410 0 
+API pokal2 410 0 
