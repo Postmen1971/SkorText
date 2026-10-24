@@ -28,15 +28,16 @@ jobs:
           B = "https://prod-public-api.livescore.com/v1/api/app"
           def get(u):
               return requests.get(u, headers=H, timeout=25)
-          for name, u in [("fifa_api", "https://inside.fifa.com/api/ranking-overview?locale=en&dateId=FRS_Male_Football_20260720"),
-                          ("fifa_api_de", "https://inside.fifa.com/api/ranking-overview?locale=de&dateId=FRS_Male_Football_20260720"),
-                          ("cat_tr", B + "/category/soccer/turkey/0?MD=1"),
-                          ("nl_a2", B + "/stage/soccer/uefa-nations-league/league-a-group-2/0?MD=1"),
-                          ("dfb_r1", B + "/stage/soccer/germany/dfb-cup-round-1-2025-2026/0?MD=1"),
-                          ("date_today", B + "/date/soccer/20261024/0?MD=1")]:
+          for name, u in [
+              ("v1rs", "https://api.fifa.com/api/v1/fifarankings/rankings/rankingsbyschedule?rankingScheduleId=FRS_Male_Football_20260720&language=en"),
+              ("v3rs", "https://api.fifa.com/api/v3/fifarankings/rankings/rankingsbyschedule?rankingScheduleId=FRS_Male_Football_20260720&language=en"),
+              ("v1rs_de", "https://api.fifa.com/api/v1/fifarankings/rankings/rankingsbyschedule?rankingScheduleId=FRS_Male_Football_20260720&language=de"),
+              ("ov_type", "https://inside.fifa.com/api/ranking-overview?locale=en&dateId=FRS_Male_Football_20260720&rankingType=football"),
+              ("ov_old", "https://inside.fifa.com/api/ranking-overview?locale=en&dateId=id14870"),
+          ]:
               try:
                   r = get(u); t = r.text
-                  OUT.append(print_("API", name, r.status_code, len(t), t[:500].replace("\n", " ")))
+                  OUT.append(print_("API", name, r.status_code, len(t), t[:600].replace("\n", " ")))
                   if r.status_code == 200 and len(t) > 100: open("samples/x_%s.json" % name, "w").write(t)
               except Exception as ex:
                   OUT.append(print_("APIERR", name, ex))
