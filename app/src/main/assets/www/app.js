@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "2.4";
+var VERSION = "3.0";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -14,12 +14,18 @@ var TXT = {
   loading:"Lade Daten …",noData:"Keine Daten erreichbar.",noData2:"Internetverbindung prüfen.",noGames:"Keine Spiele gefunden.",
   noTable:"Keine Tabelle verfügbar.",source:"Daten: LiveScore, FuPa",mdNow:"(aktuell)",mdBrowse:"Spieltag",
   noMore:"Kein weiterer Spieltag",newsHint:"▲▼ wählen · OK lesen · ◄► Rubrik",articleHint:"▲▼ / ◄► nächste Meldung · OK / ZURÜCK",
-  resHint:"◄► Liga · OK Tabelle",tabHint:"◄► Liga · OK Ergebnisse",
-  t_openHint:"Antippen = öffnen · ZURÜCK beenden",t_home:"◄ Übersicht (hier tippen)",t_resHint:"wischen ◄► Liga · Titel antippen = Tabelle",
+  resHint:"◄► Liga · OK Tore",tabHint:"◄► Liga · OK Ergebnisse",
+  cNAT:"LÄNDERSPIELE",cRANK:"RANGLISTEN",cMORE:"WEITERES",more:"▼ mehr: Länderspiele, Ranglisten",t_more:"wischen ▲ = mehr: Länderspiele, Ranglisten",
+  fav:"Mein Verein",today:"Heute",yesterday:"Gestern",tomorrow:"Morgen",dayHint:"◄► Tag wechseln",t_dayHint:"wischen ◄► = Tag wechseln",
+  last:"Letzte Spiele",next:"Nächste Spiele",noFav:"Kein Lieblingsverein gewählt.",noFav2:"Unter Einstellungen (900) auswählen.",place:"Platz",
+  scorers:"Torschützen",detHint:"OK = Tabelle · ▲▼ blättern",t_detHint:"Titel antippen = Tabelle · wischen ▲▼",pen:"E",og:"ET",
+  rkFifa:"FIFA-Weltrangliste",rkUefa:"UEFA-Länderwertung",rkClub:"UEFA-Klubwertung",points:"Punkte",season:"Saison",nation:"Land",asOf:"Stand",
+  noMatches:"Keine Spiele an diesem Tag.",
+  t_openHint:"Antippen = öffnen · ZURÜCK beenden",t_home:"◄ Übersicht (hier tippen)",t_resHint:"wischen ◄► Liga · Titel antippen = Tore",
   t_tabHint:"wischen ◄► Liga · Titel antippen = Ergebnisse",t_setHint:"Antippen = ändern · ZURÜCK zurück",
   t_newsHint:"Antippen = lesen · wischen ◄► Rubrik",t_articleHint:"wischen = nächste Meldung · Titel antippen = zurück",t_mdArrows:"wischen ▲▼",
-  helpRows:[["◄ ►","Liga wechseln"],["OK","Ergebnisse ⇄ Tabelle"],["▲ ▼","Ergebnisse: Spieltag vor/zurück"],["▲ ▼","Tabelle: Unterseite"],
-   ["ZURÜCK","Übersicht, nochmal = App beenden"],["Übersicht","▲▼◄► wählen, OK öffnet"],["440–460","Champions / Europa / Conference League"],["500","Alle Live-Spiele"],["600","Haberler (Nachrichten)"],
+  helpRows:[["◄ ►","Liga wechseln"],["OK","Ergebnisse → Torschützen → Tabelle"],["▲ ▼","Ergebnisse: Spieltag vor/zurück"],["▲ ▼","Tabelle: Unterseite"],
+   ["ZURÜCK","Übersicht, nochmal = App beenden"],["Übersicht","▲▼◄► wählen, OK öffnet"],["440–460","Champions / Europa / Conference League"],["295 / 305","DFB-Pokal / Türkiye Kupası"],["110","Mein Verein"],["510","Heute (◄► Tag)"],["470 / 472","Nations League DE / TR"],["480–484","Ranglisten FIFA / UEFA"],["500","Alle Live-Spiele"],["600","Haberler (Nachrichten)"],
    ["900","Einstellungen (Stil, Sprache …)"],["Farbtasten","falls vorhanden: DE / TR / Europa / Live"],["0–9","falls vorhanden: Seitennummer"],["Tablet","antippen = öffnen · Titel = Tabelle · oben = Übersicht"],["Wischen","◄► Liga wechseln · ▲▼ Spieltag / Unterseite"]]},
  tr: {overview:"Genel Bakış",results:"Sonuçlar",table:"Puan Durumu",liveTable:"Canlı Puan Durumu",md:"%d. Hafta",live:"Canlı",
   allLive:"Tüm Canlı Maçlar",help:"Kullanım",settings:"Ayarlar",noLive:"Şu an canlı maç yok",ht:"İY",ft:"MS",
@@ -30,12 +36,18 @@ var TXT = {
   loading:"Veriler yükleniyor …",noData:"Veri alınamadı.",noData2:"İnternet bağlantısını kontrol et.",noGames:"Maç bulunamadı.",
   noTable:"Puan durumu yok.",source:"Veri: LiveScore, FuPa",mdNow:"(güncel)",mdBrowse:"Hafta",
   noMore:"Başka hafta yok",newsHint:"▲▼ seç · OK oku · ◄► kategori",articleHint:"▲▼ / ◄► sonraki haber · OK / GERİ",
-  resHint:"◄► Lig · OK Puan",tabHint:"◄► Lig · OK Sonuçlar",
-  t_openHint:"Dokun = aç · GERİ çık",t_home:"◄ Genel Bakış (dokun)",t_resHint:"kaydır ◄► Lig · başlığa dokun = Puan",
+  resHint:"◄► Lig · OK Goller",tabHint:"◄► Lig · OK Sonuçlar",
+  cNAT:"MİLLİ MAÇLAR",cRANK:"SIRALAMALAR",cMORE:"DİĞER",more:"▼ devamı: Milli maçlar, sıralamalar",t_more:"kaydır ▲ = devamı: Milli maçlar, sıralamalar",
+  fav:"Takımım",today:"Bugün",yesterday:"Dün",tomorrow:"Yarın",dayHint:"◄► gün değiştir",t_dayHint:"kaydır ◄► = gün değiştir",
+  last:"Son maçlar",next:"Sıradaki maçlar",noFav:"Favori takım seçilmedi.",noFav2:"Ayarlar (900) altından seç.",place:"Sıra",
+  scorers:"Goller",detHint:"OK = Puan durumu · ▲▼ sayfa",t_detHint:"başlığa dokun = Puan · kaydır ▲▼",pen:"P",og:"KK",
+  rkFifa:"FIFA Dünya Sıralaması",rkUefa:"UEFA Ülke Puanı",rkClub:"UEFA Kulüp Puanı",points:"Puan",season:"Sezon",nation:"Ülke",asOf:"Güncel",
+  noMatches:"Bu gün maç yok.",
+  t_openHint:"Dokun = aç · GERİ çık",t_home:"◄ Genel Bakış (dokun)",t_resHint:"kaydır ◄► Lig · başlığa dokun = Goller",
   t_tabHint:"kaydır ◄► Lig · başlığa dokun = Sonuçlar",t_setHint:"Dokun = değiştir · GERİ",
   t_newsHint:"Dokun = oku · kaydır ◄► kategori",t_articleHint:"kaydır = sonraki haber · başlığa dokun = geri",t_mdArrows:"kaydır ▲▼",
-  helpRows:[["◄ ►","Lig değiştir"],["OK","Sonuçlar ⇄ Puan Durumu"],["▲ ▼","Sonuçlar: önceki/sonraki hafta"],["▲ ▼","Puan durumu: alt sayfa"],
-   ["GERİ","Genel Bakış, tekrar = uygulamadan çık"],["Genel Bakış","▲▼◄► seç, OK aç"],["440–460","Şampiyonlar / Avrupa / Konferans Ligi"],["500","Tüm canlı maçlar"],["600","Haberler"],
+  helpRows:[["◄ ►","Lig değiştir"],["OK","Sonuçlar → Goller → Puan Durumu"],["▲ ▼","Sonuçlar: önceki/sonraki hafta"],["▲ ▼","Puan durumu: alt sayfa"],
+   ["GERİ","Genel Bakış, tekrar = uygulamadan çık"],["Genel Bakış","▲▼◄► seç, OK aç"],["440–460","Şampiyonlar / Avrupa / Konferans Ligi"],["295 / 305","Almanya Kupası / Türkiye Kupası"],["110","Takımım"],["510","Bugün (◄► gün)"],["470 / 472","Uluslar Ligi DE / TR"],["480–484","Sıralamalar FIFA / UEFA"],["500","Tüm canlı maçlar"],["600","Haberler"],
    ["900","Ayarlar (görünüm, dil …)"],["Renk tuşları","varsa: DE / TR / Avrupa / Canlı"],["0–9","varsa: sayfa numarası"],["Tablet","dokun = aç · başlık = Puan · üst = Genel Bakış"],["Kaydır","◄► lig değiştir · ▲▼ hafta / alt sayfa"]]}
 };
 var SETTINGS = [
@@ -101,20 +113,32 @@ var LEAGUES_DEF = [
  [270,"de","germany","regionalliga-nordost","Regionalliga Nordost","Regionalliga Kuzeydoğu",""],
  [280,"de","germany","oberliga-baden-wurttemberg","Oberliga Baden-Württemberg","Oberliga Baden-Württemberg",""],
  [290,"de","fupa","verbandsliga-wuerttemberg","Verbandsliga Württemberg","Verbandsliga Württemberg",""],
- [300,"tr","turkey","super-lig","Trendyol Süper Lig","Trendyol Süper Lig",""],[310,"tr","turkey","1st-lig","Trendyol 1. Lig (2. Liga)","Trendyol 1. Lig",""],
+ [295,"de","cup:germany","dfb-cup","DFB-Pokal","Almanya Kupası",""],
+ [300,"tr","turkey","super-lig","Trendyol Süper Lig","Trendyol Süper Lig",""],[305,"tr","cup:turkey","turkiye-cup","Türkiye Kupası","Ziraat Türkiye Kupası",""],[310,"tr","turkey","1st-lig","Trendyol 1. Lig (2. Liga)","Trendyol 1. Lig",""],
  [320,"tr","turkey","2nd-lig-white-group","2. Lig (3. Liga) · Beyaz Grup","Nesine 2. Lig · Beyaz Grup",""],
  [322,"tr","turkey","2nd-lig-red-group","2. Lig (3. Liga) · Kırmızı Grup","Nesine 2. Lig · Kırmızı Grup",""],
  [400,"eu","england","premier-league","Premier League","Premier Lig","ENG"],[410,"eu","spain","laliga","LaLiga","LaLiga","ESP"],
  [420,"eu","italy","serie-a","Serie A","Serie A","ITA"],[430,"eu","france","ligue-1","Ligue 1","Ligue 1","FRA"],
  [440,"eu","champions-league","league-stage","Champions League","Şampiyonlar Ligi",""],
  [450,"eu","europa-league","league-stage","Europa League","Avrupa Ligi",""],
- [460,"eu","conference-league","league-stage","Conference League","Konferans Ligi",""]
+ [460,"eu","conference-league","league-stage","Conference League","Konferans Ligi",""],
+ [470,"nat","uefa-nations-league","league-a-group-2","Nations League · Deutschland","Uluslar Ligi · Almanya",""],
+ [472,"nat","uefa-nations-league","league-a-group-1","Nations League · Türkei","Uluslar Ligi · Türkiye",""]
 ];
-var NAME_FIX = [["FC Cologne","1. FC Köln"],["Cologne","Köln"],["Bayern Munich","Bayern München"],["Munich 1860","TSV 1860 München"],["Nuremberg","Nürnberg"],["Monchengladbach","Mönchengladbach"],["Dusseldorf","Düsseldorf"],["Furth","Fürth"],["Munster","Münster"],["Osnabruck","Osnabrück"],["Saarbrucken","Saarbrücken"],["Wurzburg","Würzburg"],["Gottingen","Göttingen"],["Goppingen","Göppingen"],["Lubeck","Lübeck"],["Grossaspach","Großaspach"],["Koln","Köln"],["Gutersloh","Gütersloh"],["Rodinghausen","Rödinghausen"],["Wiedenbruck","Wiedenbrück"],["Gmund","Gmünd"],["Nottingen","Nöttingen"],["Turkgucu","Türkgücü"],["Turkspor","Türkspor"],["Zweibrucken","Zweibrücken"],["Volklingen","Völklingen"],["Bodoe/Glimt","Bodø/Glimt"],["Slavia Prague","SK Slavia Prag"],["Sparta Prague","AC Sparta Prag"],["Atletico Madrid","Atlético Madrid"],["Ferencvaros","Ferencváros"],["Viktoria Plzen","Viktoria Pilsen"],["Lech Poznan","Lech Posen"],["Lillestroem","Lillestrøm"],["Mjaellby","Mjällby"],["FC Nordsjaelland","FC Nordsjælland"],["FC Copenhagen","FC Kopenhagen"],["FC Salzburg","RB Salzburg"],["Union St.Gilloise","Union Saint-Gilloise"],["Besiktas","Beşiktaş"],["Fenerbahce","Fenerbahçe"],["Basaksehir","Başakşehir"],["Kasimpasa","Kasımpaşa"],["Eyupspor","Eyüpspor"],["Goztepe","Göztepe"],["Caykur","Çaykur"],["Genclerbirligi","Gençlerbirliği"],["Karagumruk","Karagümrük"],["Igdir","Iğdır"],["Corum","Çorum"],["Bandirmaspor","Bandırmaspor"],["Umraniyespor","Ümraniyespor"],["Keciorengucu","Keçiörengücü"],["Istanbulspor","İstanbulspor"],["Sariyer","Sarıyer"],["Sanliurfaspor","Şanlıurfaspor"],["Arnavutkoy","Arnavutköy"],["Mus Spor","Muşspor"],["Musspor","Muşspor"],["Elazigspor","Elazığspor"],["Corluspor","Çorluspor"],["Genclik","Gençlik"],["Kirklarelispor","Kırklarelispor"],["Inegolspor","İnegölspor"],["Altinordu","Altınordu"],["Usakspor","Uşakspor"],["Kahramanmaras","Kahramanmaraş"],["Istiklalspor","İstiklalspor"],["Yildirimspor","Yıldırımspor"],["Aliaga","Aliağa"],["Karsiyaka","Karşıyaka"],["Mugla","Muğla"],["Duzce","Düzce"],["Guzide","Güzide"],["Kucukcekmece","Küçükçekmece"],["Beyoglu","Beyoğlu"],["Carsi","Çarşı"],["Iskenderun","İskenderun"],["Sile","Şile"],["Bursa Yildirim","Bursa Yıldırım"],["Igdir FK","Iğdır FK"],["Eskisehir","Eskişehir"],["Kutahya","Kütahya"],["Balikesir","Balıkesir"],["Canakkale","Çanakkale"],["Diyarbakir","Diyarbakır"],["Kirsehir","Kırşehir"],["Nevsehir","Nevşehir"],["Nigde","Niğde"],["Kirikkale","Kırıkkale"],["Inegol","İnegöl"],["Dernegi","Derneği"],["Agri ","Ağrı "],["Akcaabat","Akçaabat"],["Carsamba","Çarşamba"]];
+var NAME_FIX = [["FC Cologne","1. FC Köln"],["Cologne","Köln"],["Bayern Munich","Bayern München"],["Munich 1860","TSV 1860 München"],["Nuremberg","Nürnberg"],["Monchengladbach","Mönchengladbach"],["Dusseldorf","Düsseldorf"],["Furth","Fürth"],["Munster","Münster"],["Osnabruck","Osnabrück"],["Saarbrucken","Saarbrücken"],["Wurzburg","Würzburg"],["Gottingen","Göttingen"],["Goppingen","Göppingen"],["Lubeck","Lübeck"],["Grossaspach","Großaspach"],["Koln","Köln"],["Gutersloh","Gütersloh"],["Rodinghausen","Rödinghausen"],["Wiedenbruck","Wiedenbrück"],["Gmund","Gmünd"],["Nottingen","Nöttingen"],["Turkgucu","Türkgücü"],["Turkspor","Türkspor"],["Preussen","Preußen"],["Muenster","Münster"],["1860 Munich","TSV 1860 München"],["Luneburger","Lüneburger"],["Teutonia St. Toenis","Teutonia St. Tönis"],["Zweibrucken","Zweibrücken"],["Volklingen","Völklingen"],["Bodoe/Glimt","Bodø/Glimt"],["Slavia Prague","SK Slavia Prag"],["Sparta Prague","AC Sparta Prag"],["Atletico Madrid","Atlético Madrid"],["Ferencvaros","Ferencváros"],["Viktoria Plzen","Viktoria Pilsen"],["Lech Poznan","Lech Posen"],["Lillestroem","Lillestrøm"],["Mjaellby","Mjällby"],["FC Nordsjaelland","FC Nordsjælland"],["FC Copenhagen","FC Kopenhagen"],["FC Salzburg","RB Salzburg"],["Union St.Gilloise","Union Saint-Gilloise"],["Turkiye","Türkiye"],["Besiktas","Beşiktaş"],["Fenerbahce","Fenerbahçe"],["Basaksehir","Başakşehir"],["Kasimpasa","Kasımpaşa"],["Eyupspor","Eyüpspor"],["Goztepe","Göztepe"],["Caykur","Çaykur"],["Genclerbirligi","Gençlerbirliği"],["Karagumruk","Karagümrük"],["Igdir","Iğdır"],["Corum","Çorum"],["Bandirmaspor","Bandırmaspor"],["Umraniyespor","Ümraniyespor"],["Keciorengucu","Keçiörengücü"],["Istanbulspor","İstanbulspor"],["Sariyer","Sarıyer"],["Sanliurfaspor","Şanlıurfaspor"],["Arnavutkoy","Arnavutköy"],["Mus Spor","Muşspor"],["Musspor","Muşspor"],["Elazigspor","Elazığspor"],["Corluspor","Çorluspor"],["Genclik","Gençlik"],["Kirklarelispor","Kırklarelispor"],["Inegolspor","İnegölspor"],["Altinordu","Altınordu"],["Usakspor","Uşakspor"],["Kahramanmaras","Kahramanmaraş"],["Istiklalspor","İstiklalspor"],["Yildirimspor","Yıldırımspor"],["Aliaga","Aliağa"],["Karsiyaka","Karşıyaka"],["Mugla","Muğla"],["Duzce","Düzce"],["Guzide","Güzide"],["Kucukcekmece","Küçükçekmece"],["Beyoglu","Beyoğlu"],["Carsi","Çarşı"],["Iskenderun","İskenderun"],["Sile","Şile"],["Bursa Yildirim","Bursa Yıldırım"],["Igdir FK","Iğdır FK"],["Eskisehir","Eskişehir"],["Kutahya","Kütahya"],["Balikesir","Balıkesir"],["Canakkale","Çanakkale"],["Diyarbakir","Diyarbakır"],["Kirsehir","Kırşehir"],["Nevsehir","Nevşehir"],["Nigde","Niğde"],["Kirikkale","Kırıkkale"],["Inegol","İnegöl"],["gucu","gücü"],["Ayvalik","Ayvalık"],["Kulubu","Kulübü"],["Yesilyurt","Yeşilyurt"],["Sumerbey","Sümerbey"],["Mazidagi","Mazıdağı"],["Bingol","Bingöl"],["Universitesi","Üniversitesi"],["Dernegi","Derneği"],["Agri ","Ağrı "],["Akcaabat","Akçaabat"],["Carsamba","Çarşamba"]];
 function fixName(n) {
+  n = String(n || "").replace(/i\u0307/g, "i").trim();
   for (var i = 0; i < NAME_FIX.length; i++) { var a = NAME_FIX[i][0], b = NAME_FIX[i][1]; if (n.indexOf(a) >= 0 && n.indexOf(b) < 0) n = n.split(a).join(b); }
   return n;
 }
+var NATIONS = {"Germany":["Deutschland","Almanya"],"Türkiye":["Türkei","Türkiye"],"Turkey":["Türkei","Türkiye"],"Netherlands":["Niederlande","Hollanda"],"Greece":["Griechenland","Yunanistan"],"Serbia":["Serbien","Sırbistan"],"France":["Frankreich","Fransa"],"Italy":["Italien","İtalya"],"Belgium":["Belgien","Belçika"],"Spain":["Spanien","İspanya"],"England":["England","İngiltere"],"Portugal":["Portugal","Portekiz"],"Croatia":["Kroatien","Hırvatistan"],"Czechia":["Tschechien","Çekya"],"Czech Republic":["Tschechien","Çekya"],"Denmark":["Dänemark","Danimarka"],"Norway":["Norwegen","Norveç"],"Wales":["Wales","Galler"],"Scotland":["Schottland","İskoçya"],"Switzerland":["Schweiz","İsviçre"],"Slovenia":["Slowenien","Slovenya"],"North Macedonia":["Nordmazedonien","Kuzey Makedonya"],"Georgia":["Georgien","Gürcistan"],"Hungary":["Ungarn","Macaristan"],"Northern Ireland":["Nordirland","Kuzey İrlanda"],"Ukraine":["Ukraine","Ukrayna"],"Austria":["Österreich","Avusturya"],"Ireland":["Irland","İrlanda"],"Republic of Ireland":["Irland","İrlanda"],"Israel":["Israel","İsrail"],"Kosovo":["Kosovo","Kosova"],"Bosnia and Herzegovina":["Bosnien-Herzegowina","Bosna-Hersek"],"Poland":["Polen","Polonya"],"Romania":["Rumänien","Romanya"],"Sweden":["Schweden","İsveç"],"Albania":["Albanien","Arnavutluk"],"Belarus":["Belarus","Belarus"],"Finland":["Finnland","Finlandiya"],"San Marino":["San Marino","San Marino"],"Armenia":["Armenien","Ermenistan"],"Cyprus":["Zypern","Kıbrıs Rum Kesimi"],"Latvia":["Lettland","Letonya"],"Montenegro":["Montenegro","Karadağ"],"Faroe Islands":["Färöer","Faroe Adaları"],"Kazakhstan":["Kasachstan","Kazakistan"],"Moldova":["Moldau","Moldova"],"Slovakia":["Slowakei","Slovakya"],"Bulgaria":["Bulgarien","Bulgaristan"],"Estonia":["Estland","Estonya"],"Iceland":["Island","İzlanda"],"Luxembourg":["Luxemburg","Lüksemburg"],"Lithuania":["Litauen","Litvanya"],"Azerbaijan":["Aserbaidschan","Azerbaycan"],"Malta":["Malta","Malta"],"Andorra":["Andorra","Andorra"],"Liechtenstein":["Liechtenstein","Lihtenştayn"],"Gibraltar":["Gibraltar","Cebelitarık"],"Russia":["Russland","Rusya"],"Argentina":["Argentinien","Arjantin"],"Brazil":["Brasilien","Brezilya"],"Uruguay":["Uruguay","Uruguay"],"Colombia":["Kolumbien","Kolombiya"],"Ecuador":["Ecuador","Ekvador"],"Paraguay":["Paraguay","Paraguay"],"Peru":["Peru","Peru"],"Chile":["Chile","Şili"],"Venezuela":["Venezuela","Venezuela"],"Bolivia":["Bolivien","Bolivya"],"USA":["USA","ABD"],"United States":["USA","ABD"],"Mexico":["Mexiko","Meksika"],"Canada":["Kanada","Kanada"],"Panama":["Panama","Panama"],"Costa Rica":["Costa Rica","Kosta Rika"],"Jamaica":["Jamaika","Jamaika"],"Morocco":["Marokko","Fas"],"Senegal":["Senegal","Senegal"],"Egypt":["Ägypten","Mısır"],"Algeria":["Algerien","Cezayir"],"Tunisia":["Tunesien","Tunus"],"Nigeria":["Nigeria","Nijerya"],"Cameroon":["Kamerun","Kamerun"],"Ghana":["Ghana","Gana"],"Ivory Coast":["Elfenbeinküste","Fildişi Sahili"],"Côte d'Ivoire":["Elfenbeinküste","Fildişi Sahili"],"Mali":["Mali","Mali"],"South Africa":["Südafrika","Güney Afrika"],"DR Congo":["DR Kongo","DK Kongo"],"Congo DR":["DR Kongo","DK Kongo"],"Burkina Faso":["Burkina Faso","Burkina Faso"],"Cape Verde":["Kap Verde","Yeşil Burun Adaları"],"Cabo Verde":["Kap Verde","Yeşil Burun Adaları"],"Japan":["Japan","Japonya"],"South Korea":["Südkorea","Güney Kore"],"Korea Republic":["Südkorea","Güney Kore"],"IR Iran":["Iran","İran"],"Iran":["Iran","İran"],"Australia":["Australien","Avustralya"],"Saudi Arabia":["Saudi-Arabien","Suudi Arabistan"],"Qatar":["Katar","Katar"],"Iraq":["Irak","Irak"],"Uzbekistan":["Usbekistan","Özbekistan"],"Jordan":["Jordanien","Ürdün"],"United Arab Emirates":["VAE","BAE"],"China PR":["China","Çin"],"China":["China","Çin"],"New Zealand":["Neuseeland","Yeni Zelanda"]};
+function dn(name) { var t = NATIONS[name]; return t ? t[cfg("lang") === "tr" ? 1 : 0] : name; }
+var FAV_LEAGUES = {"VfB Stuttgart": [200, 295, 440, 450, 460], "Bayern München": [200, 295, 440, 450, 460], "Dortmund": [200, 295, 440, 450, 460],
+  "Stuttgarter Kickers": [230, 280, 295], "Großaspach": [230, 280, 295], "Göppinger": [290],
+  "Galatasaray": [300, 305, 440, 450, 460], "Fenerbahçe": [300, 305, 440, 450, 460], "Beşiktaş": [300, 305, 440, 450, 460],
+  "Trabzonspor": [300, 305, 440, 450, 460], "Başakşehir": [300, 305, 440, 450, 460]};
+var FAV_CODES = {200: "BL", 230: "RL", 280: "OL", 290: "VL", 295: "DFB", 300: "SL", 305: "TK", 440: "CL", 450: "EL", 460: "ECL"};
+function seasonStart() { var d = new Date(), y = d.getMonth() >= 6 ? d.getFullYear() : d.getFullYear() - 1; return Date.UTC(y, 6, 1) / 1000; }
 function esdTs(v) {
   var s = String(v || ""); if (s.length < 12) return 0;
   return Date.UTC(+s.slice(0, 4), +s.slice(4, 6) - 1, +s.slice(6, 8), +s.slice(8, 10), +s.slice(10, 12), +(s.slice(12, 14) || 0)) / 1000;
@@ -179,6 +203,8 @@ function inferRounds(evs) {
 function League(d) {
   this.page = d[0]; this.c = d[1]; this.ccd = d[2]; this.scd = d[3]; this.nameDe = d[4]; this.nameTr = d[5]; this.tag = d[6];
   this.ut = this.ccd + "/" + this.scd;
+  this.cup = this.ccd.indexOf("cup:") === 0; this.rnames = {};
+  if (this.cup) { this.country = this.ccd.slice(4); this.prefix = this.scd; this.ut = "cup/" + this.country + "/" + this.prefix; }
   this.season = true; this.round = null; this.maxRound = null; this.allEvents = [];
   this.events = []; this.prevEvents = []; this.prevRound = null; this.rcache = {}; this.rloading = {};
   this.tables = []; this.tLoad = 0; this.loading = false; this.error = null; this.gdefs = [];
@@ -197,6 +223,7 @@ League.prototype.liveCount = function () { return this.events.filter(function (e
 League.prototype.load = function () {
   var self = this;
   if (self.ccd === "fupa") return self.loadFupa();
+  if (self.cup) return self.loadCup();
   return getJSON(BASE + "/stage/soccer/" + self.ccd + "/" + self.scd + "/0?MD=1").then(function (d) {
     var st = (d.Stages || [])[0];
     if (!st) throw new Error("404 keine Daten");
@@ -209,10 +236,54 @@ League.prototype.load = function () {
     self.tLoad = Date.now() / 1000; self.error = null;
   });
 };
-League.prototype.setEvents = function (evs) {
+League.prototype.matchesStage = function (ccd, scd) { return this.cup && ccd === this.country && String(scd || "").indexOf(this.prefix) === 0 && String(scd).indexOf("women") < 0; };
+League.prototype.roundLabel = function (n, lang) { var k = this.rnames[n]; return k ? roundText(k, lang) : null; };
+var ROUND_NAMES = [[/^round of 16/, ["Achtelfinale", "Son 16 Turu"]], [/^round of 32/, ["Sechzehntelfinale", "Son 32 Turu"]], [/^round (\d+)/, ["%s. Runde", "%s. Tur"]],
+  [/^1st round/, ["1. Runde", "1. Tur"]], [/^quarter/, ["Viertelfinale", "Çeyrek Final"]], [/^semi/, ["Halbfinale", "Yarı Final"]], [/^final stage/, ["Endrunde", "Final Aşaması"]],
+  [/^final/, ["Finale", "Final"]], [/^qualification/, ["Qualifikation", "Ön Eleme"]], [/^group/, ["Gruppenphase", "Grup Aşaması"]], [/^play/, ["Play-offs", "Play-off"]]];
+function roundText(key, lang) {
+  var k = key.toLowerCase().trim(), sub = "";
+  if (k.indexOf("|") >= 0) { sub = k.split("|")[1]; k = k.split("|")[0]; }
+  for (var i = 0; i < ROUND_NAMES.length; i++) {
+    var m = ROUND_NAMES[i][0].exec(k);
+    if (m) { var t = ROUND_NAMES[i][1][lang === "tr" ? 1 : 0]; if (t.indexOf("%s") >= 0) t = t.replace("%s", m[1]); if (sub) t += " · " + (lang === "tr" ? sub + ". Tur" : sub + ". Runde"); return t; }
+  }
+  return key;
+}
+League.prototype.loadCup = function () {
+  var self = this, start = seasonStart();
+  return getJSON(BASE + "/category/soccer/" + self.country + "/0?MD=1").then(function (cat) {
+    var cands = (cat.Stages || []).filter(function (st) { return self.matchesStage(st.Ccd, st.Scd) && (st.Events || []).some(function (e) { return esdTs(e.Esd) >= start; }); });
+    return Promise.all(cands.map(function (c) {
+      return getJSON(BASE + "/stage/soccer/" + self.country + "/" + c.Scd + "/0?MD=1").then(function (d) { return (d.Stages || [c])[0]; }, function () { return c; });
+    }));
+  }).then(function (stages) {
+    var groups = {}, tables = [];
+    stages.forEach(function (st) {
+      var evs = (st.Events || []).map(function (e) { return parseEvent(e, self.ut); }).filter(function (e) { return e.ts >= start; });
+      if (!evs.length) return;
+      var raw = String(st.Snm || "").replace(/;/g, ":"), name = raw.split(":").pop().trim() || raw;
+      if (/^group/i.test(name)) { parseTable(st).forEach(function (tb) { tables.push(["Gruppe " + name.split(" ").pop(), tb[1]]); }); name = "Group"; }
+      var nums = {}; evs.forEach(function (e) { if (e.round !== null) nums[e.round] = 1; });
+      evs.forEach(function (e) {
+        var k = name;
+        if (/^qualification/i.test(name) && Object.keys(nums).length > 1 && e.round !== null) k = name + "|" + e.round;
+        (groups[k] = groups[k] || []).push(e);
+      });
+    });
+    var order = Object.keys(groups).sort(function (a, b) {
+      return Math.min.apply(null, groups[a].map(function (e) { return e.ts; })) - Math.min.apply(null, groups[b].map(function (e) { return e.ts; }));
+    });
+    var all = []; self.rnames = {};
+    order.forEach(function (k, i) { self.rnames[i + 1] = k; groups[k].forEach(function (e) { e.round = i + 1; all.push(e); }); });
+    self.setEvents(all, true);
+    self.tables = tables; self.tLoad = Date.now() / 1000; self.error = null;
+  });
+};
+League.prototype.setEvents = function (evs, noInfer) {
   var self = this;
     evs.sort(function (x, y) { return x.ts - y.ts; });
-    inferRounds(evs);
+    if (!noInfer) inferRounds(evs);
     self.allEvents = evs;
     var rounds = []; evs.forEach(function (e) { if (e.round !== null && rounds.indexOf(e.round) < 0) rounds.push(e.round); });
     rounds.sort(function (x, y) { return x - y; });
@@ -286,16 +357,96 @@ STORE.view = function (p) { var v = this.allViews(); for (var i = 0; i < v.lengt
 STORE.leagueByPage = function (p) { var v = this.view(p); return v ? v[0] : null; };
 STORE.liveCount = function (lg) { var n = 0; for (var k in this.live) if (!lg || this.live[k].ut === lg.ut) n++; return n; };
 STORE.liveCountView = function (lg) { return this.liveCount(lg); };
+STORE.leagueOfStage = function (ccd, scd) {
+  var lg = this.byUt[ccd + "/" + scd]; if (lg) return lg;
+  for (var i = 0; i < this.leagues.length; i++) if (this.leagues[i].matchesStage(ccd, scd)) return this.leagues[i];
+  return null;
+};
 STORE.fetchLive = function () {
   return getJSON(BASE + "/live/soccer/0?MD=1").then(function (d) {
     var out = {};
     (d.Stages || []).forEach(function (st) {
-      var key = st.Ccd + "/" + st.Scd; if (!STORE.byUt[key]) return;
-      (st.Events || []).forEach(function (e) { var pe = parseEvent(e, key); if (pe.state === "in" || pe.state === "ht") out[pe.id] = pe; });
+      var lg = STORE.leagueOfStage(st.Ccd, st.Scd); if (!lg) return;
+      (st.Events || []).forEach(function (e) { var pe = parseEvent(e, lg.ut); if (pe.state === "in" || pe.state === "ht") out[pe.id] = pe; });
     });
     return out;
   });
 };
+STORE.days = {};
+STORE.fetchDay = function (key) {
+  return getJSON(BASE + "/date/soccer/" + key + "/0?MD=1").then(function (d) {
+    var by = {};
+    (d.Stages || []).forEach(function (st) {
+      var lg = STORE.leagueOfStage(st.Ccd, st.Scd); if (!lg) return;
+      (st.Events || []).forEach(function (e) { (by[lg.page] = by[lg.page] || []).push(parseEvent(e, lg.ut)); });
+    });
+    var t0 = new Date(+key.slice(0, 4), +key.slice(4, 6) - 1, +key.slice(6, 8)).getTime() / 1000;
+    STORE.leagues.forEach(function (lg) {
+      if (lg.ccd === "fupa" && lg.allEvents.length) { var ev = lg.allEvents.filter(function (e) { return e.ts >= t0 && e.ts < t0 + 86400; }); if (ev.length) by[lg.page] = ev; }
+    });
+    var out = [];
+    STORE.leagues.forEach(function (lg) { if (by[lg.page]) out.push([lg, by[lg.page].sort(function (a, b) { return a.ts - b.ts || (a.h < b.h ? -1 : 1); })]); });
+    STORE.days[key] = {t: Date.now() / 1000, list: out};
+  });
+};
+/* Spieldetails: Tore und Platzverweise */
+var INC_TYPES = {36: "goal", 37: "pen", 39: "og", 44: "yr", 45: "red"};
+var DETAILS = {cache: {}, loading: {}};
+function parseIncidents(d) {
+  var out = [], incs = (d || {}).Incs || {};
+  Object.keys(incs).sort(function (a, b) { return (+a) - (+b); }).forEach(function (per) {
+    (incs[per] || []).forEach(function (it) {
+      [it].concat(it.Incs || []).forEach(function (x) {
+        var typ = INC_TYPES[x.IT]; if (!typ) return;
+        var mn = toInt(x.Min) || 0, ex = toInt(x.MinEx) || 0;
+        out.push({side: toInt(x.Nm) || 1, min: ex ? mn + "+" + ex : String(mn), sort: mn * 100 + ex, type: typ, name: x.Ln || x.Snm || x.Pn || "?"});
+      });
+    });
+  });
+  return out.sort(function (a, b) { return a.sort - b.sort; });
+}
+function detailsNeeded(e) {
+  if (e.state === "pre" || String(e.id).indexOf("fupa") === 0 || DETAILS.loading[e.id]) return false;
+  var c = DETAILS.cache[e.id]; if (!c) return true; if (c.final) return false;
+  return Date.now() / 1000 - c.t > +cfg("refresh");
+}
+function loadDetails(e) {
+  DETAILS.loading[e.id] = true;
+  return getJSON(BASE + "/incidents/soccer/" + e.id + "?locale=en").then(function (d) {
+    delete DETAILS.loading[e.id]; DETAILS.cache[e.id] = {t: Date.now() / 1000, list: parseIncidents(d), final: e.state === "post"};
+  }, function () { delete DETAILS.loading[e.id]; DETAILS.cache[e.id] = {t: Date.now() / 1000, list: [], final: false}; });
+}
+/* Ranglisten */
+function uefaSeasonYear() { var d = new Date(); return d.getMonth() >= 6 ? d.getFullYear() + 1 : d.getFullYear(); }
+var RANKINGS = [{page: 480, kind: "fifa", rows: [], date: "", tLoad: 0, loading: false, error: null},
+  {page: 482, kind: "uefa", rows: [], date: "", tLoad: 0, loading: false, error: null},
+  {page: 484, kind: "club", rows: [], date: "", tLoad: 0, loading: false, error: null}];
+function rankingByPage(p) { for (var i = 0; i < RANKINGS.length; i++) if (RANKINGS[i].page === p) return RANKINGS[i]; return null; }
+function loadRanking(rk) {
+  if (rk.kind === "fifa") {
+    return httpGet("https://inside.fifa.com/fifa-world-ranking/men").then(function (html) {
+      var m = /"id":"(FRS_Male_Football_\d+)"/.exec(html); if (!m) throw new Error("FIFA-Datum nicht gefunden");
+      var md = /"lastUpdateDate":"(\d{4})-(\d\d)-(\d\d)/.exec(html); rk.date = md ? md[3] + "." + md[2] + "." + md[1] : "";
+      return getJSON("https://api.fifa.com/api/v3/fifarankings/rankings/rankingsbyschedule?rankingScheduleId=" + m[1] + "&language=en");
+    }).then(function (d) {
+      rk.rows = (d.Results || []).map(function (r) {
+        return {pos: r.Rank || 0, prev: r.PrevRank || 0, name: ((r.TeamName || [{}])[0] || {}).Description || "?", code: r.IdCountry || "", pts: +r.TotalPoints || 0};
+      }).sort(function (a, b) { return a.pos - b.pos; });
+      rk.tLoad = Date.now() / 1000; rk.error = null;
+    });
+  }
+  var typ = rk.kind === "uefa" ? "MEN_ASSOCIATION" : "MEN_CLUB", sy = uefaSeasonYear();
+  return getJSON("https://comp.uefa.com/v2/coefficients?coefficientRange=OVERALL&coefficientType=" + typ + "&language=EN&page=1&pagesize=" + (rk.kind === "uefa" ? 60 : 80) + "&seasonYear=" + sy).then(function (d) {
+    var data = d.data || {}, lu = data.lastUpdateDate || "";
+    rk.date = lu.length >= 10 ? lu.slice(8, 10) + "." + lu.slice(5, 7) + "." + lu.slice(0, 4) : "";
+    rk.rows = (data.members || []).map(function (m) {
+      var mem = m.member || {}, ov = m.overallRanking || {}, cur = (m.seasonRankings || []).filter(function (x) { return x.seasonYear === sy; })[0];
+      return {pos: ov.position || 0, prev: 0, name: fixName((rk.kind === "club" ? mem.displayOfficialName : mem.displayName) || mem.countryName || "?"), code: mem.countryCode || "",
+        pts: +(ov.totalValue || ov.totalPoints || 0), season: cur ? +(cur.totalValue || cur.totalPoints || 0) : null};
+    }).sort(function (a, b) { return a.pos - b.pos; });
+    rk.tLoad = Date.now() / 1000; rk.error = null;
+  });
+}
 STORE.applyLive = function (nw) {
   var now = Date.now() / 1000, self = this, k;
   for (k in nw) {
@@ -380,7 +531,9 @@ var PAL_MOD = {w: "#eef2f7", y: "#ffd54a", c: "#7cc8ff", g: "#3ddc84", r: "#ff5a
   bg: "#0f151d", hdr: "#0a0f15", card: "#1b2533", zebra1: "#141c26", zebra2: "#111821"};
 var COL = PAL_TT;
 var PAGE_BG = {black: "#000000", navy: "#06103a"};
-var COUNTRY_BG = {de: ["r", "w"], tr: ["g", "k"], eu: ["y", "k"]};
+var COUNTRY_BG = {de: ["r", "w"], tr: ["g", "k"], eu: ["y", "k"], nat: ["c", "k"]};
+var IDX_ROWS = 19;
+function isFavFirst(name) { return isFav(name) && !/\b(II|U ?2\d|U ?19|U ?17)\b/.test(name || ""); }
 function modern() { return cfg("style") === "modern"; }
 function seg(col, width, text, fg, bg, al, blink) { return [col, width, text, fg || "w", bg || null, al || "l", !!blink]; }
 function fit(t, w, short) { t = t || ""; if (t.length <= w) return t; if (short && short.length <= w) return short; return t.slice(0, w); }
@@ -389,7 +542,7 @@ function isFav(name) { var f = cfg("fav"); return !!f && (name || "").toLowerCas
 function trUpper(s) { return s.replace(/i/g, "İ").replace(/ı/g, "I").toUpperCase(); }
 function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
 
-var S = {page: 100, sub: 0, entry: "", entryAt: 0, msg: "", msgUntil: 0, idx: [0, 1], setSel: 0, newsSel: 0, newsOpen: null, md: null,
+var S = {page: 100, sub: 0, entry: "", entryAt: 0, msg: "", msgUntil: 0, idx: [0, 1], setSel: 0, newsSel: 0, newsOpen: null, md: null, det: false, dayOff: 0,
   blinkOn: true, lastRot: Date.now(), openedAt: Date.now() / 1000};
 var G = {rowH: 20, fs: 16, cw: 9.6, pw: 800, cols: 80};
 var scr = document.getElementById("scr"), rateEl = document.getElementById("rate");
@@ -402,19 +555,20 @@ function layout() {
   G.pw = dw - 2 * mx; G.cols = Math.floor(G.pw / G.cw);
   scr.style.left = mx + "px"; scr.style.top = my + "px"; scr.style.width = G.pw + "px"; scr.style.height = (G.rowH * 24) + "px";
   rowEls.forEach(function (el, i) { el.style.top = (i * G.rowH) + "px"; el.style.height = G.rowH + "px"; });
-  rateEl.style.left = (mx + G.cw) + "px"; rateEl.style.top = (my + G.rowH * 19) + "px";
+  rateEl.style.left = (mx + G.cw) + "px"; rateEl.style.top = (my + G.rowH * 20) + "px";
   rateEl.style.width = Math.floor(G.pw * 0.47) + "px"; rateEl.style.height = (G.rowH * 2) + "px";
 }
 window.addEventListener("resize", function () { layout(); draw(); });
 
 function pageType(p) {
   if (p === 100) return "idx"; if (p === 190) return "help"; if (p === 500) return "live"; if (p === 900) return "set";
+  if (p === 110) return "fav"; if (p === 510) return "day"; if (rankingByPage(p)) return "rank";
   if (feedByPage(p)) return "news";
   var v = STORE.view(p); return v ? v[2] : null;
 }
 function allPages() {
-  var pages = [100, 190]; STORE.allViews().forEach(function (v) { pages.push(v[1], v[1] + 1); });
-  return pages.concat([500]).concat(FEEDS.map(function (f) { return f.page; })).concat([900]);
+  var pages = [100, 110, 190]; STORE.allViews().forEach(function (v) { pages.push(v[1], v[1] + 1); });
+  return pages.concat([500, 510]).concat(RANKINGS.map(function (r) { return r.page; })).concat(FEEDS.map(function (f) { return f.page; })).concat([900]).sort(function (a, b) { return a - b; });
 }
 function up(s, country) {
   if (country === "tr" || cfg("lang") === "tr") { var u = trUpper(s); if (cfg("lang") !== "tr") u = u.replace(/LİGA/g, "LIGA"); return u; }
@@ -436,6 +590,29 @@ function needRound(lg, n) {
   if (lg.eventsOfRound(n) !== null || lg.rloading[n] || !lg.season) return;
   lg.rloading[n] = true;
   lg.loadRound(n).then(function () { delete lg.rloading[n]; draw(); }, function () { delete lg.rloading[n]; lg.rcache[n] = []; draw(); });
+}
+function favLeagues() { return (FAV_LEAGUES[cfg("fav")] || []).map(function (p) { return STORE.leagueByPage(p); }).filter(function (l) { return l; }); }
+function needDetails(lg) {
+  var rnd = lg.round ? shownRound(lg) : null, evs = rnd ? lg.eventsOfRound(rnd) : lg.events, busy = Object.keys(DETAILS.loading).length;
+  (evs || []).forEach(function (e) { if (busy < 4 && detailsNeeded(e)) { busy++; loadDetails(e).then(draw); } });
+}
+function dayKey() { var d = new Date(Date.now() + S.dayOff * 86400000); return d.getFullYear() + two(d.getMonth() + 1) + two(d.getDate()); }
+function needDay() {
+  var key = dayKey(), d = STORE.days[key], now = Date.now() / 1000;
+  if (d && d.loading) return;
+  if (d && d.list) { var live = d.list.some(function (x) { return x[1].some(function (e) { return e.state === "in" || e.state === "ht"; }); }); if (now - d.t < (live ? +cfg("refresh") : 300)) return; }
+  if (d && d.error && now - d.t < 30) return;
+  STORE.days[key] = STORE.days[key] || {t: 0}; STORE.days[key].loading = true;
+  STORE.fetchDay(key).then(function () { STORE.days[key].loading = false; draw(); },
+    function (e) { var x = STORE.days[key]; x.loading = false; x.t = Date.now() / 1000; x.error = niceError(e); draw(); });
+}
+function needRank(rk) {
+  if (!rk || rk.loading) return;
+  var now = Date.now() / 1000;
+  if (rk.tLoad && now - rk.tLoad < 6 * 3600 && !rk.error) return;
+  if (rk.error && now - rk.tLoad < 60) return;
+  rk.loading = true;
+  loadRanking(rk).then(function () { rk.loading = false; draw(); }, function (e) { rk.loading = false; rk.error = niceError(e); rk.tLoad = Date.now() / 1000; draw(); });
 }
 function needFeed(f) {
   if (f.loading || (f.tLoad && Date.now() / 1000 - f.tLoad < 600)) return;
@@ -459,10 +636,16 @@ function go(p) {
   var a = STORE.leagueByPage(S.page), b = STORE.leagueByPage(p);
   if (!a || a !== b) S.md = null;
   var old = S.page;
+  if (p === 510 && old !== 510) S.dayOff = 0;
+  S.det = false;
   S.page = p; S.sub = 0; S.lastRot = Date.now(); S.newsSel = 0; S.newsOpen = null;
   var f = feedByPage(p); if (f) needFeed(f);
   if (p === 100) idxMark(old);
   var lg = STORE.leagueByPage(p); if (lg) needLeague(lg);
+  var t = pageType(p);
+  if (t === "fav") favLeagues().forEach(needLeague);
+  else if (t === "day") needDay();
+  else if (t === "rank") needRank(rankingByPage(p));
 }
 function shownRound(lg) {
   if (S.md) return S.md;
@@ -493,19 +676,25 @@ function key(k) {
     else if (t === "set") changeSetting(dd);
     else if (t === "res" || t === "tab") {
       var views = STORE.allViews(), base = S.page - (t === "tab" ? 1 : 0), bases = views.map(function (v) { return v[1]; });
-      var j = Math.max(0, bases.indexOf(base)); go(bases[(j + dd + bases.length) % bases.length] + (t === "tab" ? 1 : 0));
-    } else if (t === "live" || t === "help") { var n = subpages().length; S.sub = (S.sub + dd + n) % Math.max(1, n); }
+      var j = Math.max(0, bases.indexOf(base)), det = S.det; go(bases[(j + dd + bases.length) % bases.length] + (t === "tab" ? 1 : 0));
+      var nl = STORE.leagueByPage(S.page); S.det = det && t === "res" && nl && nl.ccd !== "fupa";
+    } else if (t === "day") { S.dayOff = Math.max(-7, Math.min(7, S.dayOff + dd)); S.sub = 0; needDay(); }
+    else if (t === "rank") { var rp = RANKINGS.map(function (r) { return r.page; }); go(rp[(rp.indexOf(S.page) + dd + rp.length) % rp.length]); }
+    else if (t === "live" || t === "help" || t === "fav") { var n = subpages().length; S.sub = (S.sub + dd + n) % Math.max(1, n); }
   } else if (k === "up" || k === "down") {
     var d2 = k === "down" ? 1 : -1;
     if (t === "idx") moveIdx(0, d2);
     else if (t === "set") S.setSel = (S.setSel + d2 + SETTINGS.length) % SETTINGS.length;
-    else if (t === "res" && STORE.leagueByPage(S.page).round) {
+    else if (t === "res" && STORE.leagueByPage(S.page).round && !S.det) {
       var lg = STORE.leagueByPage(S.page), nr = shownRound(lg) + (d2 > 0 ? -1 : 1), top = lg.maxRound || (lg.round + 40);
       if (nr >= 1 && nr <= top) { S.md = nr; S.sub = 0; needRound(lg, nr); } else message(T("noMore"), 1.5);
     } else { var ns = subpages().length; S.sub = (S.sub + d2 + ns) % Math.max(1, ns); S.lastRot = Date.now(); }
   } else if (k === "ok") {
     if (t === "idx") { var it = idxCols()[S.idx[0]][S.idx[1]]; if (it && it.page) go(it.page); }
-    else if (t === "res") { go(S.page + 1); }
+    else if (t === "res") {
+      var lr = STORE.leagueByPage(S.page);
+      if (!S.det && lr.ccd !== "fupa") { S.det = true; S.sub = 0; needDetails(lr); } else go(S.page + 1);
+    }
     else if (t === "tab") { go(S.page - 1); }
     else if (t === "set") changeSetting(1);
   }
@@ -550,9 +739,18 @@ function idxCols() {
     });
     return out;
   }
-  var left = [{hdr: T("cDE"), bg: "r", fg: "w"}].concat(views("de")).concat([null, {page: 500, lbl: T("allLive"), live: true}, {page: 900, lbl: T("settings")}, {page: 190, lbl: T("help")}]);
+  var fav = cfg("fav");
+  var left = [{hdr: T("cDE"), bg: "r", fg: "w"}].concat(views("de")).concat([null, {page: 110, lbl: T("fav") + (fav ? " · " + fav : "")}, {page: 510, lbl: T("today")},
+    {page: 500, lbl: T("allLive"), live: true}, {page: 900, lbl: T("settings")}]);
   var right = [{hdr: T("cTR"), bg: "g", fg: "k"}].concat(views("tr")).concat([null, {hdr: T("cEU"), bg: "y", fg: "k"}]).concat(views("eu"))
     .concat([null, {hdr: T("cNEWS"), bg: "m", fg: "k"}, {page: 600, lbl: "Haberler · " + FEEDS.slice(0, 3).map(function (f) { return f.name; }).join(", ") + " …"}]);
+  while (left.length < IDX_ROWS) left.push(null);
+  while (right.length < IDX_ROWS) right.push(null);
+  left = left.concat([{hdr: T("cNAT"), bg: "c", fg: "k"}]).concat(views("nat")).concat([null, {hdr: T("cRANK"), bg: "b", fg: "w"},
+    {page: 480, lbl: T("rkFifa")}, {page: 482, lbl: T("rkUefa")}, {page: 484, lbl: T("rkClub")}]);
+  right = right.concat([{hdr: T("cMORE"), bg: "w", fg: "k"}, {page: 190, lbl: T("help")}]);
+  while (left.length < right.length) left.push(null);
+  while (right.length < left.length) right.push(null);
   return [left, right];
 }
 function moveIdx(dc, dr) {
@@ -577,11 +775,11 @@ function statusSegs(e) {
 function resRow(e) {
   var C = G.cols, W = Math.floor((C - 17) / 2), fresh = Date.now() / 1000 - (e.goal_at || 0) < 30;
   var s = statusSegs(e);
-  s.push(seg(7, W, fit(e.h, W, e.hsn), fresh && e.goal_by === "h" ? "y" : "w", null, "r"));
+  s.push(seg(7, W, fit(dn(e.h), W, e.hsn), fresh && e.goal_by === "h" ? "y" : "w", null, "r"));
   if (e.state === "pre" || e.hs === null) s.push(seg(8 + W, 5, "-:-", "d", null, "c"));
   else if (fresh) s.push(seg(8 + W, 5, e.hs + ":" + e.as, "k", "y", "c", true));
   else s.push(seg(8 + W, 5, e.hs + ":" + e.as, e.state === "post" ? "w" : "y", null, "c"));
-  s.push(seg(14 + W, W, fit(e.a, W, e.asn), fresh && e.goal_by === "a" ? "y" : "w"));
+  s.push(seg(14 + W, W, fit(dn(e.a), W, e.asn), fresh && e.goal_by === "a" ? "y" : "w"));
   if (e.state === "in" || e.state === "ht") s.push(seg(15 + 2 * W, 2, "●", "g", null, "l", true));
   return [(isFav(e.h) || isFav(e.a)) ? COL.fav : null, s];
 }
@@ -624,7 +822,7 @@ function tableLines(lg, rows0, gi) {
     var rank = changed ? i + 1 : r.pos, trend = changed ? r.pos - rank : 0, z = r.zone;
     var s = [seg(0, 3, rank + ".", z ? "k" : "w", z, "c")];
     if (trend > 0) s.push(seg(3, 1, "▲", "g")); else if (trend < 0) s.push(seg(3, 1, "▼", "r"));
-    var name = fit(r.tm, N - (r.live ? 2 : 0), r.short);
+    var name = fit(dn(r.tm), N - (r.live ? 2 : 0), r.short);
     s.push(seg(5, N, name, "w"));
     if (r.live) s.push(seg(5 + name.length + 1, 1, "•", "g", null, "l", true));
     var gd = r.gf - r.ga;
@@ -654,7 +852,8 @@ function subpages() {
   if (t === "idx") {
     var cols = idxCols(), L = cols[0], R = cols[1], half = Math.floor(C / 2), mod = modern();
     lines = [];
-    for (var i = 0; i < Math.max(L.length, R.length); i++) {
+    var win = Math.floor(S.idx[1] / IDX_ROWS), nwin = Math.ceil(Math.max(L.length, R.length) / IDX_ROWS);
+    for (var i = win * IDX_ROWS; i < Math.min(Math.max(L.length, R.length), (win + 1) * IDX_ROWS); i++) {
       var s = [];
       [L, R].forEach(function (col, ci) {
         var it = col[i], base = ci * half; if (!it) return;
@@ -671,9 +870,10 @@ function subpages() {
       });
       lines.push([null, s]);
     }
-    while (lines.length < 19) lines.push(blank());
+    while (lines.length < IDX_ROWS) lines.push(blank());
+    if (win === 0 && nwin > 1) lines[IDX_ROWS - 1] = [null, lines[IDX_ROWS - 1][1].concat([seg(half, half - 1, T("more"), "c")])];
     lines.push(text(T("openHint"), "c"));
-    subs = [{ban: [up(T("overview")), "SkorText " + VERSION], bg: ["b", "w"], head: infoHead("LIVESCORE"), lines: lines}];
+    subs = [{ban: [up(T("overview")), "SkorText " + VERSION + (nwin > 1 ? "  " + (win + 1) + "/" + nwin : "")], bg: ["b", "w"], head: infoHead("LIVESCORE"), lines: lines}];
   } else if (t === "res" || t === "tab") {
     var v = STORE.view(S.page), lg = v[0], gi = v[1], bgc = COUNTRY_BG[lg.c], title = up(lg.name(lang), lg.c), stl = statusLines(lg);
     var parts;
@@ -691,7 +891,14 @@ function subpages() {
           if (evs === null) { needRound(lg, rnd); lines = [blank(), text(T("loading"), "y")]; }
           else { lines = resultLines(evs.filter(function (e) { return match(e.group); })); if (!lines.length) lines = [blank(), text(T("noGames"), "c")]; }
         }
-        var hint = rnd ? fmt(T("md"), rnd) + (rnd === lg.round ? "  " + T("mdNow") : "") + "   " + (TOUCH ? T("mdArrows") : "▲▼") + " " + T("mdBrowse") + " · " + T("resHint") : T("resHint");
+        var lbl = rnd ? (lg.roundLabel(rnd, lang) || fmt(T("md"), rnd)) : "";
+        if (S.det && !stl) {
+          var devs = (rnd ? lg.eventsOfRound(rnd) : lg.events) || [];
+          var dh = infoHead(lbl + "   " + T("detHint"));
+          chunkBlocks(detBlocks(devs.filter(function (e) { return match(e.group); }))).forEach(function (ch) { subs.push({ban: [gt, up(T("scorers"))], bg: bgc, head: dh, lines: ch}); });
+          continue;
+        }
+        var hint = rnd ? lbl + (rnd === lg.round ? "  " + T("mdNow") : "") + "   " + (TOUCH ? T("mdArrows") : "▲▼") + " " + T("mdBrowse") + " · " + T("resHint") : T("resHint");
         chunk(lines).forEach(function (ch) { subs.push({ban: [gt, up(T("results"))], bg: bgc, head: infoHead(hint), lines: ch}); });
       } else {
         if (stl) lines = stl;
@@ -720,8 +927,11 @@ function subpages() {
     lines = [blank()];
     T("helpRows").forEach(function (r) { lines.push([null, [seg(1, 14, r[0], "y"), seg(16, C - 16, r[1])]]); });
     lines.push(blank()); lines.push(text("SkorText TV " + VERSION + " · " + T("source"), "d"));
-    subs = [{ban: [up(T("help")), "SkorText"], bg: ["b", "w"], head: blank(), lines: lines}];
-  } else if (t === "set") {
+    subs = chunk(lines).map(function (ch) { return {ban: [up(T("help")), "SkorText"], bg: ["b", "w"], head: blank(), lines: ch}; });
+  } else if (t === "fav") subs = favSubpages();
+  else if (t === "day") subs = daySubpages();
+  else if (t === "rank") subs = rankSubpages();
+  else if (t === "set") {
     lines = [blank()]; var half2 = Math.floor(C / 2);
     SETTINGS.forEach(function (st, i) {
       var sel = i === S.setSel, cur = st[2].filter(function (o) { return o[0] === cfg(st[0]); })[0] || st[2][0], val = lang === "tr" ? cur[2] : cur[1];
@@ -733,6 +943,130 @@ function subpages() {
     subs = [{ban: [up(T("settings")), "SkorText"], bg: ["b", "w"], head: text("MENU", "d"), lines: lines}];
   } else if (t === "news") subs = newsSubpages();
   return subs.length ? subs : [{ban: ["", ""], bg: ["b", "w"], head: blank(), lines: []}];
+}
+function detItems(inc, side) {
+  var out = [];
+  inc.forEach(function (x) {
+    if (x.side !== side) return;
+    var m = x.min + ".";
+    if (x.type === "goal" || x.type === "pen" || x.type === "og") out.push([m + " " + x.name + (x.type === "pen" ? " (" + T("pen") + ")" : (x.type === "og" ? " (" + T("og") + ")" : "")), "c"]);
+    else if (x.type === "red") out.push(["■ " + m + " " + x.name, "r"]);
+    else if (x.type === "yr") out.push(["■ " + m + " " + x.name, "y"]);
+  });
+  return out;
+}
+function packItems(items, width) {
+  var lines = [], cur = [], ln = 0;
+  items.forEach(function (it) {
+    var txt = fit(it[0], width), add = txt.length + (cur.length ? 2 : 0);
+    if (cur.length && ln + add > width) { lines.push(cur); cur = []; ln = 0; add = txt.length; }
+    cur.push([txt, it[1]]); ln += add;
+  });
+  if (cur.length) lines.push(cur);
+  return lines;
+}
+function detBlocks(events) {
+  var C = G.cols, W = Math.floor((C - 17) / 2), blocks = [];
+  events.slice().sort(function (a, b) {
+    var la = (a.state === "in" || a.state === "ht") ? 0 : 1, lb = (b.state === "in" || b.state === "ht") ? 0 : 1;
+    return la - lb || a.ts - b.ts || (a.h < b.h ? -1 : 1);
+  }).forEach(function (e) {
+    var bl = [resRow(e)];
+    if (e.state !== "pre") {
+      var c = DETAILS.cache[e.id];
+      if (!c) bl.push([null, [seg(7, W, "…", "d", null, "r")]]);
+      else {
+        var hl = packItems(detItems(c.list, 1), W), al = packItems(detItems(c.list, 2), W);
+        for (var i = 0; i < Math.max(hl.length, al.length); i++) {
+          var s = [];
+          if (i < hl.length) {
+            var tot = hl[i].reduce(function (a, x) { return a + x[0].length; }, 0) + 2 * (hl[i].length - 1), x0 = 7 + W - tot;
+            hl[i].forEach(function (x, j) { var last = j === hl[i].length - 1; s.push(seg(x0, x[0].length + (last ? 0 : 1), x[0] + (last ? "" : ","), x[1])); x0 += x[0].length + 2; });
+          }
+          if (i < al.length) {
+            var x1 = 14 + W;
+            al[i].forEach(function (x, j) { var last = j === al[i].length - 1; s.push(seg(x1, x[0].length + 1, x[0] + (last ? "" : ","), x[1])); x1 += x[0].length + 2; });
+          }
+          bl.push([null, s]);
+        }
+      }
+    }
+    blocks.push(bl);
+  });
+  return blocks.length ? blocks : [[blank(), text(T("noGames"), "c")]];
+}
+function chunkBlocks(blocks, n) {
+  n = n || 20; var pages = [], cur = [];
+  blocks.forEach(function (bl) { if (cur.length && cur.length + bl.length > n) { pages.push(cur); cur = []; } cur = cur.concat(bl.slice(0, n)); });
+  if (cur.length) pages.push(cur);
+  return pages.length ? pages : [[]];
+}
+function favRow(e, lg) {
+  var C = G.cols, W = Math.floor((C - 22) / 2), d = new Date(e.ts * 1000), live = e.state === "in" || e.state === "ht";
+  var s = live ? statusSegs(e) : [seg(0, 6, two(d.getDate()) + "." + two(d.getMonth() + 1) + ".", "d")];
+  s.push(seg(7, W, fit(dn(e.h), W, e.hsn), isFav(e.h) ? "y" : "w", null, "r"));
+  if (e.state === "pre") s.push(seg(8 + W, 5, two(d.getHours()) + ":" + two(d.getMinutes()), "c", null, "c"));
+  else if (e.hs === null) s.push(seg(8 + W, 5, e.state === "pp" ? T("pp") : "-:-", e.state === "pp" ? "r" : "d", null, "c"));
+  else s.push(seg(8 + W, 5, e.hs + ":" + e.as, live ? "y" : "w", null, "c"));
+  s.push(seg(14 + W, W, fit(dn(e.a), W, e.asn), isFav(e.a) ? "y" : "w"));
+  s.push(seg(C - 4, 4, FAV_CODES[lg.page] || "", "d", null, "r"));
+  return [null, s];
+}
+function favSubpages() {
+  var C = G.cols, lang = cfg("lang"), fav = cfg("fav"), ban = [up(T("fav")) + (fav ? " · " + up(fav) : ""), ""], head = infoHead("");
+  if (!fav) return [{ban: ban, bg: ["m", "k"], head: head, lines: [blank(), text(T("noFav"), "y"), text(T("noFav2"), "c")]}];
+  var lgs = favLeagues(), lines = [], seen = {}, evs = [];
+  lgs.forEach(function (lg) {
+    lg.allEvents.forEach(function (e) { if (!seen[e.id] && (isFavFirst(e.h) || isFavFirst(e.a))) { seen[e.id] = 1; evs.push([e, lg]); } });
+    lg.tables.forEach(function (tb) {
+      tb[1].forEach(function (r) {
+        if (isFavFirst(r.tm)) lines.push([null, [seg(1, C - 30, fit(lg.name(lang) + (tb[0] ? " · " + tb[0] : ""), C - 31), "c"),
+          seg(C - 29, 29, T("place") + " " + r.pos + " · " + r.p + " " + T("sp") + " · " + r.pts + " " + T("pts"), "y", null, "r")]]);
+      });
+    });
+  });
+  if (!evs.length && lgs.some(function (lg) { return lg.loading || !lg.tLoad; })) return [{ban: ban, bg: ["m", "k"], head: head, lines: [blank(), text(T("loading"), "y")]}];
+  var now = Date.now() / 1000;
+  var live = evs.filter(function (x) { return x[0].state === "in" || x[0].state === "ht"; });
+  var past = evs.filter(function (x) { return (x[0].state === "post" || x[0].state === "pp") && x[0].ts <= now; }).sort(function (a, b) { return a[0].ts - b[0].ts; }).slice(-5);
+  var nxt = evs.filter(function (x) { return x[0].state === "pre" || (x[0].state === "pp" && x[0].ts > now); }).sort(function (a, b) { return a[0].ts - b[0].ts; }).slice(0, 5);
+  if (live.length) { lines.push(blank()); lines.push(text("● " + up(T("live")), "g")); live.forEach(function (x) { lines.push(favRow(x[0], x[1])); }); }
+  lines.push(blank()); lines.push(text(up(T("last")), "c"));
+  if (past.length) past.forEach(function (x, i) { lines.push(zebra(favRow(x[0], x[1]), i)); }); else lines.push(text("  –", "d"));
+  lines.push(blank()); lines.push(text(up(T("next")), "c"));
+  if (nxt.length) nxt.forEach(function (x, i) { lines.push(zebra(favRow(x[0], x[1]), i)); }); else lines.push(text("  –", "d"));
+  return chunk(lines).map(function (ch) { return {ban: ban, bg: ["m", "k"], head: head, lines: ch}; });
+}
+function daySubpages() {
+  var lang = cfg("lang"), key = dayKey(), t0 = Date.now() / 1000 + S.dayOff * 86400;
+  var nm = {"0": T("today"), "-1": T("yesterday"), "1": T("tomorrow")}[String(S.dayOff)];
+  var title = up(nm ? nm + " · " + dayLabel(t0) : dayLabel(t0)), d = STORE.days[key] || {}, head = infoHead(T("dayHint"));
+  if (!d.list) {
+    var l = d.error ? [blank(), text(T("noData"), "r"), text(T("noData2"), "c"), blank(), text(fit(d.error, G.cols), "d")] : [blank(), text(T("loading"), "y")];
+    return [{ban: [title, ""], bg: ["b", "w"], head: head, lines: l}];
+  }
+  var blocks = d.list.map(function (x) {
+    var lg = x[0], bl = [text((lg.tag ? lg.tag + " " : "") + lg.name(lang) + "   (" + lg.page + ")", "y")];
+    x[1].forEach(function (e, i) { bl.push(zebra(resRow(STORE.live[e.id] || e), i)); });
+    return bl;
+  });
+  if (!blocks.length) blocks = [[blank(), text(T("noMatches"), "c")]];
+  return chunkBlocks(blocks).map(function (ch) { return {ban: [title, ""], bg: ["b", "w"], head: head, lines: ch}; });
+}
+function rankSubpages() {
+  var C = G.cols, rk = rankingByPage(S.page), title = up({fifa: T("rkFifa"), uefa: T("rkUefa"), club: T("rkClub")}[rk.kind]);
+  var hd = [null, [seg(0, 4, T("pl"), "c", null, "r"), seg(6, C - 30, rk.kind === "club" ? T("club") : T("nation"), "c"),
+    seg(C - 23, 10, T("points"), "c", null, "r"), seg(C - 11, 10, rk.kind === "fifa" ? "+/-" : (rk.kind === "uefa" ? T("season") : T("nation")), "c", null, "r")]];
+  if (!rk.rows.length) return [{ban: [title, ""], bg: ["b", "w"], head: hd, lines: rk.error ? [blank(), text(T("noData"), "r"), text(fit(rk.error, C), "d")] : [blank(), text(T("loading"), "y")]}];
+  var lines = rk.rows.slice(0, rk.kind === "club" ? 80 : 60).map(function (r, i) {
+    var mine = rk.kind === "club" ? isFav(r.name) : (r.code === "GER" || r.code === "TUR");
+    var s = [seg(0, 4, r.pos + ".", "w", null, "r"), seg(6, C - 30, fit(dn(r.name), C - 31), "w"), seg(C - 23, 10, r.pts.toFixed(rk.kind === "fifa" ? 2 : 3), "y", null, "r")];
+    if (rk.kind === "fifa") { var dl = r.prev ? r.prev - r.pos : 0; s.push(seg(C - 11, 10, dl > 0 ? "▲" + dl : (dl < 0 ? "▼" + (-dl) : "="), dl > 0 ? "g" : (dl < 0 ? "r" : "d"), null, "r")); }
+    else if (rk.kind === "uefa") s.push(seg(C - 11, 10, r.season !== null ? r.season.toFixed(3) : "", "w", null, "r"));
+    else s.push(seg(C - 11, 10, r.code, (r.code === "GER" || r.code === "TUR") ? "y" : "w", null, "r"));
+    return zebra([mine ? COL.fav : null, s], i);
+  });
+  return chunk(lines).map(function (ch) { return {ban: [title, rk.date ? T("asOf") + " " + rk.date : ""], bg: ["b", "w"], head: hd, lines: ch}; });
 }
 function wrap(s, w) { var out = [], line = ""; (s || "").split(/\s+/).forEach(function (word) { if (!line) line = word; else if ((line + " " + word).length <= w) line += " " + word; else { out.push(line); line = word; } }); if (line) out.push(line); return out; }
 function newsSubpages() {
@@ -828,7 +1162,7 @@ function draw() {
     el.innerHTML = html;
   }
   // Wechselkurs auf der Uebersicht
-  if (S.page === 100 && !S.entry) {
+  if (S.page === 100 && !S.entry && S.idx[1] < IDX_ROWS) {
     rateEl.style.display = "flex"; rateEl.style.fontFamily = scr.style.fontFamily;
     rateEl.firstChild.style.fontSize = Math.floor(G.fs * 1.3) + "px"; rateEl.lastChild.style.fontSize = G.fs + "px";
     rateEl.firstChild.style.color = COL.y; rateEl.lastChild.style.color = COL.d;
@@ -847,10 +1181,14 @@ function tick() {
   var now = Date.now() / 1000;
   if (S.entry && Date.now() - S.entryAt > 4000) S.entry = "";
   if (!STORE.loadingLive && now - STORE.tLive > +cfg("refresh")) fetchLive();
-  var lg = STORE.leagueByPage(S.page); if (lg) needLeague(lg);
+  var lg = STORE.leagueByPage(S.page); if (lg) { needLeague(lg); if (S.det) needDetails(lg); }
+  var tt = pageType(S.page);
+  if (tt === "fav") favLeagues().forEach(needLeague);
+  else if (tt === "day") needDay();
+  else if (tt === "rank") needRank(rankingByPage(S.page));
   var f = feedByPage(S.page); if (f) needFeed(f);
   needRate();
-  if (cfg("rotate") === "10" && !f && pageType(S.page) !== "res" && Date.now() - S.lastRot > 10000) {
+  if (cfg("rotate") === "10" && !f && !(tt === "res" && !S.det) && Date.now() - S.lastRot > 10000) {
     S.lastRot = Date.now(); var n = subpages().length; if (n > 1) S.sub = (S.sub + 1) % n;
   }
   draw();
@@ -878,8 +1216,8 @@ function touchTap(x, y) {
     return;
   }
   if (t === "idx") {
-    var cols = idxCols(), ci = col < Math.floor(C / 2) ? 0 : 1, it = cols[ci][bi];
-    if (it && it.page) { S.idx = [ci, bi]; draw(); go(it.page); draw(); }
+    var cols = idxCols(), ci = col < Math.floor(C / 2) ? 0 : 1, ri = Math.floor(S.idx[1] / IDX_ROWS) * IDX_ROWS + bi, it = bi >= 0 && bi < IDX_ROWS ? cols[ci][ri] : null;
+    if (it && it.page) { S.idx = [ci, ri]; draw(); go(it.page); draw(); }
     return;
   }
   if (t === "set") {
@@ -907,7 +1245,14 @@ function touchSwipe(dx, dy) {
   if (Math.abs(dx) > Math.abs(dy)) { key(dx < 0 ? "right" : "left"); return; }
   // nach unten wischen = zurück (früherer Spieltag / vorige Unterseite), nach oben = weiter
   if (t === "res") key(dy > 0 ? "down" : "up");
-  else if (t === "idx" || t === "set") return;
+  else if (t === "idx") {
+    // Übersicht: nach oben wischen = Seite 2 (Länderspiele, Ranglisten), nach unten = zurück zu Seite 1
+    var cols = idxCols(), n = Math.max(cols[0].length, cols[1].length), win = Math.floor(S.idx[1] / IDX_ROWS), nw = Math.ceil(n / IDX_ROWS);
+    win = Math.max(0, Math.min(nw - 1, win + (dy < 0 ? 1 : -1)));
+    for (var r = win * IDX_ROWS; r < Math.min(n, (win + 1) * IDX_ROWS); r++) { var it = cols[0][r] || cols[1][r]; if (it && it.page) { S.idx = [cols[0][r] && cols[0][r].page ? 0 : 1, r]; break; } }
+    draw();
+  }
+  else if (t === "set") return;
   else key(dy > 0 ? "up" : "down");
 }
 (function () {
