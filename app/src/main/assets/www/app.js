@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "2.2";
+var VERSION = "2.3";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -585,15 +585,20 @@ function resRow(e) {
   if (e.state === "in" || e.state === "ht") s.push(seg(15 + 2 * W, 2, "●", "g", null, "l", true));
   return [(isFav(e.h) || isFav(e.a)) ? COL.fav : null, s];
 }
+function zebra(row, i) {
+  // Videotext: jede zweite Zeile türkis statt weiß – besser lesbar
+  if (modern() || i % 2 === 0) return row;
+  return [row[0], row[1].map(function (s) { var c = s.slice(); if (c[3] === "w") c[3] = "c"; return c; })];
+}
 function resultLines(events) {
-  var out = [], last = null;
+  var out = [], last = null, n = 0;
   events.slice().sort(function (a, b) {
     var la = (a.state === "in" || a.state === "ht") ? 0 : 1, lb = (b.state === "in" || b.state === "ht") ? 0 : 1;
     return la - lb || a.ts - b.ts || (a.h < b.h ? -1 : 1);
   }).forEach(function (e) {
     var live = e.state === "in" || e.state === "ht", dl = live ? "● " + up(T("live")) : dayLabel(e.ts);
     if (dl !== last) { out.push(text(dl, live ? "g" : "c")); last = dl; }
-    out.push(resRow(e));
+    out.push(zebra(resRow(e), n++));
   });
   return out;
 }
@@ -626,7 +631,7 @@ function tableLines(lg, rows0, gi) {
     s.push(seg(C - 34, 3, String(r.p), "w", null, "r"), seg(C - 30, 3, String(r.w), "w", null, "r"), seg(C - 26, 3, String(r.d), "w", null, "r"),
       seg(C - 22, 3, String(r.l), "w", null, "r"), seg(C - 18, 7, r.gf + ":" + r.ga, "w", null, "r"),
       seg(C - 10, 5, gd > 0 ? "+" + gd : String(gd), "w", null, "r"), seg(C - 4, 4, String(r.pts), "y", null, "r"));
-    return [isFav(r.tm) ? COL.fav : null, s];
+    return zebra([isFav(r.tm) ? COL.fav : null, s], i);
   });
 }
 function tableHead() {
@@ -706,7 +711,7 @@ function subpages() {
       var groups = []; evs.forEach(function (e) { if (groups.indexOf(e.group) < 0) groups.push(e.group); }); groups.sort();
       groups.forEach(function (g) {
         lines.push(text((lg.tag ? lg.tag + " " : "") + lg.name(lang) + (g ? " · " + g : "") + "   (" + lg.pageOfGroup(g) + ")", "y"));
-        evs.filter(function (e) { return e.group === g; }).sort(function (a, b) { return a.ts - b.ts; }).forEach(function (e) { lines.push(resRow(e)); });
+        evs.filter(function (e) { return e.group === g; }).sort(function (a, b) { return a.ts - b.ts; }).forEach(function (e, zi) { lines.push(zebra(resRow(e), zi)); });
       });
     });
     if (!lines.length) lines = STORE.liveError && !Object.keys(STORE.live).length ? [blank(), text(T("noData"), "r"), text(T("noData2"), "c")] : [blank(), text(T("noLive"), "c")];
