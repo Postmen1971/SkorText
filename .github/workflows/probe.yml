@@ -19,6 +19,11 @@ jobs:
       - name: Quellen testen
         run: |
           python - <<'PY'
+          import requests, json, os
+          H = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36", "Accept": "application/json, text/html, */*"}
+          OUT = []
+          def print_(*a): return ' '.join(str(x) for x in a)
+          os.makedirs("samples", exist_ok=True)
           import re, collections
           B = "https://prod-public-api.livescore.com/v1/api/app"
           def get(u):
