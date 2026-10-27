@@ -1,48 +1,20 @@
-LS stage/soccer/france/ligue-1/0? chrome [] 200 309240 nginx 
-LS stage/soccer/france/ligue-1/0? chrome ['Accept-Encoding'] 200 309240 nginx 
-LS stage/soccer/france/ligue-1/0? chrome ['Origin', 'Referer'] 200 309240 nginx 
-LS stage/soccer/france/ligue-1/0? android [] 200 309240 nginx 
-LS stage/soccer/france/ligue-1/0? android ['Accept-Encoding'] 200 309240 nginx 
-LS stage/soccer/france/ligue-1/0? android ['Origin', 'Referer'] 200 309240 nginx 
-LS stage/soccer/france/ligue-1/0? okhttp [] 200 309240 nginx 
-LS stage/soccer/france/ligue-1/0? okhttp ['Accept-Encoding'] 200 309240 nginx 
-LS stage/soccer/france/ligue-1/0? okhttp ['Origin', 'Referer'] 200 309240 nginx 
-LS stage/soccer/france/ligue-1/0? python [] 200 309240 nginx 
-LS stage/soccer/france/ligue-1/0? python ['Accept-Encoding'] 200 309240 nginx 
-LS stage/soccer/france/ligue-1/0? python ['Origin', 'Referer'] 200 309240 nginx 
-LS stage/soccer/france/ligue-1/0? none [] 200 309240 nginx 
-LS stage/soccer/france/ligue-1/0? none ['Accept-Encoding'] 200 309240 nginx 
-LS stage/soccer/france/ligue-1/0? none ['Origin', 'Referer'] 200 309240 nginx 
-LS live/soccer/0?MD=1 chrome [] 200 9223 nginx 
-LS live/soccer/0?MD=1 chrome ['Accept-Encoding'] 200 9325 nginx 
-LS live/soccer/0?MD=1 chrome ['Origin', 'Referer'] 200 9325 nginx 
-LS live/soccer/0?MD=1 android [] 200 9223 nginx 
-LS live/soccer/0?MD=1 android ['Accept-Encoding'] 200 9325 nginx 
-LS live/soccer/0?MD=1 android ['Origin', 'Referer'] 200 9325 nginx 
-LS live/soccer/0?MD=1 okhttp [] 200 9223 nginx 
-LS live/soccer/0?MD=1 okhttp ['Accept-Encoding'] 200 9325 nginx 
-LS live/soccer/0?MD=1 okhttp ['Origin', 'Referer'] 200 9325 nginx 
-LS live/soccer/0?MD=1 python [] 200 9223 nginx 
-LS live/soccer/0?MD=1 python ['Accept-Encoding'] 200 9325 nginx 
-LS live/soccer/0?MD=1 python ['Origin', 'Referer'] 200 9325 nginx 
-LS live/soccer/0?MD=1 none [] 200 9223 nginx 
-LS live/soccer/0?MD=1 none ['Accept-Encoding'] 200 9325 nginx 
-LS live/soccer/0?MD=1 none ['Origin', 'Referer'] 200 9325 nginx 
-LS stage/soccer/germany/bundeslig chrome [] 200 313424 nginx 
-LS stage/soccer/germany/bundeslig chrome ['Accept-Encoding'] 200 313424 nginx 
-LS stage/soccer/germany/bundeslig chrome ['Origin', 'Referer'] 200 313424 nginx 
-LS stage/soccer/germany/bundeslig android [] 200 313424 nginx 
-LS stage/soccer/germany/bundeslig android ['Accept-Encoding'] 200 313424 nginx 
-LS stage/soccer/germany/bundeslig android ['Origin', 'Referer'] 200 313424 nginx 
-LS stage/soccer/germany/bundeslig okhttp [] 200 313424 nginx 
-LS stage/soccer/germany/bundeslig okhttp ['Accept-Encoding'] 200 313424 nginx 
-LS stage/soccer/germany/bundeslig okhttp ['Origin', 'Referer'] 200 313424 nginx 
-LS stage/soccer/germany/bundeslig python [] 200 313424 nginx 
-LS stage/soccer/germany/bundeslig python ['Accept-Encoding'] 200 313424 nginx 
-LS stage/soccer/germany/bundeslig python ['Origin', 'Referer'] 200 313424 nginx 
-LS stage/soccer/germany/bundeslig none [] 200 313424 nginx 
-LS stage/soccer/germany/bundeslig none ['Accept-Encoding'] 200 313424 nginx 
-LS stage/soccer/germany/bundeslig none ['Origin', 'Referer'] 200 313424 nginx 
-ALT https://prod-cdn-public-api.livescore.com/v1/api/app/stage/soccer/france/ligue-1/0?MD=1 200 309240
-ALT https://prod-cdn-mev-api.livescore.com/v1/api/app/stage/soccer/france/ligue-1/0?MD=1 404 9
-ALT https://prod-public-api.livescore.com/v1/api/react/stage/soccer/france/ligue-1/0?MD=1 503 592
+ESPN ger.1 events 400 -1 55 | table 200 18
+ESPN ger.2 events 400 -1 55 | table 200 18
+ESPN ger.3 events 400 -1 55 | table 400 0
+ESPN ger.dfb_pokal events 400 -1 55 | table 200 0
+ESPN tur.1 events 400 -1 55 | table 200 18
+ESPN tur.2 events 400 -1 55 | table 200 0
+ESPN tur.cup events 400 -1 55 | table 400 0
+ESPN eng.1 events 400 -1 55 | table 200 20
+ESPN esp.1 events 400 -1 55 | table 200 20
+ESPN ita.1 events 400 -1 55 | table 200 20
+ESPN fra.1 events 400 -1 55 | table 200 18
+ESPN uefa.champions events 400 -1 55 | table 200 36
+ESPN uefa.europa events 400 -1 55 | table 200 36
+ESPN uefa.europa.conf events 400 -1 55 | table 200 36
+ESPN uefa.nations events 400 -1 55 | table 200 54
+ESPN fifa.worldq.uefa events 400 -1 55 | table 200 54
+ESPN uefa.euroq events 400 -1 55 | table 200 53
+ESPN fifa.friendly events 400 -1 55 | table 200 0
+ESPN ger.4.sw events 400 -1 55 | table 400 0
+ESPN ger.regionalliga events 400 -1 55 | table 400 0
