@@ -27,20 +27,19 @@ jobs:
           OUT = []
           def print_(*a): return ' '.join(str(x) for x in a)
           os.makedirs("samples", exist_ok=True)
-          import re, collections, time
-          def get(u):
+          import re, collections, time, sys
+          sys.path.insert(0, "repo0/enigma2/usr/lib/enigma2/python/Plugins/Extensions/SkorText")
+          import types; pk = types.ModuleType("sk"); pk.__path__ = ["repo0/enigma2/usr/lib/enigma2/python/Plugins/Extensions/SkorText"]; sys.modules["sk"] = pk
+          import importlib; news = importlib.import_module("sk.news")
+          for u in ["https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml", "https://www.tagesschau.de/index~rss2.xml",
+                    "https://www.tagesschau.de/inland/index~rss2.xml", "https://www.tagesschau.de/ausland/index~rss2.xml",
+                    "https://www.tagesschau.de/wirtschaft/index~rss2.xml", "https://www.sportschau.de/index~rss2.xml",
+                    "https://www.sportschau.de/fussball/index~rss2.xml", "https://newsfeed.kicker.de/news/aktuell", "https://newsfeed.kicker.de/news/fussball",
+                    "https://www.spiegel.de/schlagzeilen/index.rss", "https://www.zdf.de/rss/zdf/nachrichten"]:
               try:
-                  r = requests.get(u, headers=H, timeout=30); return r.status_code, r.text
-              except Exception as e: return 0, str(e)
-          LS = "https://prod-public-api.livescore.com/v1/api/app"
-          for path in ["holland/eredivisie", "netherlands/eredivisie", "portugal/primeira-liga", "belgium/belgian-pro-league-2025", "belgium/belgian-pro-league", "scotland/scotland-premiership",
-                       "austria/bundesliga", "switzerland/super-league", "greece/super-league", "england/championship", "spain/laliga-2", "italy/serie-b", "france/ligue-2", "denmark/superliga"]:
-              s, t = get(LS + "/stage/soccer/%s/0?MD=1" % path)
-              try:
-                  j = json.loads(t); st = (j.get("Stages") or [{}])[0]
-                  tb = (((st.get("LeagueTable") or {}).get("L") or [{}])[0].get("Tables") or [{}])[0].get("team") or []
-                  OUT.append(print_(path, s, st.get("Snm"), st.get("Cnm"), len(st.get("Events") or []), "Tabelle", len(tb)))
-              except Exception: OUT.append(print_(path, s, t[:80]))
+                  r = requests.get(u, headers=H, timeout=30); its = news.parse_feed(r.content)
+                  OUT.append(print_(r.status_code, u, len(its), [(i["title"][:50], len(i["desc"]), i["desc"][:90], time.strftime("%d.%m %H:%M", time.gmtime(i["ts"]))) for i in its[:2]]))
+              except Exception as e: OUT.append(print_("ERR", u, e))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
