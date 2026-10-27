@@ -1123,6 +1123,60 @@ class NatLeague(League):
 		t = NAT_TITLES[self.kind]
 		return (t[1] if lang == "tr" else t[0]) + u" · " + nat_stage_name(self.snm, lang)
 
+	def load(self):
+		if getattr(self, "source", "") == "uefa":
+			NAT.load_uefa()
+			return self
+		return League.load(self)
+
+
+# Ersatzquelle UEFA (match.uefa.com / standings.uefa.com), wenn LiveScore gesperrt ist
+UEFA_MATCH = "https://match.uefa.com/v5/matches"
+UEFA_STAND = "https://standings.uefa.com/v1/standings"
+UEFA_STATE = {"FINISHED": "post", "UPCOMING": "pre", "LIVE": "in", "POSTPONED": "pp", "CANCELLED": "pp", "ABANDONED": "pp"}
+
+
+def uefa_day(ts):
+	return time.strftime("%Y-%m-%d", time.gmtime(ts))
+
+
+def uefa_matches(cid, season, q):
+	return get_url_json("%s?competitionId=%s&seasonYear=%s&%s" % (UEFA_MATCH, cid, season, q), timeout=40) or []
+
+
+def uefa_stage_name(grp):
+	md = (grp or {}).get("metaData") or {}
+	gn = md.get("groupName") or u""
+	lg = (((grp or {}).get("league") or {}).get("metaData") or {}).get("leagueName") or u""
+	import re
+	m = re.match(r"(?i)^group ([a-d])(\d+)$", gn)
+	if lg and m:
+		return u"%s: Group %s" % (lg, m.group(2))
+	return (lg + u": " + gn) if lg else gn
+
+
+def parse_uefa_match(m, key):
+	st = m.get("status") or u""
+	state = UEFA_STATE.get(st, "pre")
+	ph = (m.get("phase") or u"").upper()
+	if state == "in" and "HALF_TIME" in ph:
+		state = "ht"
+	sc = ((m.get("score") or {}).get("total")) or {}
+	hs, as_ = sc.get("home"), sc.get("away")
+	if state == "pre":
+		hs = as_ = None
+	minute = u""
+	if state == "in":
+		mi = m.get("minute") or {}
+		minute = u"%s" % (mi.get("normal") or u"")
+	ht, at = m.get("homeTeam") or {}, m.get("awayTeam") or {}
+	md = m.get("matchday") or {}
+	return {"id": "uefa%s" % m.get("id"), "h": fix_name(ht.get("internationalName") or u"?"), "hs_name": u"",
+		"a": fix_name(at.get("internationalName") or u"?"), "as_name": u"", "hs": hs, "as": as_,
+		"state": state, "min": minute, "ts": espn_ts(((m.get("kickOffTime") or {}).get("dateTime")) or u""),
+		"round": to_int(md.get("sequenceNumber")), "group": u"", "ut": key,
+		"gid": u"%s" % ((m.get("group") or {}).get("id") or u"")}
+
 
 class NatComp(object):
 	def __init__(self):
@@ -1146,6 +1200,102 @@ class NatComp(object):
 		out.append(("wc", "world-cup-qualification"))
 		out.append(("nl", "uefa-nations-league"))
 		return out
+
+	def uefa_candidates(self):
+		y = time.localtime().tm_year
+		out = []
+		for yy in range(y, y + 6):
+			if yy % 4 == 0:
+				out.append(("euro", 3, yy))
+		for yy in range(y, y + 5):
+			if yy % 4 == 2:
+				out.append(("wc", 17, yy))
+		out.append(("nl", 2014, y + 1))
+		out.append(("nl", 2014, y))
+		return out
+
+	def discover_uefa(self):
+		"""Ersatz: aktiven Wettbewerb und Gruppen bei der UEFA suchen."""
+		now = time.time()
+		found = None
+		for kind, cid, season in self.uefa_candidates():
+			try:
+				near = uefa_matches(cid, season, "fromDate=%s&toDate=%s&limit=1&offset=0&order=ASC" % (uefa_day(now - 21 * 86400), uefa_day(now + 120 * 86400)))
+			except Exception as e:
+				log("UEFA %s/%s: %r" % (cid, season, e))
+				continue
+			grp = [m for m in near if (m.get("group") or {}).get("id")]
+			if grp:
+				found = (kind, cid, season)
+				break
+		if not found:
+			return False
+		kind, cid, season = found
+		st = get_url_json("%s?competitionId=%s&seasonYear=%s" % (UEFA_STAND, cid, season), timeout=40) or []
+		groups = []
+		for g in st:
+			grp = g.get("group") or {}
+			if not grp.get("id") or not g.get("items"):
+				continue
+			lg = NatLeague("uefa-%s" % cid, u"g%s" % grp.get("id"), uefa_stage_name(grp), kind)
+			lg.source = "uefa"
+			lg.gid = u"%s" % grp.get("id")
+			lg.order = (to_int((grp.get("league") or {}).get("order")) or 0, to_int(grp.get("order")) or 0)
+			groups.append(lg)
+		if not groups:
+			return False
+		groups.sort(key=lambda x: x.order)
+		self.kind = kind
+		self.uefa = (cid, season)
+		self.groups = groups
+		self.t_disc = now
+		self.t_uefa_full = 0
+		self.uefa_stand = st
+		log("Laenderspiele: LiveScore nicht erreichbar, UEFA %s/%s mit %d Gruppen" % (cid, season, len(groups)))
+		return True
+
+	def load_uefa(self):
+		cid, season = self.uefa
+		now = time.time()
+		byg = dict((lg.gid, lg) for lg in self.groups)
+		full = now - getattr(self, "t_uefa_full", 0) > 1800
+		if full:
+			evs = uefa_matches(cid, season, "toDate=%s&limit=80&offset=0&order=DESC" % uefa_day(now))
+			evs += uefa_matches(cid, season, "fromDate=%s&limit=80&offset=0&order=ASC" % uefa_day(now + 86400))
+			if now - self.t_disc > 60:
+				self.uefa_stand = get_url_json("%s?competitionId=%s&seasonYear=%s" % (UEFA_STAND, cid, season), timeout=40) or self.uefa_stand
+		else:
+			# nur heutige Spiele neu (laufende Partien)
+			evs = uefa_matches(cid, season, "fromDate=%s&toDate=%s&limit=80&offset=0&order=ASC" % (uefa_day(now), uefa_day(now)))
+		per = {}
+		for m in evs:
+			pe = parse_uefa_match(m, u"")
+			if pe["gid"] in byg:
+				pe["ut"] = byg[pe["gid"]].ut
+				per.setdefault(pe["gid"], {})[pe["id"]] = pe
+		tabs = {}
+		for g in self.uefa_stand or []:
+			gid = u"%s" % ((g.get("group") or {}).get("id") or u"")
+			rows = []
+			for it in g.get("items") or []:
+				tm = it.get("team") or {}
+				rows.append({"pos": to_int(it.get("rank")) or 0, "tm": fix_name(tm.get("internationalName") or u"?"), "short": u"",
+					"p": to_int(it.get("played")) or 0, "w": to_int(it.get("won")) or 0, "d": to_int(it.get("drawn")) or 0,
+					"l": to_int(it.get("lost")) or 0, "gf": to_int(it.get("goalsFor")) or 0, "ga": to_int(it.get("goalsAgainst")) or 0,
+					"pts": to_int(it.get("points")) or 0, "phr": None, "zone": None})
+			rows.sort(key=lambda r: r["pos"])
+			tabs[gid] = rows
+		for gid, lg in byg.items():
+			old = {} if full else dict((e["id"], e) for e in lg.all_events)
+			old.update(per.get(gid, {}))
+			lg.rnames = {}
+			lg.set_events(list(old.values()), infer=False)
+			if tabs.get(gid):
+				lg.tables = [(u"", tabs[gid])]
+			lg.t_load = now
+			lg.error = None
+		if full:
+			self.t_uefa_full = now
 
 	def discover(self):
 		now = time.time()
@@ -1182,14 +1332,20 @@ class NatComp(object):
 
 	def load(self):
 		if not self.groups or time.time() - self.t_disc > 6 * 3600:
-			if not self.discover() and not self.groups:
+			if not self.discover() and not self.discover_uefa() and not self.groups:
 				raise Exception("Keine Länderspiele gefunden")
 			STORE.set_nat(self.groups)
-		for lg in list(self.groups):
-			try:
-				lg.load()
-			except Exception as e:
-				lg.error = nice_error(e)
+		if self.groups and getattr(self.groups[0], "source", "") == "uefa":
+			self.load_uefa()
+		else:
+			for lg in list(self.groups):
+				try:
+					lg.load()
+				except Exception as e:
+					lg.error = nice_error(e)
+			if self.groups and all(lg.error and not lg.all_events for lg in self.groups) and self.discover_uefa():
+				STORE.set_nat(self.groups)
+				self.load_uefa()
 		self.t_load = time.time()
 		self.error = None
 		return self

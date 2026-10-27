@@ -15,6 +15,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/checkout@v4
+        with:
+          path: repo0
       - run: pip install -q requests
       - name: Quellen testen
         run: |
@@ -24,27 +27,18 @@ jobs:
           OUT = []
           def print_(*a): return ' '.join(str(x) for x in a)
           os.makedirs("samples", exist_ok=True)
-          import re, collections
-          def get(u):
-              try:
-                  r = requests.get(u, headers=H, timeout=30); return r.status_code, r.text
-              except Exception as e: return 0, str(e)
-          def save(n, t): open("samples/nl_"+n, "w").write(t)
-          def um(q):
-              s, t = get("https://match.uefa.com/v5/matches?" + q)
-              try:
-                  j = json.loads(t); return s, len(t), len(j), [(m.get("competition",{}).get("metaData",{}).get("name"), m.get("kickOffTime",{}).get("date"), m.get("round",{}).get("metaData",{}).get("name"), m.get("status")) for m in j[:2]], t
-              except Exception: return s, len(t), 0, t[:200], t
-          for q in ["competitionId=2014&seasonYear=2027&fromDate=2026-10-01&toDate=2026-10-08&limit=100&offset=0&order=ASC",
-                    "competitionId=2014&seasonYear=2027&limit=100&offset=100&order=ASC",
-                    "competitionId=2014&seasonYear=2027&fromDate=2026-11-10&toDate=2026-11-18&limit=100&offset=0&order=ASC",
-                    "competitionId=3&seasonYear=2028&limit=3&offset=0&order=ASC",
-                    "competitionId=17&seasonYear=2026&limit=3&offset=0&order=ASC",
-                    "competitionId=18&seasonYear=2026&limit=3&offset=0&order=ASC",
-                    "competitionId=17&seasonYear=2030&limit=3&offset=0&order=ASC",
-                    "competitionId=2014&seasonYear=2025&limit=3&offset=0&order=DESC"]:
-              r = um(q); OUT.append(print_("UM", q, r[:4]))
-              if "fromDate=2026-10-01" in q: save("uefa_oct.json", r[4])
+          import re, collections, sys, time
+          sys.path.insert(0, "repo0/enigma2/usr/lib/enigma2/python/Plugins/Extensions/SkorText")
+          import data
+          data.LS_STATE["pause"] = time.time() + 99999   # LiveScore gesperrt wie bei Aziz
+          t0 = time.time(); data.NAT.load(); OUT.append(print_("LOAD", data.NAT.kind, len(data.NAT.groups), "%.1fs" % (time.time()-t0)))
+          for lg in data.NAT.groups:
+              OUT.append(print_(lg.name("de"), "| Spieltag", lg.round, "prev", lg.prev_round, "| alle", len(lg.all_events)))
+              for e in lg.prev_events: OUT.append(print_("   ", e["h"], e["hs"], ":", e["as"], e["a"], e["state"]))
+              for e in lg.events: OUT.append(print_("   >", time.strftime("%d.%m %H:%M", time.gmtime(e["ts"])), e["h"], "-", e["a"], e["state"]))
+              for n, rows in lg.tables:
+                  for r in rows: OUT.append(print_("     ", r["pos"], r["tm"], r["p"], r["gf"], ":", r["ga"], r["pts"]))
+          t0 = time.time(); data.NAT.t_uefa_full = time.time(); data.NAT.load(); OUT.append(print_("LIVE-RELOAD %.1fs" % (time.time()-t0)))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
