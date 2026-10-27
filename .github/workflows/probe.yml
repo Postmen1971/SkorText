@@ -30,18 +30,21 @@ jobs:
                   r = requests.get(u, headers=H, timeout=30); return r.status_code, r.text
               except Exception as e: return 0, str(e)
           def save(n, t): open("samples/nl_"+n, "w").write(t)
-          s, t = get("https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.nations/scoreboard?dates=20260925"); save("espn_sb.json", t)
-          j = json.loads(t); OUT.append(print_("CAL", json.dumps(j["leagues"][0].get("calendar"))[:3000]))
-          s, t = get("https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.nations/scoreboard"); save("espn_sb0.json", t)
-          OUT.append(print_("SB0", s, [e.get("date") for e in json.loads(t).get("events", [])][:20]))
-          s, t = get("https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.nations/scoreboard?dates=20260901-20261130&limit=300"); save("espn_rng.json", t)
-          OUT.append(print_("RNG", s, len(json.loads(t).get("events", [])) if s==200 else t[:200]))
-          s, t = get("https://match.uefa.com/v5/matches?competitionId=2014&seasonYear=2027&limit=100&order=ASC&offset=0"); save("uefa_m.json", t)
-          OUT.append(print_("UEFA-M", s, len(t)))
-          s, t = get("https://standings.uefa.com/v1/standings?competitionId=2014&seasonYear=2027"); save("uefa_st.json", t)
-          OUT.append(print_("UEFA-ST", s, len(t), t[:200]))
-          s, t = get("https://prod-public-api.livescore.com/v1/api/app/category/soccer/uefa-nations-league/0?MD=1"); save("ls_cat.json", t)
-          OUT.append(print_("LS", s, len(t)))
+          def um(q):
+              s, t = get("https://match.uefa.com/v5/matches?" + q)
+              try:
+                  j = json.loads(t); return s, len(t), len(j), [(m.get("competition",{}).get("metaData",{}).get("name"), m.get("kickOffTime",{}).get("date"), m.get("round",{}).get("metaData",{}).get("name"), m.get("status")) for m in j[:2]], t
+              except Exception: return s, len(t), 0, t[:200], t
+          for q in ["competitionId=2014&seasonYear=2027&fromDate=2026-10-01&toDate=2026-10-08&limit=100&offset=0&order=ASC",
+                    "competitionId=2014&seasonYear=2027&limit=100&offset=100&order=ASC",
+                    "competitionId=2014&seasonYear=2027&fromDate=2026-11-10&toDate=2026-11-18&limit=100&offset=0&order=ASC",
+                    "competitionId=3&seasonYear=2028&limit=3&offset=0&order=ASC",
+                    "competitionId=17&seasonYear=2026&limit=3&offset=0&order=ASC",
+                    "competitionId=18&seasonYear=2026&limit=3&offset=0&order=ASC",
+                    "competitionId=17&seasonYear=2030&limit=3&offset=0&order=ASC",
+                    "competitionId=2014&seasonYear=2025&limit=3&offset=0&order=DESC"]:
+              r = um(q); OUT.append(print_("UM", q, r[:4]))
+              if "fromDate=2026-10-01" in q: save("uefa_oct.json", r[4])
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
