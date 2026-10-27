@@ -33,21 +33,14 @@ jobs:
                   r = requests.get(u, headers=H, timeout=30); return r.status_code, r.text
               except Exception as e: return 0, str(e)
           LS = "https://prod-public-api.livescore.com/v1/api/app"
-          for cc in ["netherlands", "portugal", "belgium", "scotland", "austria", "switzerland", "greece", "england", "denmark", "spain", "italy", "germany", "poland", "czech-republic", "norway", "sweden"]:
-              s, t = get(LS + "/category/soccer/%s/0?MD=1" % cc)
+          for path in ["holland/eredivisie", "netherlands/eredivisie", "portugal/primeira-liga", "belgium/belgian-pro-league-2025", "belgium/belgian-pro-league", "scotland/scotland-premiership",
+                       "austria/bundesliga", "switzerland/super-league", "greece/super-league", "england/championship", "spain/laliga-2", "italy/serie-b", "france/ligue-2", "denmark/superliga"]:
+              s, t = get(LS + "/stage/soccer/%s/0?MD=1" % path)
               try:
-                  j = json.loads(t); OUT.append(print_("LS", cc, s, [(st.get("Scd"), st.get("Snm"), len(st.get("Events") or [])) for st in j.get("Stages", [])][:14]))
-              except Exception: OUT.append(print_("LS", cc, s, t[:100]))
-          for code in ["ned.1", "por.1", "bel.1", "sco.1", "aut.1", "sui.1", "gre.1", "eng.2", "den.1", "esp.2", "ita.2", "fra.2", "pol.1", "cze.1", "nor.1", "swe.1"]:
-              s, t = get("https://site.api.espn.com/apis/v2/sports/soccer/%s/standings" % code)
-              try:
-                  j = json.loads(t); ch = j.get("children") or []
-                  OUT.append(print_("ESPN", code, s, j.get("name"), [(c.get("name"), len((c.get("standings") or {}).get("entries") or [])) for c in ch]))
-              except Exception: OUT.append(print_("ESPN", code, s, t[:100]))
-              s, t = get("https://site.api.espn.com/apis/site/v2/sports/soccer/%s/scoreboard" % code)
-              try:
-                  j = json.loads(t); lg0 = (j.get("leagues") or [{}])[0]; OUT.append(print_("   SB", len(j.get("events", [])), lg0.get("calendarType"), len(lg0.get("calendar") or [])))
-              except Exception: pass
+                  j = json.loads(t); st = (j.get("Stages") or [{}])[0]
+                  tb = (((st.get("LeagueTable") or {}).get("L") or [{}])[0].get("Tables") or [{}])[0].get("team") or []
+                  OUT.append(print_(path, s, st.get("Snm"), st.get("Cnm"), len(st.get("Events") or []), "Tabelle", len(tb)))
+              except Exception: OUT.append(print_(path, s, t[:80]))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
