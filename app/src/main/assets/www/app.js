@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "3.3";
+var VERSION = "3.4";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -12,7 +12,7 @@ var TXT = {
   stand:"Stand",cDE:"DEUTSCHLAND",cTR:"TÜRKEI",cEU:"EUROPA",cNEWS:"HABERLER",openHint:"▲▼◄► wählen · OK öffnen · ZURÜCK beenden",
   home:"ZURÜCK = Übersicht",exitAgain:"Übersicht · ZURÜCK nochmal = beenden",setHint:"▲▼ wählen · ◄► ändern · ZURÜCK zurück",
   loading:"Lade Daten …",noData:"Keine Daten erreichbar.",noData2:"Internetverbindung prüfen.",noGames:"Keine Spiele gefunden.",
-  noTable:"Keine Tabelle verfügbar.",source:"Daten: LiveScore, FuPa",mdNow:"(aktuell)",mdBrowse:"Spieltag",
+  noTable:"Keine Tabelle verfügbar.",source:"Daten: LiveScore, FuPa, ESPN",mdNow:"(aktuell)",mdBrowse:"Spieltag",
   noMore:"Kein weiterer Spieltag",newsHint:"▲▼ wählen · OK lesen · ◄► Rubrik",articleHint:"▲▼ / ◄► nächste Meldung · OK / ZURÜCK",
   resHint:"◄► Liga · OK Tabelle",tabHint:"◄► Liga · OK Ergebnisse",
   cNAT:"LÄNDERSPIELE",cRANK:"RANGLISTEN",cMORE:"WEITERES",more:"▼ mehr: Länderspiele, Ranglisten",t_more:"wischen ▲ = mehr: Länderspiele, Ranglisten",
@@ -35,7 +35,7 @@ var TXT = {
   stand:"Güncel",cDE:"ALMANYA",cTR:"TÜRKİYE",cEU:"AVRUPA",cNEWS:"HABERLER",openHint:"▲▼◄► seç · OK aç · GERİ çık",
   home:"GERİ = Genel Bakış",exitAgain:"Genel Bakış · tekrar GERİ = çık",setHint:"▲▼ seç · ◄► değiştir · GERİ",
   loading:"Veriler yükleniyor …",noData:"Veri alınamadı.",noData2:"İnternet bağlantısını kontrol et.",noGames:"Maç bulunamadı.",
-  noTable:"Puan durumu yok.",source:"Veri: LiveScore, FuPa",mdNow:"(güncel)",mdBrowse:"Hafta",
+  noTable:"Puan durumu yok.",source:"Veri: LiveScore, FuPa, ESPN",mdNow:"(güncel)",mdBrowse:"Hafta",
   noMore:"Başka hafta yok",newsHint:"▲▼ seç · OK oku · ◄► kategori",articleHint:"▲▼ / ◄► sonraki haber · OK / GERİ",
   resHint:"◄► Lig · OK Puan",tabHint:"◄► Lig · OK Sonuçlar",
   cNAT:"MİLLİ MAÇLAR",cRANK:"SIRALAMALAR",cMORE:"DİĞER",more:"▼ devamı: Milli maçlar, sıralamalar",t_more:"kaydır ▲ = devamı: Milli maçlar, sıralamalar",
@@ -94,11 +94,28 @@ function httpGet(url) {
     else fetch(url).then(function (r) { return r.ok ? r.text() : Promise.reject(new Error("HTTP " + r.status)); }).then(res, rej);
   });
 }
-function getJSON(url) { return httpGet(url).then(function (t) { return JSON.parse(t); }); }
+/* LiveScore hat zwei Server. Sperrt einer (HTTP 403), wird der andere genommen;
+   sperren beide, macht SkorText 5 Minuten Pause statt weiter anzufragen. */
+var LS_HOSTS = ["https://prod-public-api.livescore.com", "https://prod-cdn-public-api.livescore.com"], LS_I = 0, LS_PAUSE = 0;
+function rawJSON(url) { return httpGet(url).then(function (t) { return JSON.parse(t); }); }
+function getJSON(url) {
+  var m = /^https:\/\/prod-(?:cdn-)?public-api\.livescore\.com(\/.*)$/.exec(url);
+  if (!m) return rawJSON(url);
+  if (Date.now() < LS_PAUSE) return Promise.reject(new Error("HTTP 403 Pause"));
+  var path = m[1], first = LS_I;
+  return rawJSON(LS_HOSTS[first] + path).catch(function (e) {
+    if (String(e && e.message).indexOf("403") < 0) throw e;
+    var other = (first + 1) % LS_HOSTS.length;
+    return rawJSON(LS_HOSTS[other] + path).then(function (d) { LS_I = other; return d; }, function (e2) {
+      if (String(e2 && e2.message).indexOf("403") >= 0) LS_PAUSE = Date.now() + 5 * 60000;
+      throw e2;
+    });
+  });
+}
 var BASE = "https://prod-public-api.livescore.com/v1/api/app";
 function niceError(e) {
   var s = String(e && e.message || e);
-  if (s.indexOf("403") >= 0) return "Gesperrt (HTTP 403)";
+  if (s.indexOf("403") >= 0) return cfg("lang") === "tr" ? "Engellendi (HTTP 403) – 5 dk sonra tekrar" : "Gesperrt (HTTP 403) – neuer Versuch in 5 Min.";
   if (s.indexOf("404") >= 0 || s.indexOf("410") >= 0) return "Liga bei der Datenquelle nicht gefunden";
   if (/timeout|timed out/i.test(s)) return "Zeitüberschreitung – Internet langsam oder weg";
   if (/unknownhost|unable to resolve|dns/i.test(s)) return "Keine Internetverbindung";
@@ -221,10 +238,88 @@ League.prototype.eventsOfRound = function (n) {
   return this.allEvents.filter(function (e) { return e.round === n; });
 };
 League.prototype.liveCount = function () { return this.events.filter(function (e) { return e.state === "in" || e.state === "ht"; }).length; };
+/* Ersatzquelle ESPN, wenn LiveScore sperrt (HTTP 403) */
+var ESPN = "https://site.api.espn.com/apis/site/v2/sports/soccer", ESPN_TAB = "https://site.api.espn.com/apis/v2/sports/soccer";
+var ESPN_CODES = {200: "ger.1", 210: "ger.2", 295: "ger.dfb_pokal", 300: "tur.1", 400: "eng.1", 410: "esp.1", 420: "ita.1", 430: "fra.1",
+  440: "uefa.champions", 450: "uefa.europa", 460: "uefa.europa.conf"};
+var ESPN_NAMES = {"Bayern Munich": "Bayern München", "1. FC Union Berlin": "Union Berlin", "Borussia Monchengladbach": "Borussia M'gladbach",
+  "1. FC Cologne": "1. FC Köln", "FC Cologne": "1. FC Köln", "FC Augsburg": "Augsburg", "VfL Wolfsburg": "Wolfsburg", "1. FC Heidenheim 1846": "FC Heidenheim",
+  "TSG Hoffenheim": "Hoffenheim", "SC Freiburg": "Freiburg"};
+function espnName(n) { n = n || "?"; return ESPN_NAMES[n] || fixName(n); }
+function parseEspnEvent(ev, key) {
+  var st = (ev.status || {}).type || {}, state = {pre: "pre", "in": "in", post: "post"}[st.state] || "pre", nm = st.name || "", minute = "";
+  if (nm.indexOf("HALFTIME") >= 0) state = "ht";
+  else if (/POSTPONED|CANCELED|SUSPENDED/.test(nm)) state = "pp";
+  else if (state === "in") minute = String((ev.status || {}).displayClock || "").split("'")[0];
+  var comp = (ev.competitions || [{}])[0], home = {}, away = {};
+  (comp.competitors || []).forEach(function (c) { if (c.homeAway === "home") home = c; else away = c; });
+  var hs = toInt(home.score), as = toInt(away.score); if (state === "pre") hs = as = null;
+  var ht = home.team || {}, at = away.team || {};
+  return {id: "espn" + ev.id, h: espnName(ht.displayName), hsn: ht.shortDisplayName || "", a: espnName(at.displayName), asn: at.shortDisplayName || "",
+    hs: hs, as: as, state: state, min: minute, ts: isoTs(ev.date), round: null, group: "", ut: key, goal_at: 0, goal_by: null};
+}
+function espnZone(note) {
+  var d = String((note || {}).description || "").toLowerCase();
+  if (!d) return null;
+  if (d.indexOf("relegation") >= 0 && /play|qualif/.test(d)) return "y";
+  if (d.indexOf("relegation") >= 0) return "r";
+  if (/champions league|round of 16|promotion/.test(d)) return "g";
+  if (/europa league|play/.test(d)) return "c";
+  if (d.indexOf("conference") >= 0) return "m";
+  return "c";
+}
+League.prototype.loadEspn = function () {
+  var self = this, code = ESPN_CODES[self.page], now = Date.now();
+  var old = {}; if (self.source === "espn") self.allEvents.forEach(function (e) { old[e.id] = e; });
+  var full = !Object.keys(old).length || now - (self.tEspnFull || 0) > 1800000, days = [];
+  if (full) for (var d = -6; d <= 6; d++) days.push(d); else days = [0];
+  var evs = old;
+  return Promise.all(days.map(function (dd) {
+    var dt = new Date(now + dd * 86400000), key = dt.getFullYear() + two(dt.getMonth() + 1) + two(dt.getDate());
+    return rawJSON(ESPN + "/" + code + "/scoreboard?dates=" + key).then(function (j) {
+      (j.events || []).forEach(function (ev) { var pe = parseEspnEvent(ev, self.ut); evs[pe.id] = pe; });
+    }, function () {});
+  })).then(function () {
+    if (!Object.keys(evs).length) throw new Error("HTTP 403 (LiveScore gesperrt, ESPN ohne Daten)");
+    return rawJSON(ESPN_TAB + "/" + code + "/standings").then(function (t) {
+      var rows = [];
+      (t.children || [t]).forEach(function (ch) {
+        ((ch.standings || {}).entries || []).forEach(function (en) {
+          var st = {}; (en.stats || []).forEach(function (x) { st[x.name] = x.value; });
+          var tm = en.team || {};
+          rows.push({pos: +st.rank || 0, tm: espnName(tm.displayName), short: tm.shortDisplayName || "", p: +st.gamesPlayed || 0, w: +st.wins || 0, d: +st.ties || 0,
+            l: +st.losses || 0, gf: +st.pointsFor || 0, ga: +st.pointsAgainst || 0, pts: +st.points || 0, zone: espnZone(en.note)});
+        });
+      });
+      return rows;
+    }, function () { return self.tables.length ? self.tables[0][1] : []; });
+  }).then(function (rows) {
+    rows.sort(function (a, b) { return a.pos - b.pos; });
+    var lst = Object.keys(evs).map(function (k) { return evs[k]; }).sort(function (a, b) { return a.ts - b.ts; });
+    var buckets = [], last = null;
+    lst.forEach(function (e) { if (last === null || e.ts - last > 60 * 3600) buckets.push([]); buckets[buckets.length - 1].push(e); last = e.ts; });
+    var played = Math.max.apply(null, [0].concat(rows.map(function (r) { return r.p; }))), idx = 0;
+    buckets.forEach(function (b, i) { if (b.some(function (e) { return e.state === "post"; })) idx = i; });
+    var base = (played || (idx + 1)) - idx;
+    buckets.forEach(function (b, i) { b.forEach(function (e) { e.round = Math.max(1, base + i); }); });
+    self.rnames = {};
+    self.setEvents(lst, true);
+    self.tables = rows.length ? [["", rows]] : [];
+    self.source = "espn"; if (full) self.tEspnFull = now;
+    self.tLoad = Date.now() / 1000; self.error = null;
+  });
+};
 League.prototype.load = function () {
   var self = this;
   if (self.ccd === "fupa") return self.loadFupa();
-  if (self.cup) return self.loadCup();
+  var p = self.cup ? self.loadCup() : self.loadLs();
+  return p.then(function (r) { self.source = "ls"; return r; }, function (e) {
+    if (String(e && e.message).indexOf("403") >= 0 && ESPN_CODES[self.page] && self.c !== "nlg") return self.loadEspn();
+    throw e;
+  });
+};
+League.prototype.loadLs = function () {
+  var self = this;
   return getJSON(BASE + "/stage/soccer/" + self.ccd + "/" + self.scd + "/0?MD=1").then(function (d) {
     var st = (d.Stages || [])[0];
     if (!st) throw new Error("404 keine Daten");
@@ -974,14 +1069,14 @@ function subpages() {
           continue;
         }
         var hint = rnd ? lbl + (rnd === lg.round ? "  " + T("mdNow") : "") + "   " + (TOUCH ? T("mdArrows") : "▲▼") + " " + T("mdBrowse") + " · " + T("resHint") : T("resHint");
-        chunk(lines).forEach(function (ch) { subs.push({ban: [gt, up(T("results"))], bg: bgc, head: infoHead(hint), lines: ch}); });
+        chunk(lines).forEach(function (ch) { subs.push({ban: [gt, up(T("results")) + (lg.source === "espn" ? " · ESPN" : "")], bg: bgc, head: infoHead(hint), lines: ch}); });
       } else {
         if (stl) lines = stl;
         else {
           var tabs = lg.tables.filter(function (x) { return match(x[0]); });
           lines = tabs.length ? tableLines(lg, tabs[0][1], pgi) : [blank(), text(T("noTable"), "c")];
         }
-        chunk(lines).forEach(function (ch) { subs.push({ban: [gt, up(STORE.liveCountView(lg, pgi) ? T("liveTable") : T("table"))], bg: bgc, head: tableHead(), lines: ch}); });
+        chunk(lines).forEach(function (ch) { subs.push({ban: [gt, up(STORE.liveCountView(lg, pgi) ? T("liveTable") : T("table")) + (lg.source === "espn" ? " · ESPN" : "")], bg: bgc, head: tableHead(), lines: ch}); });
       }
       if (stl) break;
     }
