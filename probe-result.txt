@@ -1,20 +1,12 @@
-ESPN ger.1 events 400 -1 55 | table 200 18
-ESPN ger.2 events 400 -1 55 | table 200 18
-ESPN ger.3 events 400 -1 55 | table 400 0
-ESPN ger.dfb_pokal events 400 -1 55 | table 200 0
-ESPN tur.1 events 400 -1 55 | table 200 18
-ESPN tur.2 events 400 -1 55 | table 200 0
-ESPN tur.cup events 400 -1 55 | table 400 0
-ESPN eng.1 events 400 -1 55 | table 200 20
-ESPN esp.1 events 400 -1 55 | table 200 20
-ESPN ita.1 events 400 -1 55 | table 200 20
-ESPN fra.1 events 400 -1 55 | table 200 18
-ESPN uefa.champions events 400 -1 55 | table 200 36
-ESPN uefa.europa events 400 -1 55 | table 200 36
-ESPN uefa.europa.conf events 400 -1 55 | table 200 36
-ESPN uefa.nations events 400 -1 55 | table 200 54
-ESPN fifa.worldq.uefa events 400 -1 55 | table 200 54
-ESPN uefa.euroq events 400 -1 55 | table 200 53
-ESPN fifa.friendly events 400 -1 55 | table 200 0
-ESPN ger.4.sw events 400 -1 55 | table 400 0
-ESPN ger.regionalliga events 400 -1 55 | table 400 0
+SB ger.1  200 1 14427 
+SB ger.1 ?dates=20261024 200 6 61970 
+SB ger.1 ?dates=20260801-20261031 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
+SB ger.1 ?dates=20260801-20261031&limit=500 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
+SB ger.1 ?dates=20260820-20270530&limit=900 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
+SB ger.1 ?dates=2026 200 100 1047101 
+SB ger.1 ?dates=20261101-20261130 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
+SB ger.3 ?dates=20261024 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
+SB ger.dfb_pokal ?dates=20261027-20261029 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
+SB tur.cup ?dates=20261027-20261029 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
+SB tur.1 ?dates=20261024-20261026 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
+SB ger.2 ?dates=20261024-20261026 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
