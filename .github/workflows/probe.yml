@@ -25,33 +25,31 @@ jobs:
           def print_(*a): return ' '.join(str(x) for x in a)
           os.makedirs("samples", exist_ok=True)
           import re, collections
-          B = "https://prod-public-api.livescore.com/v1/api/app"
-          UAS = {"chrome": H["User-Agent"], "android": "Dalvik/2.1.0 (Linux; U; Android 11; SHIELD Android TV Build/RQ1A.210105.003)",
-                 "okhttp": "okhttp/4.9.0", "python": "python-requests/2.31", "none": ""}
-          for u in ["stage/soccer/france/ligue-1/0?MD=1", "live/soccer/0?MD=1", "stage/soccer/germany/bundesliga/0?MD=1"]:
-              for name, ua in UAS.items():
-                  for extra in [{}, {"Accept-Encoding": "gzip"}, {"Origin": "https://www.livescore.com", "Referer": "https://www.livescore.com/"}]:
-                      try:
-                          h = {"Accept": "application/json, */*"}
-                          if ua: h["User-Agent"] = ua
-                          h.update(extra)
-                          r = requests.get("%s/%s" % (B, u), headers=h, timeout=20)
-                          OUT.append(print_("LS", u[:30], name, list(extra.keys()), r.status_code, len(r.text), r.headers.get("server"), r.text[:80].replace("\n"," ") if r.status_code != 200 else ""))
-                      except Exception as ex:
-                          OUT.append(print_("ERR", u, name, ex))
-          for u in ["https://prod-cdn-public-api.livescore.com/v1/api/app/stage/soccer/france/ligue-1/0?MD=1",
-                    "https://prod-cdn-mev-api.livescore.com/v1/api/app/stage/soccer/france/ligue-1/0?MD=1",
-                    "https://prod-public-api.livescore.com/v1/api/react/stage/soccer/france/ligue-1/0?MD=1"]:
+          E = "https://site.api.espn.com/apis/site/v2/sports/soccer"
+          S = "https://site.api.espn.com/apis/v2/sports/soccer"
+          codes = ["ger.1","ger.2","ger.3","ger.dfb_pokal","tur.1","tur.2","tur.cup","eng.1","esp.1","ita.1","fra.1","uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","fifa.worldq.uefa","uefa.euroq","fifa.friendly","ger.4.sw","ger.regionalliga"]
+          for c in codes:
               try:
-                  r = requests.get(u, headers=H, timeout=20); OUT.append(print_("ALT", u, r.status_code, len(r.text)))
+                  r = requests.get("%s/%s/scoreboard?dates=20260801-20270630&limit=1000" % (E, c), headers=H, timeout=25)
+                  n = len(r.json().get("events", [])) if r.status_code == 200 else -1
+                  t = requests.get("%s/%s/standings" % (S, c), headers=H, timeout=25)
+                  tn = 0
+                  if t.status_code == 200:
+                      tj = t.json()
+                      for ch in tj.get("children", []) or [tj]:
+                          tn += len(((ch.get("standings") or {}).get("entries")) or [])
+                  OUT.append(print_("ESPN", c, "events", r.status_code, n, len(r.text), "| table", t.status_code, tn))
+                  if c in ("ger.1", "uefa.nations") and r.status_code == 200:
+                      open("samples/espn_%s.json" % c, "w").write(r.text)
+                      open("samples/espn_tab_%s.json" % c, "w").write(t.text)
               except Exception as ex:
-                  OUT.append(print_("ERR", u, ex))
+                  OUT.append(print_("ERR", c, ex))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
         with:
           path: repo
       - run: |
-          cp probe-result.txt repo/probe-result.txt && mkdir -p repo/samples && (cp samples/* repo/samples/ || true)
+          cp probe-result.txt repo/probe-result.txt && mkdir -p repo/samples && (cp samples/espn_* repo/samples/ 2>/dev/null || true)
           cd repo && git config user.name Claude && git config user.email noreply@anthropic.com
           git add probe-result.txt samples && git commit -m 'Testergebnis [skip ci]' && git push
