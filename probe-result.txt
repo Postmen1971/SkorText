@@ -1,14 +1,11 @@
-holland/eredivisie 200 Eredivisie Netherlands 306 Tabelle 18
-netherlands/eredivisie 410 
-portugal/primeira-liga 200 Primeira Liga Portugal 306 Tabelle 18
-belgium/belgian-pro-league-2025 200 Belgian Pro League Belgium 306 Tabelle 18
-belgium/belgian-pro-league 410 
-scotland/scotland-premiership 200 Premiership Scotland 198 Tabelle 12
-austria/bundesliga 200 Bundesliga Austria 132 Tabelle 12
-switzerland/super-league 200 Super League Switzerland 132 Tabelle 12
-greece/super-league 200 Super League Greece 182 Tabelle 14
-england/championship 200 Championship England 552 Tabelle 24
-spain/laliga-2 200 LaLiga 2 Spain 462 Tabelle 22
-italy/serie-b 200 Serie B Italy 380 Tabelle 20
-france/ligue-2 200 Ligue 2 France 306 Tabelle 18
-denmark/superliga 200 Superliga Denmark 132 Tabelle 12
+200 https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml 40 [('Nach Anschlägen in Frankreich: Sorge vor wachsende', 206, 'Nach den offenbar rassistisch motivierten Anschlägen in Frankreich gehen in Paris Menschen', '27.10 17:56'), ('Marktbericht: DAX kann weiter zulegen', 184, 'Obwohl die wichtigsten Termine der Woche noch bevorstehen, hat der DAX seine Kurserholung ', '27.10 17:18')]
+200 https://www.tagesschau.de/index~rss2.xml 73 [('FAQ: Die lange Suche nach einem Atommüll-Endlager', 240, 'Rund 27.000 Kubikmeter hochradioaktiver Müll müssen dauerhaft und sicher verwahrt werden. ', '27.10 17:12'), ('Atommüll-Endlager: In weiteren Bundesländern soll ', 217, 'Die Suche nach einem Endlager für den hochradioaktiven Atommüll in Deutschland wird konkre', '27.10 17:11')]
+200 https://www.tagesschau.de/inland/index~rss2.xml 49 [('FAQ: Die lange Suche nach einem Atommüll-Endlager', 240, 'Rund 27.000 Kubikmeter hochradioaktiver Müll müssen dauerhaft und sicher verwahrt werden. ', '27.10 17:12'), ('Was die Israel-Wahl für Deutschland bedeutet', 209, 'Die Wahl in Israel wird auch in Deutschland mit Spannung verfolgt. Trotz Kritik an Netanja', '27.10 15:52')]
+200 https://www.tagesschau.de/ausland/index~rss2.xml 65 [('Nach Anschlägen in Frankreich: Sorge vor wachsende', 206, 'Nach den offenbar rassistisch motivierten Anschlägen in Frankreich gehen in Paris Menschen', '27.10 17:56'), ('Schülerproteste in Frankreich: Fünf-Punkte-Plan, a', 228, 'In Frankreich geht die Regierung mit einem Maßnahmenkatalog auf die protestierenden Schüle', '27.10 02:22')]
+200 https://www.tagesschau.de/wirtschaft/index~rss2.xml 30 [('Tarifverhandlungen: IG Metall lehnt Angebot ab - W', 197, 'Die Arbeitgeber der Metall- und Elektroindustrie haben in der laufenden Tarifrunde ein ers', '27.10 16:12'), ('40 DAX-Aktien jetzt rund um die Uhr handelbar', 202, 'Wer spätabends oder am Wochenende Aktien von Siemens, SAP und Co. kaufen oder verkaufen wi', '27.10 14:12')]
+200 https://www.sportschau.de/index~rss2.xml 37 [('Jetzt live - Eintracht führt beim HSV, Großaspach ', 197, 'Im DFB-Pokal empfängt Außenseiter Großaspach Bundesligist Augsburg und gleicht aus. Im Ruh', '27.10 16:35'), ('Live hören: Die Konferenz - 2. Runde | Fußball DFB', 73, 'DFB-Pokal live - alle Spiele am 27.10.2026 um 18:00 Uhr in der Konferenz.', '27.10 16:40')]
+200 https://www.sportschau.de/fussball/index~rss2.xml 20 [('Jetzt live - Eintracht führt beim HSV, Großaspach ', 197, 'Im DFB-Pokal empfängt Außenseiter Großaspach Bundesligist Augsburg und gleicht aus. Im Ruh', '27.10 16:35'), ('Live hören: Die Konferenz - 2. Runde | Fußball DFB', 73, 'DFB-Pokal live - alle Spiele am 27.10.2026 um 18:00 Uhr in der Konferenz.', '27.10 16:40')]
+200 https://newsfeed.kicker.de/news/aktuell 20 [('LIVE! Leipzig in Unterzahl - FCA verspielt 2:0-Füh', 200, 'Um 18 Uhr stehen sich im Bundesliga-Duell der HSV und Frankfurt gegenüber. Drei weitere Er', '27.10 18:17'), ('FM27 und die FIFA: Shuffle Draft bringt den Wettbe', 188, 'Der Football Manager wagt einen neuen Anlauf im kompetitiven Bereich - und sicherlich mit ', '27.10 17:47')]
+200 https://newsfeed.kicker.de/news/fussball 20 [('Sassuolo - Lazio: Tor zum 2:4 durch Zaccagni in de', 79, 'Szene aus dem Spiel Sassuolo Calcio - Lazio Rom (Serie A 2026/27, 9. Spieltag).', '27.10 18:20'), ('LIVE! Leipzig in Unterzahl - FCA verspielt 2:0-Füh', 200, 'Um 18 Uhr stehen sich im Bundesliga-Duell der HSV und Frankfurt gegenüber. Drei weitere Er', '27.10 18:17')]
+200 https://www.spiegel.de/schlagzeilen/index.rss 30 [('Brasilien: Flávio Bolsonaro nach verlorener Wahl o', 182, 'Der unterlegene brasilianische Präsidentschaftskandidat Flávio Bolsonaro hat eine Frist zu', '27.10 18:17'), ('Russland: Finnland und Norwegen irritieren EU mit ', 183, 'Die Staats- und Regierungschefs von Finnland und Norwegen haben ein Telefonat mit Russland', '27.10 18:04')]
+200 https://www.zdf.de/rss/zdf/nachrichten 170 [('Wahlbeteiligung auf Rekordkurs - schließen Wahllok', 181, 'Bei der Wahl in Israel zeichnet sich eine Rekordbeteiligung ab. Zwischen den Parteien gibt', '27.10 17:34'), ('Israel: Schicksalswahl in einem gespaltenen Land', 175, 'Kurz vor der Parlamentswahl ist Israel hoch angespannt und tief gespalten. Gegen Machtpoli', '26.10 20:06')]
