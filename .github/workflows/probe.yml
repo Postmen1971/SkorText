@@ -30,29 +30,18 @@ jobs:
                   r = requests.get(u, headers=H, timeout=30); return r.status_code, r.text
               except Exception as e: return 0, str(e)
           def save(n, t): open("samples/nl_"+n, "w").write(t)
-          # ESPN
-          for d in ["20260925","20261010","20261013","20261114","20261117"]:
-              s, t = get("https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.nations/scoreboard?dates="+d)
-              ev = json.loads(t).get("events", []) if s == 200 else []
-              OUT.append(print_("ESPN", d, s, len(ev), [e.get("name") for e in ev[:3]], ev[0].get("season") if ev else ""))
-              if ev and d=="20261013": save("espn_sb.json", t)
-          s, t = get("https://site.api.espn.com/apis/v2/sports/soccer/uefa.nations/standings")
-          OUT.append(print_("ESPN-ST", s, len(t), t[:300])); save("espn_st.json", t)
-          # UEFA
-          for cid in [2560, 3, 17, 18, 2014, 39, 5]:
-              s, t = get("https://match.uefa.com/v5/matches?competitionId=%d&seasonYear=2027&limit=3&order=ASC&offset=0" % cid)
-              nm = ""
-              try:
-                  j = json.loads(t); nm = [(m.get("competition",{}).get("metaData",{}).get("name"), m.get("kickOffTime",{}).get("date"), m.get("homeTeam",{}).get("internationalName"), m.get("round",{}).get("metaData",{}).get("name")) for m in j[:3]]
-              except Exception: nm = t[:150]
-              OUT.append(print_("UEFA-M", cid, s, nm))
-          s, t = get("https://match.uefa.com/v5/matches?competitionId=2560&seasonYear=2027&limit=50&order=ASC&offset=0")
-          save("uefa_m.json", t)
-          s, t = get("https://standings.uefa.com/v1/standings?competitionId=2560&seasonYear=2027")
-          OUT.append(print_("UEFA-ST", s, len(t), t[:300])); save("uefa_st.json", t)
-          # LiveScore Kategorie
-          s, t = get("https://prod-public-api.livescore.com/v1/api/app/category/soccer/uefa-nations-league/2?countryCode=DE&locale=de&MD=1")
-          OUT.append(print_("LS-NL", s, t[:400]))
+          s, t = get("https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.nations/scoreboard?dates=20260925"); save("espn_sb.json", t)
+          j = json.loads(t); OUT.append(print_("CAL", json.dumps(j["leagues"][0].get("calendar"))[:3000]))
+          s, t = get("https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.nations/scoreboard"); save("espn_sb0.json", t)
+          OUT.append(print_("SB0", s, [e.get("date") for e in json.loads(t).get("events", [])][:20]))
+          s, t = get("https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.nations/scoreboard?dates=20260901-20261130&limit=300"); save("espn_rng.json", t)
+          OUT.append(print_("RNG", s, len(json.loads(t).get("events", [])) if s==200 else t[:200]))
+          s, t = get("https://match.uefa.com/v5/matches?competitionId=2014&seasonYear=2027&limit=100&order=ASC&offset=0"); save("uefa_m.json", t)
+          OUT.append(print_("UEFA-M", s, len(t)))
+          s, t = get("https://standings.uefa.com/v1/standings?competitionId=2014&seasonYear=2027"); save("uefa_st.json", t)
+          OUT.append(print_("UEFA-ST", s, len(t), t[:200]))
+          s, t = get("https://prod-public-api.livescore.com/v1/api/app/category/soccer/uefa-nations-league/0?MD=1"); save("ls_cat.json", t)
+          OUT.append(print_("LS", s, len(t)))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
