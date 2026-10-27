@@ -1,111 +1,48 @@
-CAT uefa-nations-league 200 70461
-    league-a-group-1 | League A: Group 1 | UEFA Nations League | n 8 | 20261002184500 20261115194500 
-    league-a-group-2 | League A: Group 2 | UEFA Nations League | n 8 | 20261001184500 20261116194500 
-    league-a-group-3 | League A: Group 3 | UEFA Nations League | n 2 | 20261006184500 20261006184500 
-    league-a-group-4 | League A: Group 4 | UEFA Nations League | n 6 | 20261001184500 20261114194500 
-    league-b-group-1 | League B: Group 1 | UEFA Nations League | n 2 | 20261006184500 20261006184500 
-    league-b-group-2 | League B: Group 2 | UEFA Nations League | n 6 | 20261002184500 20261114194500 
-    league-b-group-3 | League B: Group 3 | UEFA Nations League | n 6 | 20261001184500 20261114194500 
-    league-b-group-4 | League B: Group 4 | UEFA Nations League | n 6 | 20261002184500 20261114194500 
-    league-c-group-1 | League C: Group 1 | UEFA Nations League | n 2 | 20261006184500 20261006184500 
-    league-c-group-2 | League C: Group 2 | UEFA Nations League | n 8 | 20261002160000 20261115140000 
-    league-c-group-3 | League C: Group 3 | UEFA Nations League | n 2 | 20261006140000 20261006184500 
-    league-c-group-4 | League C: Group 4 | UEFA Nations League | n 2 | 20261006184500 20261006184500 
-    league-d-group-1 | League D: Group 1 | UEFA Nations League | n 4 | 20261001184500 20261116194500 
-    league-d-group-2 | League D: Group 2 | UEFA Nations League | n 4 | 20261001160000 20261116170000 
-    league-a-play-off | League A: Play-off | UEFA Nations League 2024/2025 | n 0 | 0 0 
-    league-a-qualification-play-off | League A: Qualification Play-off | UEFA Nations League 2024/2025 | n 0 | 0 0 
-    league-b-qualification-play-off | League B: Qualification Play-off | UEFA Nations League 2024/2025 | n 0 | 0 0 
-    league-c-qualification-play-off | League C: Qualification Play-off | None | n 2 | 20260331160000 20260331160000 
-CAT world-cup-qualification 200 65227
-    world-cup-qualification-uefa-2nd-round | World Cup Qualification UEFA 2nd Round | World Cup Qualifiers: UEFA | n 4 | 20260331184500 20260331184500 
-    world-cup-qualifiers-play-off-tournament | World Cup Qualifiers: Play-off Tournament | None | n 2 | 20260331210000 20260401030000 
-    uefa-qualification-1st-round-group-a | UEFA Qualification: 1st Round: Group A | World Cup Qualifiers: UEFA | n 4 | 20251114194500 20251117194500 
-    uefa-qualification-1st-round-group-b | UEFA Qualification: 1st Round: Group B | World Cup Qualifiers: UEFA | n 2 | 20251118194500 20251118194500 
-    uefa-qualification-1st-round-group-c | UEFA Qualification: 1st Round: Group C | World Cup Qualifiers: UEFA | n 2 | 20251118194500 20251118194500 
-    uefa-qualification-1st-round-group-d | UEFA Qualification: 1st Round: Group D | World Cup Qualifiers: UEFA | n 4 | 20251113170000 20251116170000 
-    uefa-qualification-1st-round-group-e | UEFA Qualification: 1st Round: Group E | World Cup Qualifiers: UEFA | n 2 | 20251118194500 20251118194500 
-    uefa-qualification-1st-round-group-f | UEFA Qualification: 1st Round: Group F | World Cup Qualifiers: UEFA | n 4 | 20251113170000 20251116140000 
-    uefa-qualification-1st-round-group-g | UEFA Qualification: 1st Round: Group G | World Cup Qualifiers: UEFA | n 4 | 20251114170000 20251117194500 
-    uefa-qualification-1st-round-group-h | UEFA Qualification: 1st Round: Group H | World Cup Qualifiers: UEFA | n 2 | 20251118194500 20251118194500 
-    uefa-qualification-1st-round-group-i | UEFA Qualification: 1st Round: Group I | World Cup Qualifiers: UEFA | n 4 | 20251113170000 20251116194500 
-    uefa-qualification-1st-round-group-j | UEFA Qualification: 1st Round: Group J | World Cup Qualifiers: UEFA | n 2 | 20251118194500 20251118194500 
-    uefa-qualification-1st-round-group-k | UEFA Qualification: 1st Round: Group K | World Cup Qualifiers: UEFA | n 4 | 20251113194500 20251116170000 
-    uefa-qualification-1st-round-group-l | UEFA Qualification: 1st Round: Group L | World Cup Qualifiers: UEFA | n 4 | 20251114194500 20251117194500 
-    caf-qualification-group-a | CAF Qualification: Group A | World Cup Qualifiers: CAF | n 0 | 0 0 
-    caf-qualification-group-b | CAF Qualification: Group B | World Cup Qualifiers: CAF | n 0 | 0 0 
-    caf-qualification-group-c | CAF Qualification: Group C | World Cup Qualifiers: CAF | n 0 | 0 0 
-    caf-qualification-group-d | CAF Qualification: Group D | World Cup Qualifiers: CAF | n 0 | 0 0 
-    caf-qualification-group-e | CAF Qualification: Group E | World Cup Qualifiers: CAF | n 0 | 0 0 
-    caf-qualification-group-f | CAF Qualification: Group F | World Cup Qualifiers: CAF | n 0 | 0 0 
-    caf-qualification-group-g | CAF Qualification: Group G | World Cup Qualifiers: CAF | n 0 | 0 0 
-    caf-qualification-group-h | CAF Qualification: Group H | World Cup Qualifiers: CAF | n 0 | 0 0 
-    caf-qualification-group-i | CAF Qualification: Group I | World Cup Qualifiers: CAF | n 0 | 0 0 
-    caf-qualification-play-off | CAF Qualification: Play-off | World Cup Qualifiers: CAF | n 3 | 20251113160000 20251116190000 
-    concacaf-qualification-second-round-group-a | CONCACAF Qualification: 2nd Round: Group A | World Cup Qualifiers: CONCACAF | n 0 | 0 0 
-    concacaf-qualification-second-round-group-b | CONCACAF Qualification: 2nd Round: Group B | World Cup Qualifiers: CONCACAF | n 0 | 0 0 
-    concacaf-qualification-second-round-group-c | CONCACAF Qualification: 2nd Round: Group C | World Cup Qualifiers: CONCACAF | n 0 | 0 0 
-    concacaf-qualification-second-round-group-d | CONCACAF Qualification: 2nd Round: Group D | World Cup Qualifiers: CONCACAF | n 0 | 0 0 
-    concacaf-qualification-second-round-group-e | CONCACAF Qualification: 2nd Round: Group E | World Cup Qualifiers: CONCACAF | n 0 | 0 0 
-    concacaf-qualification-second-round-group-f | CONCACAF Qualification: 2nd Round: Group F | World Cup Qualifiers: CONCACAF | n 0 | 0 0 
-    concacaf-qualification-3-round-group-a | CONCACAF Qualification: 3rd Round: Group A | World Cup Qualifiers: CONCACAF | n 2 | 20251119010000 20251119010000 
-    concacaf-qualification-3-round-group-b | CONCACAF Qualification: 3rd Round: Group B | World Cup Qualifiers: CONCACAF | n 2 | 20251119010000 20251119010000 
-    concacaf-qualification-3-round-group-c | CONCACAF Qualification: 3rd Round: Group C | World Cup Qualifiers: CONCACAF | n 2 | 20251119010000 20251119010000 
-    concacaf-qualification-first-round | CONCACAF Qualification: 1st Round | World Cup Qualifiers: CONCACAF | n 0 | 0 0 
-    conmebol-qualification | CONMEBOL Qualification | World Cup Qualifiers: CONMEBOL | n 0 | 0 0 
-    afc-qualification-5th-round | AFC Qualification: 5th Round | World Cup Qualifiers: AFC | n 1 | 20251118160000 20251118160000 
-    afc-qualification-4th-round-group-b | AFC Qualification: 4th Round: Group B | World Cup Qualifiers: AFC | n 0 | 0 0 
-    afc-qualification-4th-round-group-a | AFC Qualification: 4th Round: Group A | World Cup Qualifiers: AFC | n 0 | 0 0 
-    afc-qualification-3rd-round-group-a | AFC Qualification: 3rd Round: Group A | World Cup Qualifiers: AFC | n 0 | 0 0 
-    afc-qualification-3rd-round-group-b | AFC Qualification: 3rd Round: Group B | World Cup Qualifiers: AFC | n 0 | 0 0 
-    afc-qualification-3rd-round-group-c | AFC Qualification: 3rd Round: Group C | World Cup Qualifiers: AFC | n 0 | 0 0 
-    afc-qualification-2nd-round-group-a | AFC Qualification: 2nd Round: Group A | World Cup Qualifiers: AFC | n 0 | 0 0 
-    afc-qualification-2nd-round-group-b | AFC Qualification: 2nd Round: Group B | World Cup Qualifiers: AFC | n 0 | 0 0 
-    afc-qualification-2nd-round-group-c | AFC Qualification: 2nd Round: Group C | World Cup Qualifiers: AFC | n 0 | 0 0 
-    afc-qualification-2nd-round-group-d | AFC Qualification: 2nd Round: Group D | World Cup Qualifiers: AFC | n 0 | 0 0 
-    afc-qualification-2nd-round-group-e | AFC Qualification: 2nd Round: Group E | World Cup Qualifiers: AFC | n 0 | 0 0 
-    afc-qualification-2nd-round-group-f | AFC Qualification: 2nd Round: Group F | World Cup Qualifiers: AFC | n 0 | 0 0 
-    afc-qualification-2nd-round-group-g | AFC Qualification: 2nd Round: Group G | World Cup Qualifiers: AFC | n 0 | 0 0 
-    afc-qualification-2nd-round-group-h | AFC Qualification: 2nd Round: Group H | World Cup Qualifiers: AFC | n 0 | 0 0 
-    afc-qualification-2nd-round-group-i | AFC Qualification: 2nd Round: Group I | World Cup Qualifiers: AFC | n 0 | 0 0 
-    afc-qualification-1st-round | AFC Qualification: 1st Round | World Cup Qualifiers: AFC | n 0 | 0 0 
-    ofc-qualification-final-stage | OFC Qualification: Final Stage | World Cup Qualifiers: OFC | n 0 | 0 0 
-    ofc-qualification-group-a | OFC Qualification: Group A | World Cup Qualifiers: OFC | n 0 | 0 0 
-    ofc-qualification-group-b | OFC Qualification: Group B | World Cup Qualifiers: OFC | n 0 | 0 0 
-    ofc-qualification-1st-round | OFC Qualification: 1st Round | World Cup Qualifiers: OFC | n 0 | 0 0 
-CAT euro-2024-qualification 200 6776
-    league-a-euro-2024-play-off | League A: Euro 2024 Play-off | EURO 2024 Qualification | n 0 | 0 0 
-    league-b-euro-2024-play-off | League B: Euro 2024 Play-off | EURO 2024 Qualification | n 0 | 0 0 
-    league-c-euro-2024-play-off | League C: Euro 2024 Play-off | EURO 2024 Qualification | n 0 | 0 0 
-    qualification-group-a | Qualification: Group A | EURO 2024 Qualification | n 0 | 0 0 
-    qualification-group-b | Qualification: Group B | EURO 2024 Qualification | n 0 | 0 0 
-    qualification-group-c | Qualification: Group C | EURO 2024 Qualification | n 0 | 0 0 
-    qualification-group-d | Qualification: Group D | EURO 2024 Qualification | n 0 | 0 0 
-    qualification-group-e | Qualification: Group E | EURO 2024 Qualification | n 0 | 0 0 
-    qualification-group-f | Qualification: Group F | EURO 2024 Qualification | n 0 | 0 0 
-    qualification-group-g | Qualification: Group G | EURO 2024 Qualification | n 0 | 0 0 
-    qualification-group-h | Qualification: Group H | EURO 2024 Qualification | n 0 | 0 0 
-    qualification-group-i | Qualification: Group I | EURO 2024 Qualification | n 0 | 0 0 
-    qualification-group-j | Qualification: Group J | EURO 2024 Qualification | n 0 | 0 0 
-CAT euro-2028-qualification 410 0
-CAT uefa-nations-league-2022-2023 200 7678
-    final-2022-2023 | Final 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    3rd-place-play-off-2022-2023 | 3rd Place Play-off 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    semi-finals-2022-2023 | Semi-finals 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-a-group-1-2022-2023 | League A: Group 1 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-a-group-2-2022-2023 | League A: Group 2 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-a-group-3-2022-2023 | League A: Group 3 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-a-group-4-2022-2023 | League A: Group 4 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-b-group-1-2022-2023 | League B: Group 1 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-b-group-2-2022-2023 | League B: Group 2 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-b-group-3-2022-2023 | League B: Group 3 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-b-group-4-2022-2023 | League B: Group 4 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-c-group-1-2022-2023 | League C: Group 1 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-c-group-2-2022-2023 | League C: Group 2 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-c-group-3-2022-2023 | League C: Group 3 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-c-group-4-2022-2023 | League C: Group 4 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-d-group-1-2022-2023 | League D: Group 1 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-d-group-2-2022-2023 | League D: Group 2 22/23 | UEFA Nations League 22/23 | n 0 | 0 0 
-    league-c-relegation-play-offs-2022-2023 | League C: Relegation Play-off | UEFA Nations League 22/23 | n 0 | 0 0 
-ST stage/soccer/world-cup-qualification/uefa-group-a/0 410 0
-ST stage/soccer/euro-2024-qualification/group-a/0 410 0
+LS stage/soccer/france/ligue-1/0? chrome [] 200 309240 nginx 
+LS stage/soccer/france/ligue-1/0? chrome ['Accept-Encoding'] 200 309240 nginx 
+LS stage/soccer/france/ligue-1/0? chrome ['Origin', 'Referer'] 200 309240 nginx 
+LS stage/soccer/france/ligue-1/0? android [] 200 309240 nginx 
+LS stage/soccer/france/ligue-1/0? android ['Accept-Encoding'] 200 309240 nginx 
+LS stage/soccer/france/ligue-1/0? android ['Origin', 'Referer'] 200 309240 nginx 
+LS stage/soccer/france/ligue-1/0? okhttp [] 200 309240 nginx 
+LS stage/soccer/france/ligue-1/0? okhttp ['Accept-Encoding'] 200 309240 nginx 
+LS stage/soccer/france/ligue-1/0? okhttp ['Origin', 'Referer'] 200 309240 nginx 
+LS stage/soccer/france/ligue-1/0? python [] 200 309240 nginx 
+LS stage/soccer/france/ligue-1/0? python ['Accept-Encoding'] 200 309240 nginx 
+LS stage/soccer/france/ligue-1/0? python ['Origin', 'Referer'] 200 309240 nginx 
+LS stage/soccer/france/ligue-1/0? none [] 200 309240 nginx 
+LS stage/soccer/france/ligue-1/0? none ['Accept-Encoding'] 200 309240 nginx 
+LS stage/soccer/france/ligue-1/0? none ['Origin', 'Referer'] 200 309240 nginx 
+LS live/soccer/0?MD=1 chrome [] 200 9223 nginx 
+LS live/soccer/0?MD=1 chrome ['Accept-Encoding'] 200 9325 nginx 
+LS live/soccer/0?MD=1 chrome ['Origin', 'Referer'] 200 9325 nginx 
+LS live/soccer/0?MD=1 android [] 200 9223 nginx 
+LS live/soccer/0?MD=1 android ['Accept-Encoding'] 200 9325 nginx 
+LS live/soccer/0?MD=1 android ['Origin', 'Referer'] 200 9325 nginx 
+LS live/soccer/0?MD=1 okhttp [] 200 9223 nginx 
+LS live/soccer/0?MD=1 okhttp ['Accept-Encoding'] 200 9325 nginx 
+LS live/soccer/0?MD=1 okhttp ['Origin', 'Referer'] 200 9325 nginx 
+LS live/soccer/0?MD=1 python [] 200 9223 nginx 
+LS live/soccer/0?MD=1 python ['Accept-Encoding'] 200 9325 nginx 
+LS live/soccer/0?MD=1 python ['Origin', 'Referer'] 200 9325 nginx 
+LS live/soccer/0?MD=1 none [] 200 9223 nginx 
+LS live/soccer/0?MD=1 none ['Accept-Encoding'] 200 9325 nginx 
+LS live/soccer/0?MD=1 none ['Origin', 'Referer'] 200 9325 nginx 
+LS stage/soccer/germany/bundeslig chrome [] 200 313424 nginx 
+LS stage/soccer/germany/bundeslig chrome ['Accept-Encoding'] 200 313424 nginx 
+LS stage/soccer/germany/bundeslig chrome ['Origin', 'Referer'] 200 313424 nginx 
+LS stage/soccer/germany/bundeslig android [] 200 313424 nginx 
+LS stage/soccer/germany/bundeslig android ['Accept-Encoding'] 200 313424 nginx 
+LS stage/soccer/germany/bundeslig android ['Origin', 'Referer'] 200 313424 nginx 
+LS stage/soccer/germany/bundeslig okhttp [] 200 313424 nginx 
+LS stage/soccer/germany/bundeslig okhttp ['Accept-Encoding'] 200 313424 nginx 
+LS stage/soccer/germany/bundeslig okhttp ['Origin', 'Referer'] 200 313424 nginx 
+LS stage/soccer/germany/bundeslig python [] 200 313424 nginx 
+LS stage/soccer/germany/bundeslig python ['Accept-Encoding'] 200 313424 nginx 
+LS stage/soccer/germany/bundeslig python ['Origin', 'Referer'] 200 313424 nginx 
+LS stage/soccer/germany/bundeslig none [] 200 313424 nginx 
+LS stage/soccer/germany/bundeslig none ['Accept-Encoding'] 200 313424 nginx 
+LS stage/soccer/germany/bundeslig none ['Origin', 'Referer'] 200 313424 nginx 
+ALT https://prod-cdn-public-api.livescore.com/v1/api/app/stage/soccer/france/ligue-1/0?MD=1 200 309240
+ALT https://prod-cdn-mev-api.livescore.com/v1/api/app/stage/soccer/france/ligue-1/0?MD=1 404 9
+ALT https://prod-public-api.livescore.com/v1/api/react/stage/soccer/france/ligue-1/0?MD=1 503 592
