@@ -165,7 +165,11 @@ public class MainActivity extends Activity {
 							int n;
 							while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
 							in.close();
-							body = out.toString("UTF-8");
+							// Zeichensatz aus der Antwort (TFF-Seiten sind windows-1254 = Türkisch)
+							String cs = url.contains("tff.org") ? "windows-1254" : "UTF-8";
+							String ct = c.getContentType();
+							if (ct != null && ct.toLowerCase().contains("charset=")) cs = ct.substring(ct.toLowerCase().indexOf("charset=") + 8).replace("\"", "").split(";")[0].trim();
+							try { body = out.toString(cs); } catch (Exception ce) { body = out.toString("UTF-8"); }
 						}
 						deliver(id, true, code, body);
 					} catch (Exception e) {

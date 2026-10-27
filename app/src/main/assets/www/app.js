@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "3.4";
+var VERSION = "3.5";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -12,7 +12,7 @@ var TXT = {
   stand:"Stand",cDE:"DEUTSCHLAND",cTR:"TÜRKEI",cEU:"EUROPA",cNEWS:"HABERLER",openHint:"▲▼◄► wählen · OK öffnen · ZURÜCK beenden",
   home:"ZURÜCK = Übersicht",exitAgain:"Übersicht · ZURÜCK nochmal = beenden",setHint:"▲▼ wählen · ◄► ändern · ZURÜCK zurück",
   loading:"Lade Daten …",noData:"Keine Daten erreichbar.",noData2:"Internetverbindung prüfen.",noGames:"Keine Spiele gefunden.",
-  noTable:"Keine Tabelle verfügbar.",source:"Daten: LiveScore, FuPa, ESPN",mdNow:"(aktuell)",mdBrowse:"Spieltag",
+  noTable:"Keine Tabelle verfügbar.",source:"Daten: LiveScore, ESPN, FuPa, TFF",mdNow:"(aktuell)",mdBrowse:"Spieltag",
   noMore:"Kein weiterer Spieltag",newsHint:"▲▼ wählen · OK lesen · ◄► Rubrik",articleHint:"▲▼ / ◄► nächste Meldung · OK / ZURÜCK",
   resHint:"◄► Liga · OK Tabelle",tabHint:"◄► Liga · OK Ergebnisse",
   cNAT:"LÄNDERSPIELE",cRANK:"RANGLISTEN",cMORE:"WEITERES",more:"▼ mehr: Länderspiele, Ranglisten",t_more:"wischen ▲ = mehr: Länderspiele, Ranglisten",
@@ -35,7 +35,7 @@ var TXT = {
   stand:"Güncel",cDE:"ALMANYA",cTR:"TÜRKİYE",cEU:"AVRUPA",cNEWS:"HABERLER",openHint:"▲▼◄► seç · OK aç · GERİ çık",
   home:"GERİ = Genel Bakış",exitAgain:"Genel Bakış · tekrar GERİ = çık",setHint:"▲▼ seç · ◄► değiştir · GERİ",
   loading:"Veriler yükleniyor …",noData:"Veri alınamadı.",noData2:"İnternet bağlantısını kontrol et.",noGames:"Maç bulunamadı.",
-  noTable:"Puan durumu yok.",source:"Veri: LiveScore, FuPa, ESPN",mdNow:"(güncel)",mdBrowse:"Hafta",
+  noTable:"Puan durumu yok.",source:"Veri: LiveScore, ESPN, FuPa, TFF",mdNow:"(güncel)",mdBrowse:"Hafta",
   noMore:"Başka hafta yok",newsHint:"▲▼ seç · OK oku · ◄► kategori",articleHint:"▲▼ / ◄► sonraki haber · OK / GERİ",
   resHint:"◄► Lig · OK Puan",tabHint:"◄► Lig · OK Sonuçlar",
   cNAT:"MİLLİ MAÇLAR",cRANK:"SIRALAMALAR",cMORE:"DİĞER",more:"▼ devamı: Milli maçlar, sıralamalar",t_more:"kaydır ▲ = devamı: Milli maçlar, sıralamalar",
@@ -314,8 +314,17 @@ League.prototype.load = function () {
   if (self.ccd === "fupa") return self.loadFupa();
   var p = self.cup ? self.loadCup() : self.loadLs();
   return p.then(function (r) { self.source = "ls"; return r; }, function (e) {
-    if (String(e && e.message).indexOf("403") >= 0 && ESPN_CODES[self.page] && self.c !== "nlg") return self.loadEspn();
-    throw e;
+    var err = String(e && e.message || e);
+    if (self.c === "nlg" || /404|410/.test(err)) throw e;
+    var chain = [];
+    if (ESPN_CODES[self.page]) chain.push(["espn", function () { return self.loadEspn(); }]);
+    if (FUPA_SLUGS[self.page]) chain.push(["fupa", function () { return self.loadFupa(FUPA_SLUGS[self.page]); }]);
+    if (TFF_PAGES[self.page]) chain.push(["tff", function () { return self.loadTff(); }]);
+    var tryNext = function (i) {
+      if (i >= chain.length) throw e;
+      return chain[i][1]().then(function (r) { self.source = chain[i][0]; return r; }, function () { return tryNext(i + 1); });
+    };
+    return tryNext(0);
   });
 };
 League.prototype.loadLs = function () {
@@ -409,10 +418,11 @@ function parseFupaMatch(m, key) {
   return {id: "fupa" + m.id, h: h[0], hsn: h[1], a: a[0], asn: a[1], hs: hs, as: as, state: state, min: minute,
     ts: isoTs(m.kickoff), round: (m.round || {}).number || null, group: "", ut: key, goal_at: 0, goal_by: null};
 }
-League.prototype.loadFupa = function () {
-  var self = this, season = fupaSeason(), base = FUPA + "/competitions/" + self.scd + "/seasons/" + season + "/matches", now = Date.now();
+League.prototype.loadFupa = function (slug) {
+  slug = slug || this.scd;
+  var self = this, season = fupaSeason(), base = FUPA + "/competitions/" + slug + "/seasons/" + season + "/matches", now = Date.now();
   var p;
-  if (!self.allEvents.length || now - (self.tFull || 0) > 3 * 3600 * 1000) {
+  if (!self.allEvents.length || now - (self.tFull || 0) > 3 * 3600 * 1000 || (self.source && self.source !== "fupa")) {
     var raw = [];
     var page = function (n) {
       return getJSON(base + "?limit=100&page=" + n).then(function (part) {
@@ -432,7 +442,7 @@ League.prototype.loadFupa = function () {
   }
   return p.then(function (evs) {
     self.setEvents(evs);
-    return getJSON(FUPA + "/standings?competition=" + self.scd + "&season=" + season);
+    return getJSON(FUPA + "/standings?competition=" + slug + "&season=" + season);
   }).then(function (d) {
     var marks = {up1: "g", up2: "c", down1: "y", down2: "r"};
     var rows = ((d || {}).standings || []).map(function (r) {
@@ -440,6 +450,69 @@ League.prototype.loadFupa = function () {
       return {pos: r.rank || 0, tm: nm[0], short: nm[1], p: r.matches || 0, w: r.wins || 0, d: r.draws || 0, l: r.defeats || 0,
         gf: r.ownGoals || 0, ga: r.againstGoals || 0, pts: r.points || 0, zone: z};
     });
+    self.tables = rows.length ? [["", rows]] : [];
+    self.rnames = {};
+    self.tLoad = Date.now() / 1000; self.error = null;
+  });
+};
+/* Ersatzquelle TFF (türkische Ligen): Tabelle und Spielplan von tff.org */
+var TFF_PAGES = {300: [198, null], 310: [142, null], 320: [976, "Beyaz"], 322: [976, "Kırmızı"]};
+var FUPA_SLUGS = {200: "bundesliga", 210: "2-bundesliga", 220: "3-liga", 230: "regionalliga-suedwest", 240: "regionalliga-west",
+  250: "regionalliga-bayern", 260: "regionalliga-nord", 270: "regionalliga-nordost", 280: "oberliga-baden-wuerttemberg"};
+function trTitle(w) {
+  return w.split(/\s+/).map(function (word) {
+    if (/^\d+$/.test(word) || ["FK", "SK", "SMS", "GMG", "AŞ", "BB", "TFF"].indexOf(word) >= 0) return word;
+    return word.charAt(0) + word.slice(1).split("").map(function (c) { return c === "I" ? "ı" : (c === "İ" ? "i" : c.toLowerCase()); }).join("");
+  }).join(" ");
+}
+function tffName(n) {
+  n = String(n || "").replace(/\s+/g, " ").trim();
+  n = n.replace(" FUTBOL KULÜBÜ", " FK").replace(" FUTBOL SK", " SK").replace(" FUTBOL A.Ş.", "");
+  n = n.replace(/\s+(A\.Ş\.|SPOR KULÜBÜ|KULÜBÜ)$/, "");
+  return trTitle(n);
+}
+function parseTff(html, key, group) {
+  var rows = [], m, rx = /lnkTakim"[^>]*>(\d+)\.([^<]+)<\/a>([\s\S]*?)<\/tr>/g;
+  while ((m = rx.exec(html))) {
+    var nums = (m[3].match(/<span[^>]*>(-?\d+)<\/span>/g) || []).map(function (x) { return +x.replace(/<[^>]+>/g, ""); });
+    if (nums.length >= 8) rows.push({pos: +m[1], tm: tffName(m[2]), short: "", p: nums[0], w: nums[1], d: nums[2], l: nums[3], gf: nums[4], ga: nums[5], pts: nums[7], zone: null});
+  }
+  var dates = {}, rd = /lblTarih">([\d.]+)<\/span>(?:&nbsp;|\s)*<span[^>]*lbl?Saat">([\d:]*)<\/span>[\s\S]*?macId=(\d+)/g;
+  while ((m = rd.exec(html))) {
+    var dmy = m[1].split("."), hm = (m[2] || "0:0").split(":");
+    dates[m[3]] = Date.UTC(+dmy[2], +dmy[1] - 1, +dmy[0], +hm[0] || 0, +hm[1] || 0) / 1000 - 3 * 3600;
+  }
+  var start = html.indexOf("Fikstür Listesi"), end = html.length;
+  if (group) { var g = html.indexOf("<br/>" + group + " Grup<br/>"); if (g >= 0) start = g; var nx = html.indexOf("Panel1", start + 200); if (nx > 0) end = nx; }
+  var sec = start >= 0 ? html.slice(start, end) : "", evs = [], weeks = [], rw = /(\d+)\.Hafta<\/td>/g;
+  while ((m = rw.exec(sec))) weeks.push([+m[1], rw.lastIndex]);
+  weeks.forEach(function (w, i) {
+    var blk = sec.slice(w[1], i + 1 < weeks.length ? weeks[i + 1][1] : sec.length), r2 = /kulupId=\d+">([^<]+)<\/a><\/td>\s*<td[^>]*><a href="[^"]*macId=(\d+)">([^<]*)<\/a><\/td>\s*<td[^>]*><a href="[^"]*kulupId=\d+">([^<]+)<\/a>/g, x;
+    while ((x = r2.exec(blk))) {
+      var sc = /^\s*(\d+)\s*-\s*(\d+)\s*$/.exec(x[3]), ts = dates[x[2]] || 0;
+      evs.push({id: "tff" + x[2], h: tffName(x[1]), hsn: "", a: tffName(x[4]), asn: "", hs: sc ? +sc[1] : null, as: sc ? +sc[2] : null,
+        state: sc ? "post" : "pre", min: "", ts: ts, nodate: !ts, round: w[0], group: "", ut: key, goal_at: 0, goal_by: null});
+    }
+  });
+  return [evs, rows];
+}
+League.prototype.loadTff = function () {
+  var self = this, cfgT = TFF_PAGES[self.page], url = "https://www.tff.org/Default.aspx?pageID=" + cfgT[0];
+  return httpGet(url).then(function (html) {
+    if (!cfgT[1]) return html;
+    var m = new RegExp('grupID=(\\d+)#hmac"[^>]*>\\s*' + cfgT[1]).exec(html);
+    return m ? httpGet(url + "&grupID=" + m[1]) : html;
+  }).then(function (html) {
+    var r = parseTff(html, self.ut, cfgT[1]), evs = r[0], rows = r[1];
+    if (!evs.length && !rows.length) throw new Error("TFF: keine Daten");
+    var am = /haftaNoActive><a href=[^>]*hafta=(\d+)/.exec(html), active = am ? +am[1] : null;
+    if (!active) { var dated = evs.filter(function (e) { return e.ts; }).map(function (e) { return e.round; }); active = dated.length ? Math.min.apply(null, dated) : null; }
+    if (active) evs.forEach(function (e) { if (e.state === "pre" && e.round < active) e.state = "pp"; });
+    var cur = null; evs.forEach(function (e) { if (e.state === "pre") cur = cur === null ? e.round : Math.min(cur, e.round); });
+    var now = Date.now() / 1000;
+    evs.forEach(function (e) { if (!e.ts) e.ts = now + (e.round - (cur || e.round)) * 7 * 86400 - (e.state === "post" ? 3600 : 0); });
+    self.rnames = {};
+    self.setEvents(evs, true);
     self.tables = rows.length ? [["", rows]] : [];
     self.tLoad = Date.now() / 1000; self.error = null;
   });
@@ -526,7 +599,39 @@ STORE.leagueOfStage = function (ccd, scd) {
   for (var i = 0; i < this.leagues.length; i++) if (this.leagues[i].matchesStage(ccd, scd)) return this.leagues[i];
   return null;
 };
+function espnDay(key, onlyLive) {
+  return Promise.all(Object.keys(ESPN_CODES).map(function (pg) {
+    var lg = STORE.leagueByPage(+pg); if (!lg) return null;
+    return rawJSON(ESPN + "/" + ESPN_CODES[pg] + "/scoreboard?dates=" + key).then(function (j) {
+      var evs = (j.events || []).map(function (ev) { return parseEspnEvent(ev, lg.ut); });
+      if (onlyLive) evs = evs.filter(function (e) { return e.state === "in" || e.state === "ht"; });
+      return evs.length ? [lg, evs] : null;
+    }, function () { return null; });
+  })).then(function (a) { return a.filter(function (x) { return x; }); });
+}
+function fupaDay(key) {
+  var day = key.slice(0, 4) + "-" + key.slice(4, 6) + "-" + key.slice(6, 8);
+  return Promise.all(Object.keys(FUPA_SLUGS).filter(function (pg) { return !ESPN_CODES[pg]; }).map(function (pg) {
+    var lg = STORE.leagueByPage(+pg); if (!lg) return null;
+    return rawJSON(FUPA + "/competitions/" + FUPA_SLUGS[pg] + "/seasons/" + fupaSeason() + "/matches?from=" + day + "&to=" + day).then(function (lst) {
+      var evs = (lst || []).map(function (m) { return parseFupaMatch(m, lg.ut); });
+      return evs.length ? [lg, evs] : null;
+    }, function () { return null; });
+  })).then(function (a) { return a.filter(function (x) { return x; }); });
+}
 STORE.fetchLive = function () {
+  return STORE.fetchLiveLs().catch(function (e) {
+    if (/404|410/.test(String(e && e.message))) throw e;
+    var d = new Date(), key = d.getFullYear() + two(d.getMonth() + 1) + two(d.getDate());
+    return espnDay(key, true).then(function (list) {
+      var out = {};
+      list.forEach(function (x) { x[1].forEach(function (pe) { out[pe.id] = pe; }); });
+      STORE.leagues.forEach(function (lg) { lg.events.forEach(function (pe) { if ((pe.state === "in" || pe.state === "ht") && !out[pe.id]) out[pe.id] = pe; }); });
+      return out;
+    });
+  });
+};
+STORE.fetchLiveLs = function () {
   return getJSON(BASE + "/live/soccer/0?MD=1").then(function (d) {
     var out = {};
     (d.Stages || []).forEach(function (st) {
@@ -538,15 +643,21 @@ STORE.fetchLive = function () {
 };
 STORE.days = {};
 STORE.fetchDay = function (key) {
-  return getJSON(BASE + "/date/soccer/" + key + "/0?MD=1").then(function (d) {
+  return getJSON(BASE + "/date/soccer/" + key + "/0?MD=1").catch(function (e) {
+    if (/404|410/.test(String(e && e.message))) throw e;
+    return Promise.all([espnDay(key, false), fupaDay(key)]).then(function (r) { return {Stages: [], __fb: r[0].concat(r[1])}; });
+  }).then(function (d) {
     var by = {};
+    (d.__fb || []).forEach(function (x) { by[x[0].page] = x[1]; });
     (d.Stages || []).forEach(function (st) {
       var lg = STORE.leagueOfStage(st.Ccd, st.Scd); if (!lg) return;
       (st.Events || []).forEach(function (e) { (by[lg.page] = by[lg.page] || []).push(parseEvent(e, lg.ut)); });
     });
     var t0 = new Date(+key.slice(0, 4), +key.slice(4, 6) - 1, +key.slice(6, 8)).getTime() / 1000;
     STORE.leagues.forEach(function (lg) {
-      if (lg.ccd === "fupa" && lg.allEvents.length) { var ev = lg.allEvents.filter(function (e) { return e.ts >= t0 && e.ts < t0 + 86400; }); if (ev.length) by[lg.page] = ev; }
+      if ((lg.ccd === "fupa" || (lg.source === "tff" && !by[lg.page])) && lg.allEvents.length) {
+        var ev = lg.allEvents.filter(function (e) { return e.ts >= t0 && e.ts < t0 + 86400 && !e.nodate; }); if (ev.length) by[lg.page] = ev;
+      }
     });
     var out = [];
     STORE.leagues.forEach(function (lg) { if (by[lg.page]) out.push([lg, by[lg.page].sort(function (a, b) { return a.ts - b.ts || (a.h < b.h ? -1 : 1); })]); });
@@ -697,6 +808,7 @@ var COL = PAL_TT;
 var PAGE_BG = {black: "#000000", navy: "#06103a"};
 var COUNTRY_BG = {de: ["r", "w"], tr: ["g", "k"], eu: ["y", "k"], nat: ["c", "k"]};
 var IDX_ROWS = 20;
+var SRC_TAG = {espn: " · ESPN", tff: " · TFF", fupa: " · FuPa"};
 function isFavFirst(name) { return isFav(name) && !/\b(II|U ?2\d|U ?19|U ?17)\b/.test(name || ""); }
 function modern() { return cfg("style") === "modern"; }
 function seg(col, width, text, fg, bg, al, blink) { return [col, width, text, fg || "w", bg || null, al || "l", !!blink]; }
@@ -937,6 +1049,7 @@ function blank() { return [null, []]; }
 function chunk(lines, n) { n = n || 20; var out = []; for (var i = 0; i < lines.length; i += n) out.push(lines.slice(i, i + n)); return out.length ? out : [[]]; }
 function dayLabel(ts) { var d = new Date(ts * 1000); return T("days")[d.getDay()] + " " + two(d.getDate()) + "." + two(d.getMonth() + 1) + "."; }
 function statusSegs(e) {
+  if (e.state === "pre" && e.nodate) return [seg(0, 6, "", "w")];
   if (e.state === "pre") { var d = new Date(e.ts * 1000); return [seg(0, 6, two(d.getHours()) + ":" + two(d.getMinutes()), "w")]; }
   if (e.state === "post") return [seg(0, 6, T("ft"), "d")];
   if (e.state === "pp") return [seg(0, 6, T("pp"), "r")];
@@ -965,7 +1078,7 @@ function resultLines(events) {
     var la = (a.state === "in" || a.state === "ht") ? 0 : 1, lb = (b.state === "in" || b.state === "ht") ? 0 : 1;
     return la - lb || a.ts - b.ts || (a.h < b.h ? -1 : 1);
   }).forEach(function (e) {
-    var live = e.state === "in" || e.state === "ht", dl = live ? "● " + up(T("live")) : dayLabel(e.ts);
+    var live = e.state === "in" || e.state === "ht", dl = live ? "● " + up(T("live")) : (e.nodate ? "" : dayLabel(e.ts));
     if (dl !== last) { out.push(text(dl, live ? "g" : "c")); last = dl; }
     out.push(zebra(resRow(e), n++));
   });
@@ -1069,14 +1182,14 @@ function subpages() {
           continue;
         }
         var hint = rnd ? lbl + (rnd === lg.round ? "  " + T("mdNow") : "") + "   " + (TOUCH ? T("mdArrows") : "▲▼") + " " + T("mdBrowse") + " · " + T("resHint") : T("resHint");
-        chunk(lines).forEach(function (ch) { subs.push({ban: [gt, up(T("results")) + (lg.source === "espn" ? " · ESPN" : "")], bg: bgc, head: infoHead(hint), lines: ch}); });
+        chunk(lines).forEach(function (ch) { subs.push({ban: [gt, up(T("results")) + (SRC_TAG[lg.source] || "")], bg: bgc, head: infoHead(hint), lines: ch}); });
       } else {
         if (stl) lines = stl;
         else {
           var tabs = lg.tables.filter(function (x) { return match(x[0]); });
           lines = tabs.length ? tableLines(lg, tabs[0][1], pgi) : [blank(), text(T("noTable"), "c")];
         }
-        chunk(lines).forEach(function (ch) { subs.push({ban: [gt, up(STORE.liveCountView(lg, pgi) ? T("liveTable") : T("table")) + (lg.source === "espn" ? " · ESPN" : "")], bg: bgc, head: tableHead(), lines: ch}); });
+        chunk(lines).forEach(function (ch) { subs.push({ban: [gt, up(STORE.liveCountView(lg, pgi) ? T("liveTable") : T("table")) + (SRC_TAG[lg.source] || "")], bg: bgc, head: tableHead(), lines: ch}); });
       }
       if (stl) break;
     }
