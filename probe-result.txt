@@ -1,15 +1,6 @@
-ESPN 20260925 200 8 ['Latvia at Armenia', 'Northern Ireland at Georgia', 'Ukraine at Hungary'] {'year': 2026, 'type': 14105, 'slug': 'league-phase'}
-ESPN 20261010 200 0 [] 
-ESPN 20261013 200 0 [] 
-ESPN 20261114 200 8 ['Israel at Kosovo', 'Hungary at Georgia', 'Wales at Norway'] {'year': 2026, 'type': 14105, 'slug': 'league-phase'}
-ESPN 20261117 200 8 ['Romania at Bosnia-Herzegovina', 'Norway at Denmark', 'Northern Ireland at Hungary'] {'year': 2026, 'type': 14105, 'slug': 'league-phase'}
-ESPN-ST 200 171193 {"uid":"s:600~l:2395","id":"8675309","name":"UEFA Nations League","abbreviation":"UEFA Nations League","children":[{"uid":"s:600~l:2395~g:1","id":"1","name":"Group A1","abbreviation":"Group A1","standings":{"id":"0","name":"overall","displayName":"Standings","links":[{"language":"en-US","rel":["stan
-UEFA-M 2560 200 []
-UEFA-M 3 200 []
-UEFA-M 17 200 []
-UEFA-M 18 200 []
-UEFA-M 2014 200 [('UEFA Nations League', '2026-09-24', 'Andorra', 'League phase'), ('UEFA Nations League', '2026-09-24', 'Portugal', 'League phase'), ('UEFA Nations League', '2026-09-24', 'Netherlands', 'League phase')]
-UEFA-M 39 200 [("FIFA Women's World Cup", '2025-02-21', 'Armenia', 'UWNL League Stage'), ("FIFA Women's World Cup", '2025-02-21', 'Bosnia and Herzegovina', 'UWNL League Stage'), ("FIFA Women's World Cup", '2025-02-21', 'Bulgaria', 'UWNL League Stage')]
-UEFA-M 5 200 []
-UEFA-ST 404 160 {"error":{"message":"Failed to retrieve groups using competition=2560, season=2027, phase=TOURNAMENT, offset=0 and limit=100","status":404,"title":"Not Found"}}
-LS-NL 200 {"Stages":[{"Sid":"24566","Snm":"UEFA Nations League A Grp. 1","Scd":"league-a-group-1","badgeUrl":"uefa-nations-league-2024.png","Cid":"463","Cnm":"UEFA Nations League","CnmT":"uefa-nations-league","Csnm":"UEFA Nations League","Ccd":"uefa-nations-league","CompId":"523","CompN":"UEFA Nations League","CompD":"UEFA","CompUrlName":"uefa-nations-league","Scu":0,"Sds":"League A: Group 1","Chi":0,"Shi":
+CAL [{"label": "UEFA Nations League", "startDate": "2026-06-01T04:00Z", "endDate": "2028-04-01T03:59Z", "entries": [{"label": "League Phase", "detail": "Sep 24-Nov 17", "value": "1", "startDate": "2026-04-02T07:00Z", "endDate": "2026-11-19T07:59Z"}, {"label": "Quarterfinals", "detail": "Nov 19-Mar 31", "value": "2", "startDate": "2026-11-19T08:00Z", "endDate": "2027-04-01T06:59Z"}, {"label": "Relegation Playoffs", "detail": "Nov 19-Apr 2", "value": "3", "startDate": "2026-11-19T08:00Z", "endDate": "2028-04-03T06:59Z"}, {"label": "Semifinals", "detail": "Apr 1-Jun 11", "value": "4", "startDate": "2027-04-01T07:00Z", "endDate": "2027-06-12T06:59Z"}, {"label": "3rd-Place Match", "detail": "Jun 12-14", "value": "5", "startDate": "2027-06-12T07:00Z", "endDate": "2027-06-15T06:59Z"}, {"label": "Final", "detail": "Jun 12-14", "value": "6", "startDate": "2027-06-12T07:00Z", "endDate": "2027-06-15T06:59Z"}]}]
+SB0 200 ['2026-11-12T17:00Z', '2026-11-12T17:00Z', '2026-11-12T19:45Z', '2026-11-12T19:45Z', '2026-11-12T19:45Z', '2026-11-12T19:45Z', '2026-11-12T19:45Z', '2026-11-12T19:45Z']
+RNG 400 {"code":400,"message":"Failed to get events endpoint."}
+UEFA-M 200 2629676
+UEFA-ST 200 144933 [{"group":{"competitionId":"2014","id":"2014191","league":{"competitionId":"2014","id":"126","metaData":{"leagueName":"League A","leagueShortName":"LA"},"order":1,"phase":"TOURNAMENT","roundId":"20022
+LS 200 63888
