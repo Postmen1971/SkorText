@@ -26,21 +26,24 @@ jobs:
           os.makedirs("samples", exist_ok=True)
           import re, collections
           B = "https://prod-public-api.livescore.com/v1/api/app"
-          def get(u):
-              return requests.get(u, headers=H, timeout=25)
-          for c in ["uefa-nations-league", "world-cup-qualification", "euro-2024-qualification", "euro-2028-qualification", "uefa-nations-league-2022-2023"]:
+          UAS = {"chrome": H["User-Agent"], "android": "Dalvik/2.1.0 (Linux; U; Android 11; SHIELD Android TV Build/RQ1A.210105.003)",
+                 "okhttp": "okhttp/4.9.0", "python": "python-requests/2.31", "none": ""}
+          for u in ["stage/soccer/france/ligue-1/0?MD=1", "live/soccer/0?MD=1", "stage/soccer/germany/bundesliga/0?MD=1"]:
+              for name, ua in UAS.items():
+                  for extra in [{}, {"Accept-Encoding": "gzip"}, {"Origin": "https://www.livescore.com", "Referer": "https://www.livescore.com/"}]:
+                      try:
+                          h = {"Accept": "application/json, */*"}
+                          if ua: h["User-Agent"] = ua
+                          h.update(extra)
+                          r = requests.get("%s/%s" % (B, u), headers=h, timeout=20)
+                          OUT.append(print_("LS", u[:30], name, list(extra.keys()), r.status_code, len(r.text), r.headers.get("server"), r.text[:80].replace("\n"," ") if r.status_code != 200 else ""))
+                      except Exception as ex:
+                          OUT.append(print_("ERR", u, name, ex))
+          for u in ["https://prod-cdn-public-api.livescore.com/v1/api/app/stage/soccer/france/ligue-1/0?MD=1",
+                    "https://prod-cdn-mev-api.livescore.com/v1/api/app/stage/soccer/france/ligue-1/0?MD=1",
+                    "https://prod-public-api.livescore.com/v1/api/react/stage/soccer/france/ligue-1/0?MD=1"]:
               try:
-                  r = get("%s/category/soccer/%s/0?MD=1" % (B, c))
-                  OUT.append(print_("CAT", c, r.status_code, len(r.text)))
-                  if r.status_code == 200:
-                      for st in r.json().get("Stages", []):
-                          ev = st.get("Events", [])
-                          OUT.append(print_("   ", st.get("Scd"), "|", st.get("Snm"), "|", st.get("CompN"), "| n", len(ev), "|", min([e.get("Esd") for e in ev] or [0]), max([e.get("Esd") for e in ev] or [0]), "| LT" if st.get("LeagueTable") else ""))
-              except Exception as ex:
-                  OUT.append(print_("ERR", c, ex))
-          for u in ["stage/soccer/world-cup-qualification/uefa-group-a/0", "stage/soccer/euro-2024-qualification/group-a/0"]:
-              try:
-                  r = get("%s/%s?MD=1" % (B, u)); OUT.append(print_("ST", u, r.status_code, len(r.text)))
+                  r = requests.get(u, headers=H, timeout=20); OUT.append(print_("ALT", u, r.status_code, len(r.text)))
               except Exception as ex:
                   OUT.append(print_("ERR", u, ex))
           open('probe-result.txt','w').write('\n'.join(OUT))
