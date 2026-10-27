@@ -27,24 +27,27 @@ jobs:
           OUT = []
           def print_(*a): return ' '.join(str(x) for x in a)
           os.makedirs("samples", exist_ok=True)
-          import re, collections, sys, time
-          sys.path.insert(0, "repo0/enigma2/usr/lib/enigma2/python/Plugins/Extensions/SkorText")
-          import data
-          data.LS_STATE["pause"] = time.time() + 99999   # LiveScore gesperrt wie bei Aziz
-          for pg in (200, 210, 300, 400, 410):
-              lg = data.STORE.league_by_page(pg)
-              t0 = time.time()
+          import re, collections, time
+          def get(u):
               try:
-                  lg.load()
-              except Exception as e:
-                  OUT.append(print_(pg, "FEHLER", e)); continue
-              OUT.append(print_(pg, lg.source, "Spieltag", lg.round, "max", lg.max_round, "off", getattr(lg, "espn_off", "-"), "%.1fs" % (time.time()-t0)))
-              for n in (1, lg.round - 3, lg.round + 2, lg.max_round):
-                  ev = lg.events_of_round(n)
-                  if ev is None:
-                      lg.load_round(n); ev = lg.events_of_round(n)
-                  OUT.append(print_("   MD", n, len(ev or []), [(e["h"], e["hs"], e["as"], e["a"], time.strftime("%d.%m", time.gmtime(e["ts"]))) for e in (ev or [])[:2]]))
-          t0 = time.time(); data.NAT.load(); OUT.append(print_("NAT", data.NAT.kind, len(data.NAT.groups), "%.1fs" % (time.time()-t0)))
+                  r = requests.get(u, headers=H, timeout=30); return r.status_code, r.text
+              except Exception as e: return 0, str(e)
+          LS = "https://prod-public-api.livescore.com/v1/api/app"
+          for cc in ["netherlands", "portugal", "belgium", "scotland", "austria", "switzerland", "greece", "england", "denmark", "spain", "italy", "germany", "poland", "czech-republic", "norway", "sweden"]:
+              s, t = get(LS + "/category/soccer/%s/0?MD=1" % cc)
+              try:
+                  j = json.loads(t); OUT.append(print_("LS", cc, s, [(st.get("Scd"), st.get("Snm"), len(st.get("Events") or [])) for st in j.get("Stages", [])][:14]))
+              except Exception: OUT.append(print_("LS", cc, s, t[:100]))
+          for code in ["ned.1", "por.1", "bel.1", "sco.1", "aut.1", "sui.1", "gre.1", "eng.2", "den.1", "esp.2", "ita.2", "fra.2", "pol.1", "cze.1", "nor.1", "swe.1"]:
+              s, t = get("https://site.api.espn.com/apis/v2/sports/soccer/%s/standings" % code)
+              try:
+                  j = json.loads(t); ch = j.get("children") or []
+                  OUT.append(print_("ESPN", code, s, j.get("name"), [(c.get("name"), len((c.get("standings") or {}).get("entries") or [])) for c in ch]))
+              except Exception: OUT.append(print_("ESPN", code, s, t[:100]))
+              s, t = get("https://site.api.espn.com/apis/site/v2/sports/soccer/%s/scoreboard" % code)
+              try:
+                  j = json.loads(t); lg0 = (j.get("leagues") or [{}])[0]; OUT.append(print_("   SB", len(j.get("events", [])), lg0.get("calendarType"), len(lg0.get("calendar") or [])))
+              except Exception: pass
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
