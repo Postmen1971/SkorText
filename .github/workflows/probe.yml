@@ -25,10 +25,11 @@ jobs:
           def print_(*a): return ' '.join(str(x) for x in a)
           os.makedirs("samples", exist_ok=True)
           import re, collections
-          for pid, name in [(142, "tff_1lig"), (976, "tff_2lig")]:
-              r = requests.get("https://www.tff.org/default.aspx?pageID=%d" % pid, headers=H, timeout=30)
-              open("samples/%s.html" % name, "w").write(r.text)
-              OUT.append(print_("TFF", pid, r.status_code, len(r.text), r.encoding))
+          r = requests.get("https://www.tff.org/Default.aspx?pageID=288", headers=H, timeout=30)
+          open("samples/tff_kupa.html", "w").write(r.text)
+          OUT.append(print_("KUPA", r.status_code, len(r.text), re.findall(r'class="moduleTitle">([^<]+)<', r.text)))
+          for m in re.finditer(r'pageI[Dd]=(\d+)[^"]*"[^>]*>\s*(?:<span[^>]*>)?([^<]{3,60})<', r.text):
+              if re.search(r"(?i)tur|grup|kupa|final|2026", m.group(2)): OUT.append(print_("  LINK", m.group(1), m.group(2).strip()))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
