@@ -42,7 +42,21 @@ LEAGUES = [
 	(440, "eu", "champions-league", "league-stage", u"Champions League", u"Şampiyonlar Ligi", u""),
 	(450, "eu", "europa-league", "league-stage", u"Europa League", u"Avrupa Ligi", u""),
 	(460, "eu", "conference-league", "league-stage", u"Conference League", u"Konferans Ligi", u""),
+	# weitere Ligen Europas - erst nach Haken in den Einstellungen (Seite 910) sichtbar
+	(700, "eu", "holland", "eredivisie", u"Eredivisie", u"Eredivisie", u"NED"),
+	(710, "eu", "portugal", "primeira-liga", u"Liga Portugal", u"Portekiz Ligi", u"POR"),
+	(720, "eu", "belgium", "belgian-pro-league-2025", u"Pro League", u"Belçika Ligi", u"BEL"),
+	(730, "eu", "scotland", "scotland-premiership", u"Premiership", u"İskoçya Ligi", u"SCO"),
+	(740, "eu", "austria", "bundesliga", u"Bundesliga", u"Avusturya Ligi", u"AUT"),
+	(750, "eu", "switzerland", "super-league", u"Super League", u"İsviçre Ligi", u"SUI"),
+	(760, "eu", "greece", "super-league", u"Super League", u"Yunanistan Ligi", u"GRE"),
+	(770, "eu", "england", "championship", u"Championship (2. Liga)", u"Championship", u"ENG"),
+	(780, "eu", "spain", "laliga-2", u"LaLiga 2", u"LaLiga 2", u"ESP"),
+	(790, "eu", "italy", "serie-b", u"Serie B", u"Serie B", u"ITA"),
+	(800, "eu", "france", "ligue-2", u"Ligue 2", u"Ligue 2", u"FRA"),
+	(810, "eu", "denmark", "superliga", u"Superliga", u"Danimarka Ligi", u"DEN"),
 ]
+EXTRA_PAGES = (700, 710, 720, 730, 740, 750, 760, 770, 780, 790, 800, 810)
 
 # LiveScore schreibt deutsche Vereine teils englisch / ohne Umlaute
 NAME_FIX = [
@@ -338,7 +352,9 @@ def infer_rounds(evs):
 ESPN = "https://site.api.espn.com/apis/site/v2/sports/soccer"
 ESPN_TAB = "https://site.api.espn.com/apis/v2/sports/soccer"
 ESPN_CODES = {200: "ger.1", 210: "ger.2", 295: "ger.dfb_pokal", 300: "tur.1", 400: "eng.1", 410: "esp.1", 420: "ita.1",
-	430: "fra.1", 440: "uefa.champions", 450: "uefa.europa", 460: "uefa.europa.conf"}
+	430: "fra.1", 440: "uefa.champions", 450: "uefa.europa", 460: "uefa.europa.conf",
+	700: "ned.1", 710: "por.1", 720: "bel.1", 730: "sco.1", 740: "aut.1", 750: "sui.1", 760: "gre.1", 770: "eng.2",
+	780: "esp.2", 790: "ita.2", 800: "fra.2", 810: "den.1"}
 FUPA_SLUGS = {200: "bundesliga", 210: "2-bundesliga", 220: "3-liga", 230: "regionalliga-suedwest", 240: "regionalliga-west",
 	250: "regionalliga-bayern", 260: "regionalliga-nord", 270: "regionalliga-nordost", 280: "oberliga-baden-wuerttemberg"}
 ESPN_NAMES = [(u"Bayern Munich", u"Bayern München"), (u"1. FC Union Berlin", u"Union Berlin"), (u"Borussia Monchengladbach", u"Borussia M'gladbach"),
@@ -1445,6 +1461,7 @@ class DataStore(object):
 		self.live_error = None
 		self.goals = []      # [(zeit, event)]
 		self.loading_live = False
+		self.is_on = lambda page: True   # wird vom Plugin gesetzt (Ligen-Auswahl)
 
 	def all_views(self):
 		return [(lg, lg.page, None) for lg in self.leagues if lg.c != "nlg"]
@@ -1476,19 +1493,21 @@ class DataStore(object):
 
 	def league_of_stage(self, ccd, scd):
 		lg = self.by_ut.get("%s/%s" % (ccd, scd))
-		if lg is not None:
-			return lg
-		for l in self.leagues:
-			if isinstance(l, CupLeague) and l.matches_stage(ccd, scd):
-				return l
-		return None
+		if lg is None:
+			for l in self.leagues:
+				if isinstance(l, CupLeague) and l.matches_stage(ccd, scd):
+					lg = l
+					break
+		if lg is not None and lg.c != "nlg" and not self.is_on(lg.page):
+			return None  # in den Einstellungen ausgeblendet
+		return lg
 
 	def espn_day(self, ymd, only_live=False):
 		"""Ersatz: Spiele eines Tages von ESPN (fuer 500 / 510, wenn LiveScore sperrt)."""
 		out = []
 		for page, code in sorted(ESPN_CODES.items()):
 			lg = self.league_by_page(page)
-			if lg is None:
+			if lg is None or not self.is_on(page):
 				continue
 			try:
 				d = fetch_json("%s/%s/scoreboard?dates=%s" % (ESPN, code, ymd), timeout=15)
@@ -1509,7 +1528,7 @@ class DataStore(object):
 			if page in ESPN_CODES:
 				continue
 			lg = self.league_by_page(page)
-			if lg is None:
+			if lg is None or not self.is_on(page):
 				continue
 			try:
 				lst = fetch_json("%s/competitions/%s/seasons/%s/matches?from=%s&to=%s" % (FUPA, slug, fupa_season(), day, day), timeout=15)

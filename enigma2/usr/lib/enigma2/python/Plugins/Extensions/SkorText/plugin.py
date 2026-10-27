@@ -13,17 +13,17 @@ from Components.ActionMap import NumberActionMap
 from Components.MenuList import MenuList
 from Components.MultiContent import MultiContentEntryText
 from Components.Label import Label
-from Components.config import config, ConfigSubsection, ConfigSelection, configfile
+from Components.config import config, ConfigSubsection, ConfigSelection, ConfigText, configfile
 from Plugins.Plugin import PluginDescriptor
 from twisted.internet import threads
 
-from .data import STORE, RATE, log, nice_error, RANKINGS, ranking_by_page, FupaLeague, fupa_today, NAT, get_url_json, fetch_bytes
+from .data import EXTRA_PAGES, STORE, RATE, log, nice_error, RANKINGS, ranking_by_page, FupaLeague, fupa_today, NAT, get_url_json, fetch_bytes
 from .texts import TXT, SETTINGS, tr_upper, nation, FAV_LEAGUES
 from .news import FEED_LIST, feed_by_page
 
 PY2 = sys.version_info[0] == 2
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "3.8.0"
+VERSION = "3.9.0"
 
 
 def E(s):
@@ -51,6 +51,9 @@ for _k, _lbl, _opts, _info in SETTINGS:
 	setattr(config.plugins.SkorText, _k, ConfigSelection(default=E(_opts[0][0]), choices=[(E(o[0]), E(o[1])) for o in _opts]))
 
 
+config.plugins.SkorText.lgsel = ConfigText(default="", fixed_size=False)
+
+
 def cfg(key):
 	return U(getattr(config.plugins.SkorText, key).value)
 
@@ -67,6 +70,33 @@ def set_cfg(key, val):
 
 def T(key):
 	return TXT[cfg("lang")][key]
+
+
+# ---------------- Ligen-Auswahl (Seite 910) ----------------
+# gespeichert werden nur die Seiten, die vom Standard abweichen:
+# Standard an = alles Bisherige, Standard aus = die weiteren Ligen Europas
+def lg_toggled():
+	out = set()
+	for x in cfg("lgsel").split(u","):
+		try:
+			out.add(int(x))
+		except ValueError:
+			pass
+	return out
+
+
+def page_on(p):
+	t = lg_toggled()
+	return (p in t) if p in EXTRA_PAGES else (p not in t)
+
+
+def toggle_page(p):
+	t = lg_toggled()
+	t.symmetric_difference_update([p])
+	set_cfg("lgsel", u",".join(u"%d" % x for x in sorted(t)))
+
+
+STORE.is_on = page_on
 
 
 def mk_timer(owner, cb):
@@ -200,6 +230,7 @@ class SkorText(Screen):
 		self.msg_until = 0
 		self.idx = [0, 1]
 		self.set_sel = 0
+		self.ls_sel = 200
 		self.tick_sel = 0
 		self.news_sel = 0
 		self.news_open = None
@@ -583,6 +614,8 @@ class SkorText(Screen):
 			return "live"
 		if p == 900:
 			return "set"
+		if p == 910:
+			return "lsel"
 		if p == 110:
 			return "fav"
 		if p == 470:
@@ -602,7 +635,7 @@ class SkorText(Screen):
 		pages = [100, 110, 150, 190, 470]
 		for lg, base, gi in STORE.all_views():
 			pages += [base, base + 1]
-		return sorted(pages + [500, 510] + [r.page for r in RANKINGS] + [f.page for f in FEED_LIST] + [900])
+		return sorted(pages + [500, 510] + [r.page for r in RANKINGS] + [f.page for f in FEED_LIST] + [900, 910])
 
 	def go(self, p, quiet=False):
 		if self.page_type(p) is None:
@@ -676,6 +709,10 @@ class SkorText(Screen):
 			self.news_key(k)
 			self.draw()
 			return
+		if k == "exit" and t == "lsel":
+			self.go(900)
+			self.draw()
+			return
 		if k == "exit":
 			if self.page != 100:
 				self.go(100)
@@ -703,10 +740,14 @@ class SkorText(Screen):
 				self.move_idx(d, 0)
 			elif t == "set":
 				if self.set_sel == len(SETTINGS):
+					self.go(910)
+					self.draw()
+					return
+				if self.set_sel == len(SETTINGS) + 1:
 					self.go(190)
 					self.draw()
 					return
-				if self.set_sel > len(SETTINGS):
+				if self.set_sel > len(SETTINGS) + 1:
 					self.check_update(True)
 					self.draw()
 					return
@@ -735,12 +776,18 @@ class SkorText(Screen):
 			elif t == "rank":
 				pages = [r.page for r in RANKINGS]
 				self.go(pages[(pages.index(self.page) + d) % len(pages)])
+			elif t == "lsel":
+				self.lsel_toggle()
 		elif k in ("up", "down"):
 			d = 1 if k == "down" else -1
 			if t == "idx":
 				self.move_idx(0, d)
 			elif t == "set":
-				self.set_sel = (self.set_sel + d) % (len(SETTINGS) + 2)
+				self.set_sel = (self.set_sel + d) % (len(SETTINGS) + 3)
+			elif t == "lsel":
+				its = [it[0] for it in self.lsel_items() if it[0] is not None]
+				cur = its.index(self.ls_sel) if self.ls_sel in its else 0
+				self.ls_sel = its[(cur + d) % len(its)]
 			elif t == "tick":
 				self.tick_sel = (self.tick_sel + d) % len(SETTINGS[3][2])
 			elif t == "res" and STORE.league_by_page(self.page).round and not self.det:
@@ -768,10 +815,14 @@ class SkorText(Screen):
 				self.go(self.page - 1)
 			elif t == "set":
 				if self.set_sel == len(SETTINGS):
+					self.go(910)
+					self.draw()
+					return
+				if self.set_sel == len(SETTINGS) + 1:
 					self.go(190)
 					self.draw()
 					return
-				if self.set_sel > len(SETTINGS):
+				if self.set_sel > len(SETTINGS) + 1:
 					self.check_update(True)
 					self.draw()
 					return
@@ -781,6 +832,8 @@ class SkorText(Screen):
 				set_cfg(key, vals[(i + 1) % len(vals)])
 				if key == "style":
 					self.apply_style()
+			elif t == "lsel":
+				self.lsel_toggle()
 			elif t == "tick":
 				val = SETTINGS[3][2][self.tick_sel][0]
 				set_cfg("alarm", val)
@@ -833,26 +886,93 @@ class SkorText(Screen):
 		def views(ls):
 			out = []
 			for l in ls:
+				if not page_on(l.page):
+					continue
 				for base, gi in l.views():
 					lbl = (l.tag + u" " if l.tag else u"") + l.name(lang) + ((u" · " + l.gdefs[gi][0]) if gi is not None else u"")
 					out.append({"page": base, "lbl": lbl, "lg": l, "gi": gi})
 			return out
-		tick = T("ticker") + u" · " + (T("tkOff") if cfg("alarm") == "off" else T("tkOn"))
-		left = [{"hdr": T("cDE"), "bg": "r", "fg": "w"}] + views(de) + [None,
-			{"hdr": T("cMORE"), "bg": "m", "fg": "k"},
+		def sec(hdr, items):
+			items = [it for it in items if it.get("page") in (None, 900) or page_on(it["page"])]
+			return [hdr] + items if items else []
+		more = sec({"hdr": T("cMORE"), "bg": "m", "fg": "k"}, [
 			{"page": 110, "lbl": T("fav") + ((u" · " + cfg("fav")) if cfg("fav") else u"")}, {"page": 510, "lbl": T("today")},
 			{"page": 500, "lbl": T("allLive"), "live": True},
 			{"page": 600, "lbl": u"Haberler · " + u", ".join(f.name for f in FEED_LIST[:3]) + u" …"},
-			{"page": 150, "lbl": tick}, {"page": 900, "lbl": T("settings")}]
-		right = [{"hdr": T("cTR"), "bg": "g", "fg": "k"}] + views(tr) + [
-			{"hdr": T("cEU"), "bg": "y", "fg": "k"}] + views(eu) + [
-			{"hdr": T("cNAT"), "bg": "c", "fg": "k"}, {"page": 470, "lbl": NAT.title(lang) if NAT.groups else T("natEU")},
-			{"hdr": T("cRANK"), "bg": "b", "fg": "w"},
-			{"page": 480, "lbl": T("rkFifa")}, {"page": 482, "lbl": T("rkUefa")}, {"page": 484, "lbl": T("rkClub")}]
+			{"page": 150, "lbl": self.tick_label()}, {"page": 900, "lbl": T("settings")}])
+		dep = sec({"hdr": T("cDE"), "bg": "r", "fg": "w"}, views(de))
+		left = dep + ([None] if dep else []) + more
+		right = sec({"hdr": T("cTR"), "bg": "g", "fg": "k"}, views(tr)) + sec({"hdr": T("cEU"), "bg": "y", "fg": "k"}, views(eu)) + \
+			sec({"hdr": T("cNAT"), "bg": "c", "fg": "k"}, [{"page": 470, "lbl": NAT.title(lang) if NAT.groups else T("natEU")}]) + \
+			sec({"hdr": T("cRANK"), "bg": "b", "fg": "w"}, [{"page": 480, "lbl": T("rkFifa")}, {"page": 482, "lbl": T("rkUefa")}, {"page": 484, "lbl": T("rkClub")}])
+		# rechts zu lang (viele Ligen eingeblendet) -> Ranglisten/Laenderspiele nach links
+		while len(right) > IDX_ROWS and len(left) < IDX_ROWS:
+			cut = max(i for i, it in enumerate(right) if it is not None and "hdr" in it)
+			if cut == 0:
+				break
+			blk = right[cut:]
+			if len(left) + 1 + len(blk) > IDX_ROWS:
+				break
+			left = left + [None] + blk
+			right = right[:cut]
 		n = max(len(left), len(right), IDX_ROWS)
 		left += [None] * (n - len(left))
 		right += [None] * (n - len(right))
 		return [left, right]
+
+	def tick_label(self):
+		return T("ticker") + u" · " + (T("tkOff") if cfg("alarm") == "off" else T("tkOn"))
+
+	# ---------- Ligen-Auswahl ----------
+	def lsel_items(self):
+		"""[(seite oder None, text, bereich)] - alles, was auf der Hauptseite stehen kann."""
+		lang = cfg("lang")
+		out = []
+		for c, hdr in (("de", "cDE"), ("tr", "cTR"), ("eu", "cEU")):
+			out.append((None, T(hdr), c))
+			for l in STORE.leagues:
+				if l.c == c and l.page not in EXTRA_PAGES:
+					out.append((l.page, (l.tag + u" " if l.tag else u"") + l.name(lang), c))
+			if c == "eu":
+				out.append((None, T("cEUx"), c))
+				for l in STORE.leagues:
+					if l.page in EXTRA_PAGES:
+						out.append((l.page, (l.tag + u" " if l.tag else u"") + l.name(lang), c))
+		out.append((None, T("cNAT"), "nat"))
+		out.append((470, NAT.title(lang) if NAT.groups else T("natEU"), "nat"))
+		out.append((None, T("cRANK"), "rk"))
+		out += [(480, T("rkFifa"), "rk"), (482, T("rkUefa"), "rk"), (484, T("rkClub"), "rk")]
+		out.append((None, T("cMORE"), "more"))
+		out += [(110, T("fav"), "more"), (510, T("today"), "more"), (500, T("allLive"), "more"), (600, u"Haberler", "more"), (150, T("ticker"), "more")]
+		return out
+
+	def lsel_toggle(self):
+		if self.ls_sel is None:
+			return
+		toggle_page(self.ls_sel)
+		self.message(T("lselOn") if page_on(self.ls_sel) else T("lselOff"), 1.2)
+
+	def lsel_subpages(self):
+		C = self.cols
+		its = self.lsel_items()
+		pos = [i for i, it in enumerate(its) if it[0] == self.ls_sel]
+		at = pos[0] if pos else 1
+		H = 17
+		top = max(0, min(at - H // 2, len(its) - H))
+		hb = {"de": ("r", "w"), "tr": ("g", "k"), "eu": ("y", "k"), "nat": ("c", "k"), "rk": ("b", "w"), "more": ("m", "k")}
+		lines = [self.text((u"▲ " + T("lselMore")) if top > 0 else u"", "d")]
+		for pg, lbl, c in its[top:top + H]:
+			if pg is None:
+				bg, fg = hb.get(c, ("k", "w"))
+				lines.append((None, [seg(1, C - 2, u" " + self.up(lbl), fg, bg)]))
+				continue
+			sel = pg == self.ls_sel
+			on = page_on(pg)
+			lines.append((COL["sel"] if sel else None, [seg(1, 5, u"[✓]" if on else u"[ ]", "g" if on else "d"),
+				seg(6, 5, u"%d" % pg, "y" if sel else "w"), seg(11, C - 12, (u"► " if sel else u"") + lbl, "y" if sel else ("w" if on else "d"))]))
+		lines.append(self.text((u"▼ " + T("lselMore")) if top + H < len(its) else u"", "d"))
+		lines.append(self.text(T("lselHint"), "c"))
+		return [{"ban": (u"910 " + self.up(T("lselRow")), u"SkorText"), "bg": ("b", "w"), "head": self.text(T("lselHead"), "c"), "lines": lines}]
 
 	def idx_mark(self, old):
 		"""In der Uebersicht dort stehen bleiben, wo man zuletzt hineingegangen ist."""
@@ -1181,19 +1301,25 @@ class SkorText(Screen):
 				val = cur[2] if lang == "tr" else cur[1]
 				lines.append((COL["sel"] if sel else None, [seg(1, half - 2, lbl[1] if lang == "tr" else lbl[0], "y" if sel else "w"),
 					seg(half, half, (u"◄ " if sel else u"  ") + val + (u" ►" if sel else u""), "y" if sel else "c")]))
-			sel = self.set_sel == len(SETTINGS)
+			ls = self.set_sel == len(SETTINGS)
+			non = len([1 for it in self.lsel_items() if it[0] is not None and page_on(it[0])])
+			lines.append((COL["sel"] if ls else None, [seg(1, half - 2, T("lselRow"), "y" if ls else "w"),
+				seg(half, half, (u"► " if ls else u"  ") + T("lselOpen") % non, "y" if ls else "c")]))
+			sel = self.set_sel == len(SETTINGS) + 1
 			lines.append((COL["sel"] if sel else None, [seg(1, half - 2, T("help"), "y" if sel else "w"),
 				seg(half, half, (u"► " if sel else u"  ") + T("helpOpen"), "y" if sel else "c")]))
-			us = self.set_sel > len(SETTINGS)
+			us = self.set_sel > len(SETTINGS) + 1
 			lines.append((COL["sel"] if us else None, [seg(1, half - 2, T("updRow"), "y" if us else "w"),
 				seg(half, half, (u"► " if us else u"  ") + (UPD["msg"] or T("updOpen")), "y" if us else "c")]))
 			lines.append(self.text(u""))
-			inf = SETTINGS[self.set_sel][3] if not (sel or us) else ((T("helpInfo"),) * 2 if sel else ((T("updInfo") + u" " + VERSION),) * 2)
+			inf = SETTINGS[self.set_sel][3] if not (ls or sel or us) else ((T("lselInfo"),) * 2 if ls else ((T("helpInfo"),) * 2 if sel else ((T("updInfo") + u" " + VERSION),) * 2))
 			lines.append(self.text(u" " + (inf[1] if lang == "tr" else inf[0]), "g"))
 			while len(lines) < 19:
 				lines.append(self.text(u""))
 			lines.append(self.text(T("setHint"), "c"))
 			subs = [{"ban": (self.up(T("settings")), u"SkorText"), "bg": ("b", "w"), "head": self.text(u"MENU", "d"), "lines": lines}]
+		elif t == "lsel":
+			subs = self.lsel_subpages()
 		elif t == "tick":
 			key, lbl, opts, info = SETTINGS[3]
 			on = cfg("alarm") != "off"
