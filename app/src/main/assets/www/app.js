@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "3.9";
+var VERSION = "3.9.1";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -1030,14 +1030,24 @@ var rowEls = [];
 for (var ri = 0; ri < 24; ri++) { var d = document.createElement("div"); d.className = "row"; scr.appendChild(d); rowEls.push(d); }
 
 function layout() {
-  var dw = window.innerWidth, dh = window.innerHeight, mx = Math.floor(dw * 0.03), my = Math.floor(dh * 0.035);
+  var dw = window.innerWidth || document.documentElement.clientWidth || 0, dh = window.innerHeight || document.documentElement.clientHeight || 0;
+  G.lw = dw; G.lh = dh;
+  if (dw < 50 || dh < 50) return false;  // Fenster hat noch keine Größe (Shield beim Start) – später nochmal
+  var mx = Math.floor(dw * 0.03), my = Math.floor(dh * 0.035);
   G.rowH = Math.floor((dh - 2 * my) / 24); G.fs = Math.floor(G.rowH * 0.84); G.cw = G.fs * 0.602;
   G.pw = dw - 2 * mx; G.cols = Math.floor(G.pw / G.cw);
   scr.style.left = mx + "px"; scr.style.top = my + "px"; scr.style.width = G.pw + "px"; scr.style.height = (G.rowH * 24) + "px";
   rowEls.forEach(function (el, i) { el.style.top = (i * G.rowH) + "px"; el.style.height = G.rowH + "px"; });
   rateEl.style.left = (mx + G.cw) + "px"; rateEl.style.top = (my + G.rowH * 20) + "px";
   rateEl.style.width = Math.floor(G.pw * 0.47) + "px"; rateEl.style.height = (G.rowH * 2) + "px";
+  G.ok = true;
+  return true;
 }
+// Lebenszeichen für die Android-Hülle: neu ausmessen und zeichnen; "ok" = Seite läuft
+window.skorAlive = function () {
+  try { if (!G.ok || G.lw !== window.innerWidth || G.lh !== window.innerHeight) layout(); draw(); return G.ok ? "ok" : "nolayout"; }
+  catch (e) { return "err"; }
+};
 window.addEventListener("resize", function () { layout(); draw(); });
 
 function pageType(p) {
@@ -1877,12 +1887,19 @@ function touchSwipe(dx, dy) {
   }, {passive: false});
 })();
 
+setInterval(function () {
+  // Größe hat sich geändert oder war beim Start noch 0 -> neu ausmessen
+  try { if (!G.ok || G.lw !== window.innerWidth || G.lh !== window.innerHeight) { if (layout()) draw(); } } catch (e) {}
+  tick();
+}, 500);
+try {
 layout();
 var sp0 = cfg("startpage"); S.page = /^\d+$/.test(sp0) ? +sp0 : 100;
 go(S.page);
 fetchLive();
 draw();
-setInterval(tick, 500);
+} catch (e) { try { console.log("Start: " + e); } catch (e2) {} }
+
 if (cfg("autoupd") !== "off") setTimeout(function () { checkUpdate(false); }, 8000);
 try { document.fonts && document.fonts.ready.then(draw); } catch (e) {}
 window.__skor = {S: S, STORE: STORE, FEEDS: FEEDS, RATE: RATE, draw: draw, key: key, parseFeed: parseFeed, parseEvent: parseEvent, G: G};

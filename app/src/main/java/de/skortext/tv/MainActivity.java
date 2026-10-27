@@ -39,12 +39,25 @@ public class MainActivity extends Activity {
 	private SharedPreferences prefs;
 	private static final String APP_URL = "file:///android_asset/www/index.html";
 	private boolean appLoaded = false;
+	private final Handler ui = new Handler(Looper.getMainLooper());
+	private int repairs = 0;
+	private long lastRepair = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		prefs = getSharedPreferences("skortext", MODE_PRIVATE);
+		createWeb();
+		watchdog(5000);
+	}
+
+	/** Oberflaeche (neu) aufbauen - auch, wenn Android den Anzeige-Prozess im Hintergrund beendet hat. */
+	private void createWeb() {
+		if (web != null) {
+			try { ((android.view.ViewGroup) web.getParent()).removeView(web); } catch (Exception e) {}
+			try { web.destroy(); } catch (Exception e) {}
+		}
 		web = new WebView(this);
 		web.setBackgroundColor(Color.BLACK);
 		web.setFocusable(true);
@@ -58,11 +71,69 @@ public class MainActivity extends Activity {
 		CookieManager cm = CookieManager.getInstance();
 		cm.setAcceptCookie(true);
 		if (android.os.Build.VERSION.SDK_INT >= 21) cm.setAcceptThirdPartyCookies(web, true);
-		web.setWebViewClient(new WebViewClient());
+		web.setWebViewClient(new WebViewClient() {
+			@Override
+			public boolean onRenderProcessGone(WebView view, android.webkit.RenderProcessGoneDetail detail) {
+				// Anzeige-Prozess wurde beendet -> sonst bleibt der Bildschirm schwarz
+				ui.post(new Runnable() { @Override public void run() { createWeb(); watchdog(5000); } });
+				return true;
+			}
+		});
 		setContentView(web);
 		appLoaded = true;
 		web.loadUrl(APP_URL);
 		web.requestFocus(View.FOCUS_DOWN);
+	}
+
+	/** Prueft nach kurzer Zeit, ob die Seite lebt und zeichnet; wenn nicht, wird sie neu geladen. */
+	private void watchdog(long delay) {
+		ui.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (web == null || isFinishing()) return;
+				final boolean[] alive = {false};
+				web.evaluateJavascript("window.skorAlive ? window.skorAlive() : 'no'", new ValueCallback<String>() {
+					@Override
+					public void onReceiveValue(String v) { alive[0] = "\"ok\"".equals(v); }
+				});
+				ui.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						if (alive[0] || web == null || isFinishing()) return;
+						long now = System.currentTimeMillis();
+						if (now - lastRepair > 60000) repairs = 0;
+						if (repairs >= 3) return;
+						repairs++;
+						lastRepair = now;
+						if (repairs == 1) web.reload(); else createWeb();
+						watchdog(5000);
+					}
+				}, 2500);
+			}
+		}, delay);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (web != null) {
+			web.onResume();
+			web.resumeTimers();
+			web.requestFocus(View.FOCUS_DOWN);
+			watchdog(1200);
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		if (web != null) web.onPause();
+		super.onPause();
+	}
+
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		if (hasFocus && web != null) web.evaluateJavascript("window.skorAlive && window.skorAlive()", null);
 	}
 
 	private static String mime(String name) {
@@ -126,6 +197,7 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
+		ui.removeCallbacksAndMessages(null);
 		if (web != null) web.destroy();
 		super.onDestroy();
 	}
