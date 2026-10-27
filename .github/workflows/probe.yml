@@ -25,7 +25,7 @@ jobs:
           def print_(*a): return ' '.join(str(x) for x in a)
           os.makedirs("samples", exist_ok=True)
           import re, collections
-          r = requests.get("https://www.tff.org/Default.aspx?pageID=288", headers=H, timeout=30)
+          r = requests.get("https://www.tff.org/Default.aspx?pageID=598", headers=H, timeout=30)
           open("samples/tff_kupa.html", "w").write(r.text)
           OUT.append(print_("KUPA", r.status_code, len(r.text), re.findall(r'class="moduleTitle">([^<]+)<', r.text)))
           for m in re.finditer(r'pageI[Dd]=(\d+)[^"]*"[^>]*>\s*(?:<span[^>]*>)?([^<]{3,60})<', r.text):
