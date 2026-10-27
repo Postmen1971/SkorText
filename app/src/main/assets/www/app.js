@@ -240,7 +240,9 @@ League.prototype.inGroup = function () { return true; };
 League.prototype.pageOfGroup = function () { return this.page; };
 League.prototype.eventsOfRound = function (n) {
   if (n === null || n === undefined) return [];
-  return this.allEvents.filter(function (e) { return e.round === n; });
+  var evs = this.allEvents.filter(function (e) { return e.round === n; });
+  if (!evs.length && this.source === "espn" && this.espnCal && !(n in this.rcache)) return null;  // beim Blättern nachladen
+  return evs;
 };
 League.prototype.liveCount = function () { return this.events.filter(function (e) { return e.state === "in" || e.state === "ht"; }).length; };
 /* Ersatzquelle ESPN, wenn LiveScore sperrt (HTTP 403) */
@@ -282,6 +284,8 @@ League.prototype.loadEspn = function () {
   return Promise.all(days.map(function (dd) {
     var dt = new Date(now + dd * 86400000), key = dt.getFullYear() + two(dt.getMonth() + 1) + two(dt.getDate());
     return rawJSON(ESPN + "/" + code + "/scoreboard?dates=" + key).then(function (j) {
+      var lg0 = (j.leagues || [])[0] || {};
+      if (!self.espnCal && lg0.calendarType === "day" && lg0.calendar) self.espnCal = espnCalRounds(lg0.calendar.filter(function (x) { return typeof x === "string"; }).map(isoTs));
       (j.events || []).forEach(function (ev) { var pe = parseEspnEvent(ev, self.ut); evs[pe.id] = pe; });
     }, function () {});
   })).then(function () {
@@ -301,17 +305,64 @@ League.prototype.loadEspn = function () {
   }).then(function (rows) {
     rows.sort(function (a, b) { return a.pos - b.pos; });
     var lst = Object.keys(evs).map(function (k) { return evs[k]; }).sort(function (a, b) { return a.ts - b.ts; });
-    var buckets = [], last = null;
-    lst.forEach(function (e) { if (last === null || e.ts - last > 60 * 3600) buckets.push([]); buckets[buckets.length - 1].push(e); last = e.ts; });
-    var played = Math.max.apply(null, [0].concat(rows.map(function (r) { return r.p; }))), idx = 0;
-    buckets.forEach(function (b, i) { if (b.some(function (e) { return e.state === "post"; })) idx = i; });
-    var base = (played || (idx + 1)) - idx;
-    buckets.forEach(function (b, i) { b.forEach(function (e) { e.round = Math.max(1, base + i); }); });
+    var cal = self.espnCal, expected = rows.length > 2 ? 2 * (rows.length - 1) : null, nowS = now / 1000;
+    if (cal && self.espnOff === undefined) {
+      if (expected && cal.length === expected) self.espnOff = 0;
+      else {
+        var win = lst.filter(function (e) { return Math.abs(e.ts - nowS) < 8 * 86400; }).map(function (e) { return Object.assign({}, e); });
+        espnGuessRounds(win, rows);
+        var cnt = {}, best = null;
+        win.forEach(function (e) { var bi = espnCalIndex(cal, e.ts); if (bi !== null) { var o = e.round - (bi + 1); cnt[o] = (cnt[o] || 0) + 1; if (best === null || cnt[o] > cnt[best]) best = o; } });
+        self.espnOff = best === null ? null : +best;
+      }
+    }
+    if (cal && self.espnOff !== null && self.espnOff !== undefined) {
+      lst.forEach(function (e) { var bi = espnCalIndex(cal, e.ts); e.round = bi !== null ? Math.max(1, bi + 1 + self.espnOff) : (e.round || 1); });
+    } else espnGuessRounds(lst, rows);
     self.rnames = {};
     self.setEvents(lst, true);
+    if (cal && self.espnOff !== null && self.espnOff !== undefined) self.maxRound = Math.max(self.maxRound || 0, cal.length + self.espnOff);
+    else if (expected) self.maxRound = Math.max(self.maxRound || 0, expected);
     self.tables = rows.length ? [["", rows]] : [];
     self.source = "espn"; if (full) self.tEspnFull = now;
     self.tLoad = Date.now() / 1000; self.error = null;
+  });
+};
+function espnCalRounds(days) {
+  var out = [];
+  days.filter(function (x) { return x; }).sort(function (a, b) { return a - b; }).forEach(function (t) {
+    var b = out[out.length - 1];
+    if (b && t === b[b.length - 1]) return;
+    if (b && t - b[b.length - 1] <= 30 * 3600) b.push(t); else out.push([t]);
+  });
+  return out;
+}
+function espnCalIndex(cal, ts) {
+  var day = new Date((ts - 7 * 3600) * 1000).toISOString().slice(0, 10);
+  for (var i = 0; i < cal.length; i++) for (var j = 0; j < cal[i].length; j++) if (new Date(cal[i][j] * 1000).toISOString().slice(0, 10) === day) return i;
+  return null;
+}
+function espnGuessRounds(lst, rows) {
+  var buckets = [], last = null;
+  lst.slice().sort(function (a, b) { return a.ts - b.ts; }).forEach(function (e) { if (last === null || e.ts - last > 60 * 3600) buckets.push([]); buckets[buckets.length - 1].push(e); last = e.ts; });
+  var played = Math.max.apply(null, [0].concat(rows.map(function (r) { return r.p; }))), idx = 0;
+  buckets.forEach(function (b, i) { if (b.some(function (e) { return e.state === "post"; })) idx = i; });
+  var base = (played || (idx + 1)) - idx;
+  buckets.forEach(function (b, i) { b.forEach(function (e) { e.round = Math.max(1, base + i); }); });
+}
+League.prototype.loadRoundEspn = function (n) {
+  var self = this, cal = self.espnCal, off = self.espnOff;
+  if (!cal || off === null || off === undefined || n - 1 - off < 0 || n - 1 - off >= cal.length) { self.rcache[n] = []; return Promise.resolve(n); }
+  var got = {};
+  return Promise.all(cal[n - 1 - off].map(function (t) {
+    var key = new Date(t * 1000).toISOString().slice(0, 10).replace(/-/g, "");
+    return rawJSON(ESPN + "/" + ESPN_CODES[self.page] + "/scoreboard?dates=" + key).then(function (j) {
+      (j.events || []).forEach(function (ev) { var pe = parseEspnEvent(ev, self.ut); pe.round = n; got[pe.id] = pe; });
+    });
+  })).then(function () {
+    self.allEvents = self.allEvents.filter(function (e) { return !(e.id in got); }).concat(Object.keys(got).map(function (k) { return got[k]; })).sort(function (a, b) { return a.ts - b.ts; });
+    self.rcache[n] = true;
+    return n;
   });
 };
 League.prototype.load = function () {
@@ -404,7 +455,7 @@ League.prototype.setEvents = function (evs, noInfer) {
     self.round = cur;
     self.events = cur ? self.eventsOfRound(cur) : evs.slice(-10);
     self.prevRound = cur && cur > 1 ? cur - 1 : null;
-    self.prevEvents = self.prevRound ? self.eventsOfRound(self.prevRound) : [];
+    self.prevEvents = (self.prevRound ? self.eventsOfRound(self.prevRound) : []) || [];
 };
 
 /* Amateurligen von FuPa (Verbandsliga Württemberg mit dem 1. Göppinger SV) */
@@ -555,7 +606,7 @@ League.prototype.loadTff = function () {
     self.tLoad = Date.now() / 1000; self.error = null;
   });
 };
-League.prototype.loadRound = function (n) { return Promise.resolve(n); };
+League.prototype.loadRound = function (n) { return this.source === "espn" ? this.loadRoundEspn(n) : Promise.resolve(n); };
 
 var STORE = {leagues: LEAGUES_DEF.map(function (d) { return new League(d); }), live: {}, tLive: 0, liveError: null, goals: [], loadingLive: false};
 STORE.byUt = {}; STORE.leagues.forEach(function (l) { STORE.byUt[l.ut] = l; });
