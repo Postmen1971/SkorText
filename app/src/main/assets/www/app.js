@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "3.6";
+var VERSION = "3.7";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -21,7 +21,9 @@ var TXT = {
   scorers:"Torschützen",detHint:"OK = Tabelle · ▲▼ blättern",t_detHint:"Titel antippen = Tabelle · wischen ▲▼",pen:"E",og:"ET",
   rkFifa:"FIFA-Weltrangliste",rkUefa:"UEFA-Länderwertung",rkClub:"UEFA-Klubwertung",points:"Punkte",season:"Saison",nation:"Land",asOf:"Stand",
   noMatches:"Keine Spiele an diesem Tag.",nlHint:"◄► ▲▼ nächste Gruppe",natEU:"Länderspiele Europa",t_nlHint:"wischen = nächste Gruppe",helpOpen:"OK = öffnen",t_helpOpen:"antippen = öffnen",
-  helpInfo:"Alle Tasten und Seiten auf einen Blick.",
+  helpInfo:"Alle Tasten und Seiten auf einen Blick.",updRow:"Update suchen",updOpen:"OK = jetzt prüfen",t_updOpen:"antippen = jetzt prüfen",
+  updInfo:"Neue Version von GitHub laden. Installiert:",updNone:"SkorText ist aktuell",updLoad:"Update %s wird geladen …",updPerm:"Bitte „Unbekannte Apps installieren“ erlauben, dann nochmal",
+  updErr:"Update fehlgeschlagen",updAvail:"Neue Version %s – Einstellungen → Update",
   t_openHint:"Antippen = öffnen · ZURÜCK beenden",t_home:"◄ Übersicht (hier tippen)",t_resHint:"wischen ◄► Liga · Titel antippen = Tabelle",
   t_tabHint:"wischen ◄► Liga · Titel antippen = Ergebnisse",t_setHint:"Antippen = ändern · ZURÜCK zurück",
   t_newsHint:"Antippen = lesen · wischen ◄► Rubrik",t_articleHint:"wischen = nächste Meldung · Titel antippen = zurück",t_mdArrows:"wischen ▲▼",
@@ -44,7 +46,9 @@ var TXT = {
   scorers:"Goller",detHint:"OK = Puan durumu · ▲▼ sayfa",t_detHint:"başlığa dokun = Puan · kaydır ▲▼",pen:"P",og:"KK",
   rkFifa:"FIFA Dünya Sıralaması",rkUefa:"UEFA Ülke Puanı",rkClub:"UEFA Kulüp Puanı",points:"Puan",season:"Sezon",nation:"Ülke",asOf:"Güncel",
   noMatches:"Bu gün maç yok.",nlHint:"◄► ▲▼ sonraki grup",natEU:"Avrupa milli maçları",t_nlHint:"kaydır = sonraki grup",helpOpen:"OK = aç",t_helpOpen:"dokun = aç",
-  helpInfo:"Tüm tuşlar ve sayfalar.",
+  helpInfo:"Tüm tuşlar ve sayfalar.",updRow:"Güncelleme ara",updOpen:"OK = şimdi kontrol et",t_updOpen:"dokun = şimdi kontrol et",
+  updInfo:"GitHub'dan yeni sürüm yükle. Kurulu:",updNone:"SkorText güncel",updLoad:"Güncelleme %s yükleniyor …",updPerm:"Lütfen „Bilinmeyen uygulamalar“ iznini ver, sonra tekrar",
+  updErr:"Güncelleme başarısız",updAvail:"Yeni sürüm %s – Ayarlar → Güncelleme",
   t_openHint:"Dokun = aç · GERİ çık",t_home:"◄ Genel Bakış (dokun)",t_resHint:"kaydır ◄► Lig · başlığa dokun = Puan",
   t_tabHint:"kaydır ◄► Lig · başlığa dokun = Sonuçlar",t_setHint:"Dokun = değiştir · GERİ",
   t_newsHint:"Dokun = oku · kaydır ◄► kategori",t_articleHint:"kaydır = sonraki haber · başlığa dokun = geri",t_mdArrows:"kaydır ▲▼",
@@ -62,7 +66,8 @@ var SETTINGS = [
  ["startpage",["Startseite","Açılış sayfası"],[["100","100 Übersicht","100 Genel Bakış"],["500","500 Live","500 Canlı"],["200","200 1. Bundesliga","200 Bundesliga"],["300","300 Süper Lig","300 Süper Lig"]],["Seite nach dem Start.","Başlatınca açılan sayfa."]],
  ["refresh",["Aktualisierung","Güncelleme"],[["60","alle 60 s","60 sn'de bir"],["30","alle 30 s","30 sn'de bir"],["120","alle 120 s","120 sn'de bir"]],["Wie oft neue Daten geholt werden.","Verilerin çekilme sıklığı."]],
  ["rotate",["Unterseiten blättern","Alt sayfa çevirme"],[["man","Manuell (▲▼)","Manuel (▲▼)"],["10","Automatisch alle 10 s","10 sn'de bir otomatik"]],["Bei langen Seiten.","Uzun sayfalarda."]],
- ["bg",["Hintergrund","Arka plan"],[["black","Schwarz","Siyah"],["navy","Dunkelblau","Lacivert"]],["Hintergrundfarbe.","Arka plan rengi."]]
+ ["bg",["Hintergrund","Arka plan"],[["black","Schwarz","Siyah"],["navy","Dunkelblau","Lacivert"]],["Hintergrundfarbe.","Arka plan rengi."]],
+ ["autoupd",["Auto-Update","Otomatik güncelleme"],[["on","Beim Start prüfen","Açılışta kontrol et"],["off","Aus","Kapalı"]],["Sucht beim Start auf GitHub nach einer neuen Version.","Açılışta GitHub'da yeni sürüm arar."]]
 ];
 
 /* ================= Einstellungen (dauerhaft) ================= */
@@ -1002,7 +1007,7 @@ function key(k) {
   } else if (k === "up" || k === "down") {
     var d2 = k === "down" ? 1 : -1;
     if (t === "idx") moveIdx(0, d2);
-    else if (t === "set") S.setSel = (S.setSel + d2 + SETTINGS.length + 1) % (SETTINGS.length + 1);
+    else if (t === "set") S.setSel = (S.setSel + d2 + SETTINGS.length + 2) % (SETTINGS.length + 2);
     else if (t === "res" && STORE.leagueByPage(S.page).round && !S.det) {
       var lg = STORE.leagueByPage(S.page), nr = shownRound(lg) + (d2 > 0 ? -1 : 1), top = lg.maxRound || (lg.round + 40);
       if (nr >= 1 && nr <= top) { S.md = nr; S.sub = 0; needRound(lg, nr); } else message(T("noMore"), 1.5);
@@ -1018,7 +1023,8 @@ function key(k) {
   draw();
 }
 function changeSetting(d) {
-  if (S.setSel >= SETTINGS.length) { go(190); return; }
+  if (S.setSel === SETTINGS.length) { go(190); return; }
+  if (S.setSel > SETTINGS.length) { checkUpdate(true); return; }
   var s = SETTINGS[S.setSel], vals = s[2].map(function (o) { return o[0]; }), i = Math.max(0, vals.indexOf(cfg(s[0])));
   setCfg(s[0], vals[(i + d + vals.length) % vals.length]);
 }
@@ -1254,9 +1260,10 @@ function subpages() {
       var sel = i === S.setSel, cur = st[2].filter(function (o) { return o[0] === cfg(st[0]); })[0] || st[2][0], val = lang === "tr" ? cur[2] : cur[1];
       lines.push([sel ? COL.sel : null, [seg(1, half2 - 2, lang === "tr" ? st[1][1] : st[1][0], sel ? "y" : "w"), seg(half2, half2, (sel ? "◄ " : "  ") + val + (sel ? " ►" : ""), sel ? "y" : "c")]]);
     });
-    var hs = S.setSel >= SETTINGS.length;
+    var hs = S.setSel === SETTINGS.length, us = S.setSel > SETTINGS.length;
     lines.push([hs ? COL.sel : null, [seg(1, half2 - 2, T("help"), hs ? "y" : "w"), seg(half2, half2, (hs ? "► " : "  ") + T("helpOpen"), hs ? "y" : "c")]]);
-    lines.push(blank()); lines.push(text(" " + (hs ? T("helpInfo") : SETTINGS[S.setSel][3][lang === "tr" ? 1 : 0]), "g"));
+    lines.push([us ? COL.sel : null, [seg(1, half2 - 2, T("updRow"), us ? "y" : "w"), seg(half2, half2, (us ? "► " : "  ") + (UPD.msg || T("updOpen")), us ? "y" : "c")]]);
+    lines.push(blank()); lines.push(text(" " + (hs ? T("helpInfo") : (us ? T("updInfo") + " " + VERSION : SETTINGS[S.setSel][3][lang === "tr" ? 1 : 0])), "g"));
     while (lines.length < 19) lines.push(blank());
     lines.push(text(T("setHint"), "c"));
     subs = [{ban: [up(T("settings")), "SkorText"], bg: ["b", "w"], head: text("MENU", "d"), lines: lines}];
@@ -1522,6 +1529,30 @@ function draw() {
 }
 
 /* ================= Takt ================= */
+/* Update über GitHub: skortext.apk (Android) und skortext.ipk (GigaBlue) liegen auf derselben Release-Seite */
+var UPD_BASE = "https://github.com/postmen1971/skortext/releases/latest/download/", UPD = {msg: "", busy: false};
+function newerVersion(a, b) {
+  var x = String(a || "0").split("."), y = String(b || "0").split(".");
+  for (var i = 0; i < Math.max(x.length, y.length); i++) { var p = +(x[i] || 0), q = +(y[i] || 0); if (p !== q) return p > q; }
+  return false;
+}
+function checkUpdate(manual) {
+  if (UPD.busy) return;
+  UPD.busy = true; if (manual) { UPD.msg = "…"; draw(); }
+  rawJSON(UPD_BASE + "version.json").then(function (v) {
+    UPD.busy = false;
+    if (!newerVersion(v.app, VERSION)) { if (manual) { UPD.msg = T("updNone") + " (" + VERSION + ")"; message(UPD.msg, 3); } draw(); return; }
+    UPD.msg = T("updLoad").replace("%s", v.app); message(UPD.msg, 4); draw();
+    if (window.SkorBridge && SkorBridge.installApk) SkorBridge.installApk(UPD_BASE + "skortext.apk");
+  }, function () { UPD.busy = false; if (manual) { UPD.msg = T("updErr"); message(UPD.msg, 3); } draw(); });
+}
+window.__skorUpd = function (st) {
+  if (st === "perm") UPD.msg = T("updPerm");
+  else if (String(st).indexOf("error") === 0) UPD.msg = T("updErr");
+  else UPD.msg = "";
+  if (UPD.msg) message(UPD.msg, 5);
+  draw();
+};
 function tick() {
   S.blinkOn = !S.blinkOn;
   var now = Date.now() / 1000;
@@ -1569,6 +1600,7 @@ function touchTap(x, y) {
   if (t === "set") {
     var si = bi - 1;
     if (si === SETTINGS.length) { S.setSel = si; go(190); draw(); return; }
+    if (si === SETTINGS.length + 1) { S.setSel = si; checkUpdate(true); draw(); return; }
     if (si >= 0 && si < SETTINGS.length) {
       var half = Math.floor(C / 2);
       if (S.setSel !== si) { S.setSel = si; if (col >= half) changeSetting(1); }
@@ -1625,6 +1657,7 @@ go(S.page);
 fetchLive();
 draw();
 setInterval(tick, 500);
+if (cfg("autoupd") !== "off") setTimeout(function () { checkUpdate(false); }, 8000);
 try { document.fonts && document.fonts.ready.then(draw); } catch (e) {}
 window.__skor = {S: S, STORE: STORE, FEEDS: FEEDS, RATE: RATE, draw: draw, key: key, parseFeed: parseFeed, parseEvent: parseEvent, G: G};
 })();

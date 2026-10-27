@@ -1,0 +1,7 @@
+Package: enigma2-plugin-extensions-skortext
+Version: 1.7.0
+Architecture: all
+Section: extra
+Priority: optional
+Maintainer: Aziz
+Description: SkorText - Live-Ergebnisse, Tabellen und tuerkische Nachrichten im Videotext-Stil

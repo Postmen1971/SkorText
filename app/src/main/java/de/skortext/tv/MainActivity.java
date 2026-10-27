@@ -130,6 +130,15 @@ public class MainActivity extends Activity {
 		super.onDestroy();
 	}
 
+	private void status(final String st) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (web != null) web.evaluateJavascript("window.__skorUpd && window.__skorUpd(" + JSONObject.quote(st) + ")", null);
+			}
+		});
+	}
+
 	private void deliver(final int id, final boolean ok, final int status, final String body) {
 		final String js = "window.__skorRes(" + id + "," + ok + "," + status + "," + JSONObject.quote(body == null ? "" : body) + ")";
 		runOnUiThread(new Runnable() {
@@ -174,6 +183,67 @@ public class MainActivity extends Activity {
 						deliver(id, true, code, body);
 					} catch (Exception e) {
 						deliver(id, false, 0, e.getClass().getSimpleName() + ": " + e.getMessage());
+					} finally {
+						if (c != null) c.disconnect();
+					}
+				}
+			}).start();
+		}
+
+		/** Update: APK laden und das Android-Installationsfenster öffnen. */
+		@JavascriptInterface
+		public void installApk(final String url) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					HttpURLConnection c = null;
+					try {
+						c = (HttpURLConnection) new URL(url).openConnection();
+						c.setInstanceFollowRedirects(true);
+						c.setConnectTimeout(15000);
+						c.setReadTimeout(60000);
+						int code = c.getResponseCode();
+						// GitHub leitet auf einen anderen Server weiter
+						for (int i = 0; i < 5 && (code == 301 || code == 302 || code == 303 || code == 307 || code == 308); i++) {
+							String loc = c.getHeaderField("Location");
+							c.disconnect();
+							c = (HttpURLConnection) new URL(new URL(url), loc).openConnection();
+							c.setConnectTimeout(15000);
+							c.setReadTimeout(60000);
+							code = c.getResponseCode();
+						}
+						if (code != 200) throw new IOException("HTTP " + code);
+						java.io.File f = ApkProvider.file(MainActivity.this);
+						InputStream in = c.getInputStream();
+						java.io.FileOutputStream out = new java.io.FileOutputStream(f);
+						byte[] buf = new byte[65536];
+						int n;
+						while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+						out.close();
+						in.close();
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								try {
+									if (android.os.Build.VERSION.SDK_INT >= 26 && !getPackageManager().canRequestPackageInstalls()) {
+										// einmalig erlauben: "Unbekannte Apps installieren" für SkorText
+										startActivity(new android.content.Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+											Uri.parse("package:" + getPackageName())));
+										status("perm");
+										return;
+									}
+									android.content.Intent it = new android.content.Intent(android.content.Intent.ACTION_VIEW);
+									it.setDataAndType(Uri.parse("content://" + ApkProvider.AUTH + "/skortext.apk"), "application/vnd.android.package-archive");
+									it.addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION | android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+									startActivity(it);
+									status("open");
+								} catch (Exception e) {
+									status("error:" + e.getMessage());
+								}
+							}
+						});
+					} catch (Exception e) {
+						status("error:" + e.getMessage());
 					} finally {
 						if (c != null) c.disconnect();
 					}

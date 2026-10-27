@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "SkorText installiert. Bitte die Enigma2-Oberflaeche neu starten."
+exit 0

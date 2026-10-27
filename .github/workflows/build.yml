@@ -1,4 +1,4 @@
-name: SkorText APK bauen
+name: SkorText APK + IPK bauen
 
 on:
   push:
@@ -14,7 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -27,10 +26,27 @@ jobs:
       - name: APK bauen
         run: gradle :app:assembleRelease --no-daemon --stacktrace
 
-      - name: APK bereitstellen
+      - name: IPK bauen (GigaBlue)
+        run: |
+          PV=$(grep -m1 '^VERSION = ' enigma2/usr/lib/enigma2/python/Plugins/Extensions/SkorText/plugin.py | cut -d'"' -f2)
+          AV=$(grep -m1 'VERSION = ' app/src/main/assets/www/app.js | cut -d'"' -f2)
+          echo "Plugin $PV / App $AV"
+          B=$(mktemp -d)
+          cp -r enigma2/usr $B/
+          sed "s/^Version:.*/Version: $PV/" enigma2/CONTROL/control > $B/control
+          cp enigma2/CONTROL/postinst $B/postinst
+          find $B -type d -exec chmod 755 {} \; ; find $B -type f -exec chmod 644 {} \; ; chmod 755 $B/postinst
+          (cd $B && tar --format=gnu --owner=0 --group=0 -czf control.tar.gz ./control ./postinst \
+            && tar --format=gnu --owner=0 --group=0 -czf data.tar.gz ./usr && echo 2.0 > debian-binary \
+            && ar rc pkg.ipk debian-binary control.tar.gz data.tar.gz)
+          cp $B/pkg.ipk skortext.ipk
+          printf '{"app": "%s", "plugin": "%s"}\n' "$AV" "$PV" > version.json
+          cat version.json
+
+      - name: Release bereitstellen
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp app/build/outputs/apk/release/app-release.apk skortext.apk
           TAG="v1.0.${{ github.run_number }}"
-          gh release create "$TAG" skortext.apk --title "SkorText TV $TAG" --notes "Automatisch gebaut" --latest
+          gh release create "$TAG" skortext.apk skortext.ipk version.json --title "SkorText $TAG" --notes "Android: skortext.apk · GigaBlue: skortext.ipk" --latest
