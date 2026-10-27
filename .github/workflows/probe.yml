@@ -27,23 +27,18 @@ jobs:
           import re, collections
           E = "https://site.api.espn.com/apis/site/v2/sports/soccer"
           S = "https://site.api.espn.com/apis/v2/sports/soccer"
-          codes = ["ger.1","ger.2","ger.3","ger.dfb_pokal","tur.1","tur.2","tur.cup","eng.1","esp.1","ita.1","fra.1","uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","fifa.worldq.uefa","uefa.euroq","fifa.friendly","ger.4.sw","ger.regionalliga"]
-          for c in codes:
+          for c, q in [("ger.1", ""), ("ger.1", "?dates=20261024"), ("ger.1", "?dates=20260801-20261031"), ("ger.1", "?dates=20260801-20261031&limit=500"),
+                       ("ger.1", "?dates=20260820-20270530&limit=900"), ("ger.1", "?dates=2026"), ("ger.1", "?dates=20261101-20261130"),
+                       ("ger.3", "?dates=20261024"), ("ger.dfb_pokal", "?dates=20261027-20261029"), ("tur.cup", "?dates=20261027-20261029"),
+                       ("tur.1", "?dates=20261024-20261026"), ("ger.2", "?dates=20261024-20261026")]:
               try:
-                  r = requests.get("%s/%s/scoreboard?dates=20260801-20270630&limit=1000" % (E, c), headers=H, timeout=25)
+                  r = requests.get("%s/%s/scoreboard%s" % (E, c, q), headers=H, timeout=25)
                   n = len(r.json().get("events", [])) if r.status_code == 200 else -1
-                  t = requests.get("%s/%s/standings" % (S, c), headers=H, timeout=25)
-                  tn = 0
-                  if t.status_code == 200:
-                      tj = t.json()
-                      for ch in tj.get("children", []) or [tj]:
-                          tn += len(((ch.get("standings") or {}).get("entries")) or [])
-                  OUT.append(print_("ESPN", c, "events", r.status_code, n, len(r.text), "| table", t.status_code, tn))
-                  if c in ("ger.1", "uefa.nations") and r.status_code == 200:
-                      open("samples/espn_%s.json" % c, "w").write(r.text)
-                      open("samples/espn_tab_%s.json" % c, "w").write(t.text)
+                  OUT.append(print_("SB", c, q, r.status_code, n, len(r.text), r.text[:120] if r.status_code != 200 else ""))
+                  if c == "ger.1" and q.endswith("limit=500") and r.status_code == 200: open("samples/espn_ger1.json", "w").write(r.text)
               except Exception as ex:
-                  OUT.append(print_("ERR", c, ex))
+                  OUT.append(print_("ERR", c, q, ex))
+          t = requests.get("%s/ger.1/standings" % S, headers=H, timeout=25); open("samples/espn_tab_ger1.json", "w").write(t.text)
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
