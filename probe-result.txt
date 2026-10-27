@@ -1,12 +1,6 @@
-SB ger.1  200 1 14427 
-SB ger.1 ?dates=20261024 200 6 61970 
-SB ger.1 ?dates=20260801-20261031 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
-SB ger.1 ?dates=20260801-20261031&limit=500 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
-SB ger.1 ?dates=20260820-20270530&limit=900 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
-SB ger.1 ?dates=2026 200 100 1047101 
-SB ger.1 ?dates=20261101-20261130 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
-SB ger.3 ?dates=20261024 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
-SB ger.dfb_pokal ?dates=20261027-20261029 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
-SB tur.cup ?dates=20261027-20261029 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
-SB tur.1 ?dates=20261024-20261026 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
-SB ger.2 ?dates=20261024-20261026 400 -1 55 {"code":400,"message":"Failed to get events endpoint."}
+SB ger.1 ?dates=20261024 200 61970
+SB ger.1 ?dates=20261031 200 74076
+SB ger.dfb_pokal ?dates=20261028 200 57846
+SB uefa.champions ?dates=20261021 200 102826
+SB tur.1 ?dates=20261025 200 21442
+SB ger.1  200 14427
