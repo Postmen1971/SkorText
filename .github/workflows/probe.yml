@@ -27,18 +27,10 @@ jobs:
           import re, collections
           E = "https://site.api.espn.com/apis/site/v2/sports/soccer"
           S = "https://site.api.espn.com/apis/v2/sports/soccer"
-          for c, q in [("ger.1", ""), ("ger.1", "?dates=20261024"), ("ger.1", "?dates=20260801-20261031"), ("ger.1", "?dates=20260801-20261031&limit=500"),
-                       ("ger.1", "?dates=20260820-20270530&limit=900"), ("ger.1", "?dates=2026"), ("ger.1", "?dates=20261101-20261130"),
-                       ("ger.3", "?dates=20261024"), ("ger.dfb_pokal", "?dates=20261027-20261029"), ("tur.cup", "?dates=20261027-20261029"),
-                       ("tur.1", "?dates=20261024-20261026"), ("ger.2", "?dates=20261024-20261026")]:
-              try:
-                  r = requests.get("%s/%s/scoreboard%s" % (E, c, q), headers=H, timeout=25)
-                  n = len(r.json().get("events", [])) if r.status_code == 200 else -1
-                  OUT.append(print_("SB", c, q, r.status_code, n, len(r.text), r.text[:120] if r.status_code != 200 else ""))
-                  if c == "ger.1" and q.endswith("limit=500") and r.status_code == 200: open("samples/espn_ger1.json", "w").write(r.text)
-              except Exception as ex:
-                  OUT.append(print_("ERR", c, q, ex))
-          t = requests.get("%s/ger.1/standings" % S, headers=H, timeout=25); open("samples/espn_tab_ger1.json", "w").write(t.text)
+          for c, q in [("ger.1", "?dates=20261024"), ("ger.1", "?dates=20261031"), ("ger.dfb_pokal", "?dates=20261028"), ("uefa.champions", "?dates=20261021"), ("tur.1", "?dates=20261025"), ("ger.1", "")]:
+              r = requests.get("%s/%s/scoreboard%s" % (E, c, q), headers=H, timeout=25)
+              OUT.append(print_("SB", c, q, r.status_code, len(r.text)))
+              if r.status_code == 200: open("samples/espn_sb_%s_%s.json" % (c, q[7:] or "x"), "w").write(r.text)
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
