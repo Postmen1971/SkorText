@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "3.5";
+var VERSION = "3.6";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -456,7 +456,30 @@ League.prototype.loadFupa = function (slug) {
   });
 };
 /* Ersatzquelle TFF (türkische Ligen): Tabelle und Spielplan von tff.org */
-var TFF_PAGES = {300: [198, null], 310: [142, null], 320: [976, "Beyaz"], 322: [976, "Kırmızı"]};
+var TFF_PAGES = {300: [198, null], 310: [142, null], 320: [976, "Beyaz"], 322: [976, "Kırmızı"], 305: [598, "cup"]};
+var TR_MONTHS = {"Ocak": 1, "Şubat": 2, "Mart": 3, "Nisan": 4, "Mayıs": 5, "Haziran": 6, "Temmuz": 7, "Ağustos": 8, "Eylül": 9, "Ekim": 10, "Kasım": 11, "Aralık": 12};
+function tffRoundKey(name) {
+  var n = String(name || "").replace("Maçları", "").trim(), m = /(\d+)\s*\.?\s*Tur/.exec(n);
+  if (m) return "Round " + m[1];
+  var low = n.toLowerCase(), map = [["son 16", "Round of 16"], ["son 32", "Round of 32"], ["çeyrek", "Quarter-finals"], ["yarı", "Semi-finals"],
+    ["final", "Final"], ["grup", "Group"], ["eleme", "Qualification"], ["play", "Play-offs"]];
+  for (var i = 0; i < map.length; i++) if (low.indexOf(map[i][0]) >= 0) return map[i][1];
+  return n || "Round";
+}
+function parseTffCup(html, key) {
+  var rows = {}, order = [], m, rx = /kupaMaclari_ctl(\d+)_(lblGrup|lblTarih|lblTakim1|lblSkor|lblTakim2)"[^>]*>([^<]*)</g, evs = [], cur = "";
+  while ((m = rx.exec(html))) { if (!rows[m[1]]) { rows[m[1]] = {}; order.push(m[1]); } rows[m[1]][m[2]] = m[3].trim(); }
+  order.forEach(function (n) {
+    var r = rows[n]; if (r.lblGrup) cur = r.lblGrup; if (!r.lblTakim1) return;
+    var ts = 0, dm = /(\d+)\s+(\S+)\s+(\d{4})\s*(\d+)?:?(\d+)?/.exec(r.lblTarih || "");
+    if (dm && TR_MONTHS[dm[2]]) ts = Date.UTC(+dm[3], TR_MONTHS[dm[2]] - 1, +dm[1], +(dm[4] || 0), +(dm[5] || 0)) / 1000 - 3 * 3600;
+    var sc = /^\s*(\d+)\s*-\s*(\d+)/.exec(r.lblSkor || "");
+    evs.push({id: "tffk" + n + r.lblTakim1.slice(0, 6), h: tffName(r.lblTakim1), hsn: "", a: tffName(r.lblTakim2 || "?"), asn: "",
+      hs: sc ? +sc[1] : null, as: sc ? +sc[2] : null, state: sc ? "post" : "pre", min: "", ts: ts, nodate: !ts, round: null, rkey: tffRoundKey(cur),
+      group: "", ut: key, goal_at: 0, goal_by: null});
+  });
+  return evs;
+}
 var FUPA_SLUGS = {200: "bundesliga", 210: "2-bundesliga", 220: "3-liga", 230: "regionalliga-suedwest", 240: "regionalliga-west",
   250: "regionalliga-bayern", 260: "regionalliga-nord", 270: "regionalliga-nordost", 280: "oberliga-baden-wuerttemberg"};
 function trTitle(w) {
@@ -498,6 +521,16 @@ function parseTff(html, key, group) {
 }
 League.prototype.loadTff = function () {
   var self = this, cfgT = TFF_PAGES[self.page], url = "https://www.tff.org/Default.aspx?pageID=" + cfgT[0];
+  if (cfgT[1] === "cup") return httpGet(url).then(function (html) {
+    var evs = parseTffCup(html, self.ut);
+    if (!evs.length) throw new Error("TFF-Pokal: keine Daten");
+    var keys = [];
+    evs.slice().sort(function (a, b) { return (a.ts || 9e9) - (b.ts || 9e9); }).forEach(function (e) { if (keys.indexOf(e.rkey) < 0) keys.push(e.rkey); });
+    self.rnames = {}; keys.forEach(function (k, i) { self.rnames[i + 1] = k; });
+    var now = Date.now() / 1000;
+    evs.forEach(function (e) { e.round = keys.indexOf(e.rkey) + 1; if (e.state === "pre" && e.ts && e.ts < now - 3 * 3600) e.state = "pp"; });
+    self.setEvents(evs, true); self.tables = []; self.tLoad = Date.now() / 1000; self.error = null;
+  });
   return httpGet(url).then(function (html) {
     if (!cfgT[1]) return html;
     var m = new RegExp('grupID=(\\d+)#hmac"[^>]*>\\s*' + cfgT[1]).exec(html);
