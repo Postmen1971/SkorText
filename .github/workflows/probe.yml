@@ -25,17 +25,40 @@ jobs:
           def print_(*a): return ' '.join(str(x) for x in a)
           os.makedirs("samples", exist_ok=True)
           import re, collections
-          r = requests.get("https://www.tff.org/Default.aspx?pageID=598", headers=H, timeout=30)
-          open("samples/tff_kupa.html", "w").write(r.text)
-          OUT.append(print_("KUPA", r.status_code, len(r.text), re.findall(r'class="moduleTitle">([^<]+)<', r.text)))
-          for m in re.finditer(r'pageI[Dd]=(\d+)[^"]*"[^>]*>\s*(?:<span[^>]*>)?([^<]{3,60})<', r.text):
-              if re.search(r"(?i)tur|grup|kupa|final|2026", m.group(2)): OUT.append(print_("  LINK", m.group(1), m.group(2).strip()))
+          def get(u):
+              try:
+                  r = requests.get(u, headers=H, timeout=30); return r.status_code, r.text
+              except Exception as e: return 0, str(e)
+          def save(n, t): open("samples/nl_"+n, "w").write(t)
+          # ESPN
+          for d in ["20260925","20261010","20261013","20261114","20261117"]:
+              s, t = get("https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.nations/scoreboard?dates="+d)
+              ev = json.loads(t).get("events", []) if s == 200 else []
+              OUT.append(print_("ESPN", d, s, len(ev), [e.get("name") for e in ev[:3]], ev[0].get("season") if ev else ""))
+              if ev and d=="20261013": save("espn_sb.json", t)
+          s, t = get("https://site.api.espn.com/apis/v2/sports/soccer/uefa.nations/standings")
+          OUT.append(print_("ESPN-ST", s, len(t), t[:300])); save("espn_st.json", t)
+          # UEFA
+          for cid in [2560, 3, 17, 18, 2014, 39, 5]:
+              s, t = get("https://match.uefa.com/v5/matches?competitionId=%d&seasonYear=2027&limit=3&order=ASC&offset=0" % cid)
+              nm = ""
+              try:
+                  j = json.loads(t); nm = [(m.get("competition",{}).get("metaData",{}).get("name"), m.get("kickOffTime",{}).get("date"), m.get("homeTeam",{}).get("internationalName"), m.get("round",{}).get("metaData",{}).get("name")) for m in j[:3]]
+              except Exception: nm = t[:150]
+              OUT.append(print_("UEFA-M", cid, s, nm))
+          s, t = get("https://match.uefa.com/v5/matches?competitionId=2560&seasonYear=2027&limit=50&order=ASC&offset=0")
+          save("uefa_m.json", t)
+          s, t = get("https://standings.uefa.com/v1/standings?competitionId=2560&seasonYear=2027")
+          OUT.append(print_("UEFA-ST", s, len(t), t[:300])); save("uefa_st.json", t)
+          # LiveScore Kategorie
+          s, t = get("https://prod-public-api.livescore.com/v1/api/app/category/soccer/uefa-nations-league/2?countryCode=DE&locale=de&MD=1")
+          OUT.append(print_("LS-NL", s, t[:400]))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
         with:
           path: repo
       - run: |
-          cp probe-result.txt repo/probe-result.txt && mkdir -p repo/samples && (cp samples/tff_* repo/samples/ 2>/dev/null || true)
+          cp probe-result.txt repo/probe-result.txt && mkdir -p repo/samples && (cp samples/nl_* repo/samples/ 2>/dev/null || true)
           cd repo && git config user.name Claude && git config user.email noreply@anthropic.com
           git add probe-result.txt samples && git commit -m 'Testergebnis [skip ci]' && git push
