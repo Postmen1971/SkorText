@@ -25,12 +25,41 @@ jobs:
           def print_(*a): return ' '.join(str(x) for x in a)
           os.makedirs("samples", exist_ok=True)
           import re, collections
-          E = "https://site.api.espn.com/apis/site/v2/sports/soccer"
-          S = "https://site.api.espn.com/apis/v2/sports/soccer"
-          for c, q in [("ger.1", "?dates=20261024"), ("ger.1", "?dates=20261031"), ("ger.dfb_pokal", "?dates=20261028"), ("uefa.champions", "?dates=20261021"), ("tur.1", "?dates=20261025"), ("ger.1", "")]:
-              r = requests.get("%s/%s/scoreboard%s" % (E, c, q), headers=H, timeout=25)
-              OUT.append(print_("SB", c, q, r.status_code, len(r.text)))
-              if r.status_code == 200: open("samples/espn_sb_%s_%s.json" % (c, q[7:] or "x"), "w").write(r.text)
+          def get(u, **kw):
+              return requests.get(u, headers=H, timeout=25, **kw)
+          F = "https://api.fupa.net/v1"
+          for slug in ["3-liga", "dritte-liga", "regionalliga-suedwest", "regionalliga-west", "regionalliga-bayern", "regionalliga-nord", "regionalliga-nordost",
+                       "oberliga-baden-wuerttemberg", "2-bundesliga", "bundesliga"]:
+              try:
+                  r = get("%s/standings?competition=%s&season=2026-27" % (F, slug))
+                  n = len(r.json().get("standings", [])) if r.status_code == 200 else -1
+                  m = get("%s/competitions/%s/seasons/2026-27/matches?limit=5" % (F, slug))
+                  OUT.append(print_("FUPA", slug, r.status_code, n, "| matches", m.status_code, len(m.text)))
+              except Exception as ex:
+                  OUT.append(print_("FERR", slug, ex))
+          for u in ["https://api.openligadb.de/getmatchdata/bl3/2026", "https://api.openligadb.de/getbltable/bl3/2026", "https://api.openligadb.de/getavailableleagues"]:
+              try:
+                  r = get(u); OUT.append(print_("OLDB", u, r.status_code, len(r.text)))
+                  if "available" in u and r.status_code == 200:
+                      for l in r.json():
+                          sc = (l.get("leagueShortcut") or "")
+                          if l.get("leagueSeason") in (2026, "2026") and l.get("sport", {}).get("sportId") == 1:
+                              OUT.append(print_("   ", sc, l.get("leagueName")))
+              except Exception as ex:
+                  OUT.append(print_("OERR", u, ex))
+          for u in ["https://www.tff.org/default.aspx?pageID=142", "https://www.tff.org/default.aspx?pageID=976", "https://www.tff.org/default.aspx?pageID=198",
+                    "https://www.tff.org/Default.aspx?pageId=561"]:
+              try:
+                  r = get(u); t = r.text
+                  OUT.append(print_("TFF", u, r.status_code, len(t), re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", t))[:300]))
+                  i = t.find("Bandırma"); 
+                  if i < 0: i = t.find("Bandirma")
+                  if i >= 0: OUT.append("   BAND: " + re.sub(r"\s+", " ", t[i-300:i+300]))
+              except Exception as ex:
+                  OUT.append(print_("TERR", u, ex))
+          # ESPN heute fuer Live-Ersatz
+          r = get("https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard")
+          OUT.append(print_("ESPNALL", r.status_code, len(r.text)))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
