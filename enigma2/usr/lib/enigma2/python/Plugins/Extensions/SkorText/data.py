@@ -407,6 +407,42 @@ def espn_zone(note):
 	return "c"
 
 
+def espn_cal_rounds(days):
+	"""ESPN-Kalendertage (je 07:00 UTC) zu Spieltagen zusammenfassen: aufeinanderfolgende Tage = ein Spieltag."""
+	out = []
+	for t in sorted(set(x for x in days if x)):
+		if out and t - out[-1][-1] <= 30 * 3600:
+			out[-1].append(t)
+		else:
+			out.append([t])
+	return out
+
+
+def espn_cal_index(cal, ts):
+	day = time.strftime("%Y%m%d", time.gmtime(ts - 7 * 3600))
+	for i, b in enumerate(cal):
+		for t in b:
+			if time.strftime("%Y%m%d", time.gmtime(t)) == day:
+				return i
+	return None
+
+
+def espn_guess_rounds(lst, rows):
+	"""Ohne Kalender: Spieltage nach Datum bilden, Nummer aus der Zahl der gespielten Spiele ableiten."""
+	buckets, last = [], None
+	for e in sorted(lst, key=lambda x: x["ts"]):
+		if last is None or e["ts"] - last > 60 * 3600:
+			buckets.append([])
+		buckets[-1].append(e)
+		last = e["ts"]
+	played = max([r["p"] for r in rows] or [0])
+	idx = max([i for i, b in enumerate(buckets) if any(e["state"] == "post" for e in b)] or [0])
+	base = (played or (idx + 1)) - idx
+	for i, b in enumerate(buckets):
+		for e in b:
+			e["round"] = max(1, base + i)
+
+
 class League(object):
 	def __init__(self, row):
 		self.page, self.c, self.ccd, self.scd, self.name_de, self.name_tr, self.tag = row
@@ -486,6 +522,10 @@ class League(object):
 				d = fetch_json("%s/%s/scoreboard?dates=%s" % (ESPN, code, ymd), timeout=20)
 			except Exception:
 				continue
+			if not getattr(self, "espn_cal", None):
+				lg0 = (d.get("leagues") or [{}])[0]
+				if lg0.get("calendarType") == "day" and lg0.get("calendar"):
+					self.espn_cal = espn_cal_rounds([espn_ts(x) for x in lg0.get("calendar") if isinstance(x, (str, type(u"")))])
 			for ev in d.get("events") or []:
 				pe = parse_espn_event(ev, self.ut)
 				evs[pe["id"]] = pe
@@ -505,22 +545,30 @@ class League(object):
 		except Exception:
 			rows = [r for _n, rr in self.tables for r in rr] if old else []
 		rows.sort(key=lambda r: r["pos"])
-		# Spieltage nach Datum bilden; Nummer aus der Zahl der gespielten Spiele ableiten
 		lst = sorted(evs.values(), key=lambda x: x["ts"])
-		buckets, last = [], None
-		for e in lst:
-			if last is None or e["ts"] - last > 60 * 3600:
-				buckets.append([])
-			buckets[-1].append(e)
-			last = e["ts"]
-		played = max([r["p"] for r in rows] or [0])
-		idx = max([i for i, b in enumerate(buckets) if any(e["state"] == "post" for e in b)] or [0])
-		base = (played or (idx + 1)) - idx
-		for i, b in enumerate(buckets):
-			for e in b:
-				e["round"] = max(1, base + i)
+		cal = getattr(self, "espn_cal", None)
+		expected = 2 * (len(rows) - 1) if len(rows) > 2 else None
+		if cal and getattr(self, "espn_off", None) is None:
+			# Spieltagsnummer = Position im Saisonkalender (+ Versatz, falls der Kalender nicht vollstaendig ist)
+			if expected and len(cal) == expected:
+				self.espn_off = 0
+			else:
+				win = [dict(e) for e in lst if abs(e["ts"] - now) < 8 * 86400]
+				espn_guess_rounds(win, rows)
+				offs = [e["round"] - (espn_cal_index(cal, e["ts"]) + 1) for e in win if espn_cal_index(cal, e["ts"]) is not None]
+				self.espn_off = max(set(offs), key=offs.count) if offs else None
+		if cal and self.espn_off is not None:
+			for e in lst:
+				bi = espn_cal_index(cal, e["ts"])
+				e["round"] = max(1, bi + 1 + self.espn_off) if bi is not None else (e.get("round") or 1)
+		else:
+			espn_guess_rounds(lst, rows)
 		self.rnames = {}
 		self.set_events(lst, infer=False)
+		if cal and self.espn_off is not None:
+			self.max_round = max(self.max_round or 0, len(cal) + self.espn_off)
+		elif expected:
+			self.max_round = max(self.max_round or 0, expected)
 		self.tables = [(u"", rows)] if rows else []
 		self.source = "espn"
 		if full:
@@ -528,6 +576,26 @@ class League(object):
 		self.t_load = time.time()
 		self.error = None
 		return self
+
+	def load_round_espn(self, n):
+		"""Beim Blaettern: Tage dieses Spieltags laut ESPN-Kalender nachladen."""
+		cal = getattr(self, "espn_cal", None)
+		off = getattr(self, "espn_off", None)
+		if not cal or off is None or not (0 <= n - 1 - off < len(cal)):
+			self.rcache[n] = []
+			return n
+		got = {}
+		for day in cal[n - 1 - off]:
+			ymd = time.strftime("%Y%m%d", time.gmtime(day))
+			dd = fetch_json("%s/%s/scoreboard?dates=%s" % (ESPN, ESPN_CODES[self.page], ymd), timeout=20)
+			for ev in dd.get("events") or []:
+				pe = parse_espn_event(ev, self.ut)
+				pe["round"] = n
+				got[pe["id"]] = pe
+		ids = set(got)
+		self.all_events = sorted([e for e in self.all_events if e["id"] not in ids] + list(got.values()), key=lambda x: x["ts"])
+		self.rcache[n] = True
+		return n
 
 	def load_ls(self):
 		d = get_url_json("%s/stage/soccer/%s/%s/0?MD=1" % (BASE, self.ccd, self.scd))
@@ -569,14 +637,19 @@ class League(object):
 		self.round = cur
 		self.events = self.events_of_round(cur) if cur else list(evs[-10:])
 		self.prev_round = cur - 1 if cur and cur > 1 else None
-		self.prev_events = self.events_of_round(self.prev_round) if self.prev_round else []
+		self.prev_events = (self.events_of_round(self.prev_round) if self.prev_round else []) or []
 
 	def events_of_round(self, n):
 		if n is None:
 			return []
-		return [e for e in self.all_events if e["round"] == n]
+		evs = [e for e in self.all_events if e["round"] == n]
+		if not evs and getattr(self, "source", "") == "espn" and getattr(self, "espn_cal", None) and n not in self.rcache:
+			return None  # ESPN: Spieltag noch nicht geladen -> beim Blaettern nachladen
+		return evs
 
 	def load_round(self, n):
+		if getattr(self, "source", "") == "espn":
+			return self.load_round_espn(n)
 		return n  # alle Spieltage sind schon geladen
 
 	def live_count(self):

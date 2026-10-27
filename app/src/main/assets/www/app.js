@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "3.7";
+var VERSION = "3.8";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -622,11 +622,106 @@ function natDiscover() {
     return true;
   });
 }
+/* Ersatzquelle UEFA, wenn LiveScore gesperrt ist */
+var UEFA_MATCH = "https://match.uefa.com/v5/matches", UEFA_STAND = "https://standings.uefa.com/v1/standings";
+var UEFA_STATE = {FINISHED: "post", UPCOMING: "pre", LIVE: "in", POSTPONED: "pp", CANCELLED: "pp", ABANDONED: "pp"};
+function uefaDay(ts) { return new Date(ts * 1000).toISOString().slice(0, 10); }
+function uefaMatches(cid, season, q) { return rawJSON(UEFA_MATCH + "?competitionId=" + cid + "&seasonYear=" + season + "&" + q).then(function (j) { return j || []; }); }
+function uefaStageName(grp) {
+  var gn = ((grp || {}).metaData || {}).groupName || "", lg = (((grp || {}).league || {}).metaData || {}).leagueName || "";
+  var m = /^group ([a-d])(\d+)$/i.exec(gn);
+  if (lg && m) return lg + ": Group " + m[2];
+  return lg ? lg + ": " + gn : gn;
+}
+function parseUefaMatch(m) {
+  var state = UEFA_STATE[m.status] || "pre";
+  if (state === "in" && /HALF_TIME/i.test(m.phase || "")) state = "ht";
+  var sc = (m.score || {}).total || {}, hs = sc.home, as = sc.away;
+  if (state === "pre" || hs === undefined) { hs = null; as = null; }
+  var ht = m.homeTeam || {}, at = m.awayTeam || {};
+  return {id: "uefa" + m.id, h: fixName(ht.internationalName || "?"), hs_name: "", a: fixName(at.internationalName || "?"), as_name: "",
+    hs: state === "pre" ? null : hs, as: state === "pre" ? null : as, state: state, min: state === "in" ? String(((m.minute || {}).normal) || "") : "",
+    ts: isoTs((m.kickOffTime || {}).dateTime), round: toInt((m.matchday || {}).sequenceNumber), group: "", ut: "", gid: String((m.group || {}).id || "")};
+}
+function natCandidatesUefa() {
+  var y = new Date().getFullYear(), out = [];
+  for (var yy = y; yy < y + 6; yy++) if (yy % 4 === 0) out.push(["euro", 3, yy]);
+  for (yy = y; yy < y + 5; yy++) if (yy % 4 === 2) out.push(["wc", 17, yy]);
+  return out.concat([["nl", 2014, y + 1], ["nl", 2014, y]]);
+}
+function natDiscoverUefa() {
+  var now = Date.now() / 1000, D = 86400, cands = natCandidatesUefa();
+  function tryAt(i) {
+    if (i >= cands.length) return Promise.resolve(null);
+    var c = cands[i];
+    return uefaMatches(c[1], c[2], "fromDate=" + uefaDay(now - 21 * D) + "&toDate=" + uefaDay(now + 120 * D) + "&limit=1&offset=0&order=ASC").then(function (ms) {
+      return ms.some(function (m) { return (m.group || {}).id; }) ? c : tryAt(i + 1);
+    }, function () { return tryAt(i + 1); });
+  }
+  return tryAt(0).then(function (c) {
+    if (!c) return false;
+    return rawJSON(UEFA_STAND + "?competitionId=" + c[1] + "&seasonYear=" + c[2]).then(function (st) {
+      var groups = [];
+      (st || []).forEach(function (g) {
+        var grp = g.group || {};
+        if (!grp.id || !(g.items || []).length) return;
+        var lg = new League([470, "nlg", "uefa-" + c[1], "g" + grp.id, "", "", ""]);
+        lg.snm = uefaStageName(grp); lg.kind = c[0]; lg.source = "uefa"; lg.gid = String(grp.id);
+        lg.order = [toInt((grp.league || {}).order) || 0, toInt(grp.order) || 0];
+        lg.name = function (lang) { return NAT_TITLES[this.kind][lang === "tr" ? 1 : 0] + " · " + natStageName(this.snm, lang); };
+        lg.load = function () { return natLoadUefa(); };
+        groups.push(lg);
+      });
+      if (!groups.length) return false;
+      groups.sort(function (a, b) { return a.order[0] - b.order[0] || a.order[1] - b.order[1]; });
+      NAT.kind = c[0]; NAT.uefa = [c[1], c[2]]; NAT.groups = groups; NAT.tDisc = now; NAT.tUefaFull = 0; NAT.uefaStand = st;
+      STORE.setNat(NAT.groups);
+      return true;
+    });
+  });
+}
+function natLoadUefa() {
+  var cid = NAT.uefa[0], season = NAT.uefa[1], now = Date.now() / 1000, full = now - (NAT.tUefaFull || 0) > 1800;
+  var byg = {}; NAT.groups.forEach(function (lg) { byg[lg.gid] = lg; });
+  var p = full ? Promise.all([
+      uefaMatches(cid, season, "toDate=" + uefaDay(now) + "&limit=80&offset=0&order=DESC"),
+      uefaMatches(cid, season, "fromDate=" + uefaDay(now + 86400) + "&limit=80&offset=0&order=ASC"),
+      now - NAT.tDisc > 60 ? rawJSON(UEFA_STAND + "?competitionId=" + cid + "&seasonYear=" + season).then(null, function () { return null; }) : Promise.resolve(null)
+    ]).then(function (r) { if (r[2]) NAT.uefaStand = r[2]; return r[0].concat(r[1]); })
+    : uefaMatches(cid, season, "fromDate=" + uefaDay(now) + "&toDate=" + uefaDay(now) + "&limit=80&offset=0&order=ASC");
+  return p.then(function (ms) {
+    var per = {}, tabs = {};
+    ms.forEach(function (m) { var e = parseUefaMatch(m); if (byg[e.gid]) { e.ut = byg[e.gid].ut; (per[e.gid] = per[e.gid] || {})[e.id] = e; } });
+    (NAT.uefaStand || []).forEach(function (g) {
+      var gid = String((g.group || {}).id || "");
+      tabs[gid] = (g.items || []).map(function (it) {
+        var tm = it.team || {};
+        return {pos: toInt(it.rank) || 0, tm: fixName(tm.internationalName || "?"), short: "", p: toInt(it.played) || 0, w: toInt(it.won) || 0,
+          d: toInt(it.drawn) || 0, l: toInt(it.lost) || 0, gf: toInt(it.goalsFor) || 0, ga: toInt(it.goalsAgainst) || 0, pts: toInt(it.points) || 0, phr: null, zone: null};
+      }).sort(function (a, b) { return a.pos - b.pos; });
+    });
+    Object.keys(byg).forEach(function (gid) {
+      var lg = byg[gid], old = {};
+      if (!full) lg.allEvents.forEach(function (e) { old[e.id] = e; });
+      var nw = per[gid] || {}; Object.keys(nw).forEach(function (k) { old[k] = nw[k]; });
+      lg.rnames = {};
+      lg.setEvents(Object.keys(old).map(function (k) { return old[k]; }), true);
+      if (tabs[gid] && tabs[gid].length) lg.tables = [["", tabs[gid]]];
+      lg.tLoad = now; lg.error = null;
+    });
+    if (full) NAT.tUefaFull = now;
+  });
+}
 function natLoad() {
-  var p = (!NAT.groups.length || Date.now() / 1000 - NAT.tDisc > 6 * 3600) ? natDiscover() : Promise.resolve(true);
+  var p = (!NAT.groups.length || Date.now() / 1000 - NAT.tDisc > 6 * 3600)
+    ? natDiscover().then(function (ok) { return ok || natDiscoverUefa(); }) : Promise.resolve(true);
   return p.then(function (ok) {
     if (!ok && !NAT.groups.length) throw new Error("Keine Länderspiele gefunden");
-    return Promise.all(NAT.groups.map(function (lg) { return lg.load().then(function () {}, function (e) { lg.error = niceError(e); }); }));
+    if (NAT.groups.length && NAT.groups[0].source === "uefa") return natLoadUefa();
+    return Promise.all(NAT.groups.map(function (lg) { return lg.load().then(function () {}, function (e) { lg.error = niceError(e); }); })).then(function () {
+      if (NAT.groups.length && NAT.groups.every(function (lg) { return lg.error && !lg.allEvents.length; }))
+        return natDiscoverUefa().then(function (ok2) { if (ok2) return natLoadUefa(); });
+    });
   }).then(function () { NAT.tLoad = Date.now() / 1000; NAT.error = null; });
 }
 STORE.leagueByPage = function (p) { var v = this.view(p); return v ? v[0] : null; };

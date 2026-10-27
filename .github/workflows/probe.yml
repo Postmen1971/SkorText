@@ -31,14 +31,20 @@ jobs:
           sys.path.insert(0, "repo0/enigma2/usr/lib/enigma2/python/Plugins/Extensions/SkorText")
           import data
           data.LS_STATE["pause"] = time.time() + 99999   # LiveScore gesperrt wie bei Aziz
-          t0 = time.time(); data.NAT.load(); OUT.append(print_("LOAD", data.NAT.kind, len(data.NAT.groups), "%.1fs" % (time.time()-t0)))
-          for lg in data.NAT.groups:
-              OUT.append(print_(lg.name("de"), "| Spieltag", lg.round, "prev", lg.prev_round, "| alle", len(lg.all_events)))
-              for e in lg.prev_events: OUT.append(print_("   ", e["h"], e["hs"], ":", e["as"], e["a"], e["state"]))
-              for e in lg.events: OUT.append(print_("   >", time.strftime("%d.%m %H:%M", time.gmtime(e["ts"])), e["h"], "-", e["a"], e["state"]))
-              for n, rows in lg.tables:
-                  for r in rows: OUT.append(print_("     ", r["pos"], r["tm"], r["p"], r["gf"], ":", r["ga"], r["pts"]))
-          t0 = time.time(); data.NAT.t_uefa_full = time.time(); data.NAT.load(); OUT.append(print_("LIVE-RELOAD %.1fs" % (time.time()-t0)))
+          for pg in (200, 210, 300, 400, 410):
+              lg = data.STORE.league_by_page(pg)
+              t0 = time.time()
+              try:
+                  lg.load()
+              except Exception as e:
+                  OUT.append(print_(pg, "FEHLER", e)); continue
+              OUT.append(print_(pg, lg.source, "Spieltag", lg.round, "max", lg.max_round, "off", getattr(lg, "espn_off", "-"), "%.1fs" % (time.time()-t0)))
+              for n in (1, lg.round - 3, lg.round + 2, lg.max_round):
+                  ev = lg.events_of_round(n)
+                  if ev is None:
+                      lg.load_round(n); ev = lg.events_of_round(n)
+                  OUT.append(print_("   MD", n, len(ev or []), [(e["h"], e["hs"], e["as"], e["a"], time.strftime("%d.%m", time.gmtime(e["ts"]))) for e in (ev or [])[:2]]))
+          t0 = time.time(); data.NAT.load(); OUT.append(print_("NAT", data.NAT.kind, len(data.NAT.groups), "%.1fs" % (time.time()-t0)))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
