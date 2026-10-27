@@ -1,2 +1,28 @@
-TFF 142 200 381073 windows-1254
-TFF 976 200 475883 windows-1254
+KUPA 200 69561 ['Fikstürler']
+  LINK 288 ZİRAAT TÜRKİYE KUPASI
+  LINK 329 TURKCELL SÜPER KUPA
+  LINK 1764 2026/27 UEFA Uluslar A Ligi
+  LINK 1775 2026 D&#252;nya Kupası
+  LINK 1720 2026 D&#252;nya Kupası Elemeleri
+  LINK 1523 2022 D&#252;nya Kupası Elemeleri
+  LINK 1324 2018 D&#252;nya Kupası Elemeleri
+  LINK 1092 2014 D&#252;nya Kupası Elemeleri
+  LINK 631 2010 D&#252;nya Kupası Elemeleri
+  LINK 1766 2025/26 UEFA Avrupa Şampiyonası Elit Tur
+  LINK 1758 2025/26 UEFA Avrupa Şampiyonası Eleme Turu
+  LINK 1728 2024/25 UEFA Avrupa Şampiyonası Elit Tur
+  LINK 1671 2024/25 UEFA Avrupa Şampiyonası Eleme Turu
+  LINK 1765 2025/26 UEFA Avrupa Şampiyonası 2. Tur
+  LINK 1759 2025/26 UEFA Avrupa Şampiyonası Eleme Turu
+  LINK 1729 2024/25 UEFA Avrupa Şampiyonası 2. Tur
+  LINK 1670 2024/25 UEFA Avrupa Şampiyonası 1. Tur
+  LINK 1639 Ege Kupası
+  LINK 1638 Yaay eT&#252;rkiye Kupası
+  LINK 88 KUPALAR
+  LINK 88 Kupalar Ana Sayfa
+  LINK 288 Ziraat T&#252;rkiye Kupası
+  LINK 329 Turkcell S&#252;per Kupa
+  LINK 593 Avrupa Kupaları
+  LINK 88 Kupalar Ana Sayfa
+  LINK 329 Turkcell Süper Kupa
+  LINK 593 Avrupa Kupaları
