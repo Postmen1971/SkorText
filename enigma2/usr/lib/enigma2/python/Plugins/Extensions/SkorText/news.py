@@ -15,13 +15,21 @@ except ImportError:  # Python 2
 
 from .data import Request, urlopen, _ctx, UA
 
-# Seite, Rubrik, Quelle, Feed
+# Seite, Rubrik, Quelle, Feed - je nach Einstellung tuerkische oder deutsche Nachrichten
 FEEDS = [
 	(600, u"Manşet", u"TRT Haber", "https://www.trthaber.com/manset_articles.rss"),
 	(610, u"Güncel", u"Anadolu Ajansı", "https://www.aa.com.tr/tr/rss/default?cat=guncel"),
 	(620, u"Dünya", u"Anadolu Ajansı", "https://www.aa.com.tr/tr/rss/default?cat=dunya"),
 	(630, u"Ekonomi", u"Anadolu Ajansı", "https://www.aa.com.tr/tr/rss/default?cat=ekonomi"),
 	(640, u"Spor", u"Anadolu Ajansı", "https://www.aa.com.tr/tr/rss/default?cat=spor"),
+]
+FEEDS_DE = [
+	(600, u"Schlagzeilen", u"tagesschau", "https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml"),
+	(610, u"Inland", u"tagesschau", "https://www.tagesschau.de/inland/index~rss2.xml"),
+	(620, u"Welt", u"tagesschau", "https://www.tagesschau.de/ausland/index~rss2.xml"),
+	(630, u"Wirtschaft", u"tagesschau", "https://www.tagesschau.de/wirtschaft/index~rss2.xml"),
+	(640, u"Sport", u"sportschau", "https://www.sportschau.de/index~rss2.xml"),
+	(650, u"Fußball", u"kicker", "https://newsfeed.kicker.de/news/aktuell"),
 ]
 
 
@@ -124,7 +132,15 @@ class Feed(object):
 		raise last
 
 
-FEED_LIST = [Feed(r) for r in FEEDS]
+FEED_SETS = {"tr": [Feed(r) for r in FEEDS], "de": [Feed(r) for r in FEEDS_DE]}
+FEED_LIST = list(FEED_SETS["tr"])   # wird beim Umstellen in der Einstellung ausgetauscht
+NEWS = {"lang": "tr"}
+
+
+def set_news(lang):
+	lang = "de" if lang == "de" else "tr"
+	NEWS["lang"] = lang
+	FEED_LIST[:] = FEED_SETS[lang]
 
 
 def feed_by_page(p):

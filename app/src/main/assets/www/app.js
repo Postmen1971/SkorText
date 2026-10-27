@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "3.9.1";
+var VERSION = "3.10";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -73,8 +73,10 @@ var SETTINGS = [
  ["refresh",["Aktualisierung","Güncelleme"],[["60","alle 60 s","60 sn'de bir"],["30","alle 30 s","30 sn'de bir"],["120","alle 120 s","120 sn'de bir"]],["Wie oft neue Daten geholt werden.","Verilerin çekilme sıklığı."]],
  ["rotate",["Unterseiten blättern","Alt sayfa çevirme"],[["man","Manuell (▲▼)","Manuel (▲▼)"],["10","Automatisch alle 10 s","10 sn'de bir otomatik"]],["Bei langen Seiten.","Uzun sayfalarda."]],
  ["bg",["Hintergrund","Arka plan"],[["black","Schwarz","Siyah"],["navy","Dunkelblau","Lacivert"]],["Hintergrundfarbe.","Arka plan rengi."]],
- ["autoupd",["Auto-Update","Otomatik güncelleme"],[["on","Beim Start prüfen","Açılışta kontrol et"],["off","Aus","Kapalı"]],["Sucht beim Start auf GitHub nach einer neuen Version.","Açılışta GitHub'da yeni sürüm arar."]]
+ ["autoupd",["Auto-Update","Otomatik güncelleme"],[["on","Beim Start prüfen","Açılışta kontrol et"],["off","Aus","Kapalı"]],["Sucht beim Start auf GitHub nach einer neuen Version.","Açılışta GitHub'da yeni sürüm arar."]],
+ ["news",["Nachrichten (600)","Haberler (600)"],[["tr","Türkisch (TRT, AA)","Türkçe (TRT, AA)"],["de","Deutsch (tagesschau, kicker)","Almanca (tagesschau, kicker)"]],["Türkische oder deutsche Schlagzeilen, Welt, Sport … auf den Seiten 600 ff.","600 ve sonrası: Türkçe veya Almanca manşet, dünya, spor …"]]
 ];
+var DL_CODE = "5694507";  // Downloader-Code für die Android-App (aftv.news/5694507)
 
 /* ================= Einstellungen (dauerhaft) ================= */
 var CFG = {};
@@ -88,7 +90,7 @@ function prefSet(k, v) {
 }
 SETTINGS.forEach(function (s) { CFG[s[0]] = prefGet(s[0], s[2][0][0]); });
 function cfg(k) { return CFG[k]; }
-function setCfg(k, v) { CFG[k] = v; prefSet(k, v); }
+function setCfg(k, v) { CFG[k] = v; prefSet(k, v); if (k === "news" && typeof setNews === "function") setNews(v); }
 var TOUCH = false;
 function T(k) { var t = TXT[cfg("lang")]; return (TOUCH && t["t_" + k] !== undefined) ? t["t_" + k] : t[k]; }
 function fmt(s, n) { return s.replace("%d", n); }
@@ -952,14 +954,25 @@ STORE.applyLive = function (nw) {
 };
 
 /* Nachrichten */
-var FEEDS = [
+var FEED_SETS = {tr: [
  {page: 600, name: "Manşet", source: "TRT Haber", url: "https://www.trthaber.com/manset_articles.rss"},
  {page: 610, name: "Güncel", source: "Anadolu Ajansı", url: "https://www.aa.com.tr/tr/rss/default?cat=guncel"},
  {page: 620, name: "Dünya", source: "Anadolu Ajansı", url: "https://www.aa.com.tr/tr/rss/default?cat=dunya"},
  {page: 630, name: "Ekonomi", source: "Anadolu Ajansı", url: "https://www.aa.com.tr/tr/rss/default?cat=ekonomi"},
  {page: 640, name: "Spor", source: "Anadolu Ajansı", url: "https://www.aa.com.tr/tr/rss/default?cat=spor"}
-];
-FEEDS.forEach(function (f) { f.items = []; f.tLoad = 0; f.loading = false; f.error = null; });
+], de: [
+ {page: 600, name: "Schlagzeilen", source: "tagesschau", url: "https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml"},
+ {page: 610, name: "Inland", source: "tagesschau", url: "https://www.tagesschau.de/inland/index~rss2.xml"},
+ {page: 620, name: "Welt", source: "tagesschau", url: "https://www.tagesschau.de/ausland/index~rss2.xml"},
+ {page: 630, name: "Wirtschaft", source: "tagesschau", url: "https://www.tagesschau.de/wirtschaft/index~rss2.xml"},
+ {page: 640, name: "Sport", source: "sportschau", url: "https://www.sportschau.de/index~rss2.xml"},
+ {page: 650, name: "Fußball", source: "kicker", url: "https://newsfeed.kicker.de/news/aktuell"}
+]};
+[FEED_SETS.tr, FEED_SETS.de].forEach(function (s) { s.forEach(function (f) { f.items = []; f.tLoad = 0; f.loading = false; f.error = null; }); });
+var FEEDS = [], NEWS_LANG = "tr";
+function setNews(lang) { NEWS_LANG = lang === "de" ? "de" : "tr"; FEEDS.length = 0; FEED_SETS[NEWS_LANG].forEach(function (f) { FEEDS.push(f); }); }
+setNews(cfg("news"));
+function newsLabel() { return (NEWS_LANG === "de" ? "Nachrichten" : "Haberler") + " · " + FEEDS.slice(0, 3).map(function (f) { return f.name; }).join(", ") + " …"; }
 function feedByPage(p) { for (var i = 0; i < FEEDS.length; i++) if (FEEDS[i].page === p) return FEEDS[i]; return null; }
 function cleanText(s) {
   var d = document.createElement("div"); d.innerHTML = String(s || "").replace(/<[^>]+>/g, " ");
@@ -1235,7 +1248,7 @@ function lselItems() {
   });
   out.push([null, T("cNAT"), "nat"], [470, NAT.groups.length ? NAT.title(lang) : T("natEU"), "nat"]);
   out.push([null, T("cRANK"), "rk"], [480, T("rkFifa"), "rk"], [482, T("rkUefa"), "rk"], [484, T("rkClub"), "rk"]);
-  out.push([null, T("cMORE"), "more"], [110, T("fav"), "more"], [510, T("today"), "more"], [500, T("allLive"), "more"], [600, "Haberler", "more"]);
+  out.push([null, T("cMORE"), "more"], [110, T("fav"), "more"], [510, T("today"), "more"], [500, T("allLive"), "more"], [600, "Nachrichten / Haberler", "more"]);
   return out;
 }
 function lselToggle() { if (S.lsSel === null || S.lsSel === undefined) return; togglePage(S.lsSel); message(pageOn(S.lsSel) ? T("lselOn") : T("lselOff"), 1.2); }
@@ -1284,7 +1297,7 @@ function idxCols() {
   function sec(hdr, items) { items = items.filter(function (it) { return it.page === 900 || pageOn(it.page); }); return items.length ? [hdr].concat(items) : []; }
   var more = sec({hdr: T("cMORE"), bg: "m", fg: "k"}, [
     {page: 110, lbl: T("fav") + (fav ? " · " + fav : "")}, {page: 510, lbl: T("today")}, {page: 500, lbl: T("allLive"), live: true},
-    {page: 600, lbl: "Haberler · " + FEEDS.slice(0, 3).map(function (f) { return f.name; }).join(", ") + " …"}, {page: 900, lbl: T("settings")}]);
+    {page: 600, lbl: newsLabel()}, {page: 900, lbl: T("settings")}]);
   var dep = sec({hdr: T("cDE"), bg: "r", fg: "w"}, views("de"));
   var left = dep.concat(dep.length ? [null] : []).concat(more);
   var right = sec({hdr: T("cTR"), bg: "g", fg: "k"}, views("tr")).concat(sec({hdr: T("cEU"), bg: "y", fg: "k"}, views("eu")))
@@ -1492,6 +1505,7 @@ function subpages() {
     lines.push([hs ? COL.sel : null, [seg(1, half2 - 2, T("help"), hs ? "y" : "w"), seg(half2, half2, (hs ? "► " : "  ") + T("helpOpen"), hs ? "y" : "c")]]);
     lines.push([us ? COL.sel : null, [seg(1, half2 - 2, T("updRow"), us ? "y" : "w"), seg(half2, half2, (us ? "► " : "  ") + (UPD.msg || T("updOpen")), us ? "y" : "c")]]);
     lines.push(blank()); lines.push(text(" " + (ls ? T("lselInfo") : hs ? T("helpInfo") : (us ? T("updInfo") + " " + VERSION : SETTINGS[S.setSel][3][lang === "tr" ? 1 : 0])), "g"));
+    lines.push(blank()); lines.push(text(" " + (lang === "tr" ? "Android uygulaması: Downloader kodu " : "Android-App laden: Downloader-Code ") + DL_CODE + "  (aftv.news/" + DL_CODE + ")", "y"));
     while (lines.length < 19) lines.push(blank());
     lines.push(text(T("setHint"), "c"));
     subs = [{ban: [up(T("settings")), "SkorText"], bg: ["b", "w"], head: text("MENU", "d"), lines: lines}];
@@ -1652,7 +1666,7 @@ function rankSubpages() {
 }
 function wrap(s, w) { var out = [], line = ""; (s || "").split(/\s+/).forEach(function (word) { if (!line) line = word; else if ((line + " " + word).length <= w) line += " " + word; else { out.push(line); line = word; } }); if (line) out.push(line); return out; }
 function newsSubpages() {
-  var C = G.cols, f = feedByPage(S.page), title = trUpper(T("cNEWS") + " · " + f.name), lt = new Date((f.tLoad || Date.now() / 1000) * 1000);
+  var C = G.cols, f = feedByPage(S.page), title = NEWS_LANG === "de" ? ("NACHRICHTEN · " + f.name).toUpperCase() : trUpper(T("cNEWS") + " · " + f.name), lt = new Date((f.tLoad || Date.now() / 1000) * 1000);
   var head = [null, [seg(0, C - 18, f.source, "c"), seg(C - 17, 17, T("stand") + " " + two(lt.getHours()) + ":" + two(lt.getMinutes()), "c", null, "r")]];
   var lines;
   if (!f.items.length) {

@@ -26,7 +26,8 @@ TXT = {
 		"tkHint": u"▲▼ wählen · OK = übernehmen + Fernsehbild", "tkOffMsg": u"Tor-Ticker aus",
 		"source": u"Daten: LiveScore, FuPa, ESPN",
 		"mdNow": u"(aktuell)", "mdBrowse": u"Spieltag", "noMore": u"Kein weiterer Spieltag",
-		"cNEWS": u"HABERLER", "newsHint": u"▲▼ wählen · OK lesen · ◄► Rubrik",
+		"cNEWS": u"HABERLER", "cNEWSde": u"NACHRICHTEN", "newsHint": u"▲▼ wählen · OK lesen · ◄► Rubrik",
+		"dlRow": u"Android-App laden: Downloader-Code %s  (aftv.news/%s)",
 		"cNAT": u"LÄNDERSPIELE", "cRANK": u"RANGLISTEN", "cMORE": u"WEITERES", "more": u"▼ mehr: Länderspiele, Ranglisten",
 		"fav": u"Mein Verein", "today": u"Heute", "yesterday": u"Gestern", "tomorrow": u"Morgen", "dayHint": u"◄► Tag wechseln",
 		"last": u"Letzte Spiele", "next": u"Nächste Spiele", "noFav": u"Kein Lieblingsverein gewählt.",
@@ -49,7 +50,7 @@ TXT = {
 			(u"320 / 322", u"2. Lig: Beyaz / Kırmızı Grup"), (u"295 / 305", u"DFB-Pokal / Türkiye Kupası"),
 			(u"510", u"Heute: alle Spiele des Tages (◄► Tag)"),
 			(u"110", u"Mein Verein"), (u"470", u"Länderspiele Europa: NL / EM- / WM-Quali (◄►)"), (u"480–484", u"Ranglisten: FIFA, UEFA-Länder, UEFA-Klubs"),
-			(u"600–640", u"Türkische Nachrichten (Haberler)"),
+			(u"600–650", u"Nachrichten (türkisch oder deutsch, siehe Einstellungen)"),
 			(u"EXIT", u"Übersicht, nochmal EXIT = TV"), (u"MENU", u"Einstellungen (900)"),
 			(u"INFO", u"diese Hilfe (190)"), (u"CH+ / CH−", u"nächste / vorige Seite")],
 	},
@@ -77,7 +78,8 @@ TXT = {
 		"tkHint": u"▲▼ seç · OK = kaydet + TV", "tkOffMsg": u"Gol bildirimi kapalı",
 		"source": u"Veri: LiveScore, FuPa, ESPN",
 		"mdNow": u"(güncel)", "mdBrowse": u"Hafta", "noMore": u"Başka hafta yok",
-		"cNEWS": u"HABERLER", "newsHint": u"▲▼ seç · OK oku · ◄► kategori",
+		"cNEWS": u"HABERLER", "cNEWSde": u"HABERLER (ALMANCA)", "newsHint": u"▲▼ seç · OK oku · ◄► kategori",
+		"dlRow": u"Android uygulaması: Downloader kodu %s  (aftv.news/%s)",
 		"cNAT": u"MİLLİ MAÇLAR", "cRANK": u"SIRALAMALAR", "cMORE": u"DİĞER", "more": u"▼ devamı: Milli maçlar, sıralamalar",
 		"fav": u"Takımım", "today": u"Bugün", "yesterday": u"Dün", "tomorrow": u"Yarın", "dayHint": u"◄► gün değiştir",
 		"last": u"Son maçlar", "next": u"Sıradaki maçlar", "noFav": u"Favori takım seçilmedi.",
@@ -100,7 +102,7 @@ TXT = {
 			(u"320 / 322", u"2. Lig: Beyaz / Kırmızı Grup"), (u"295 / 305", u"Almanya Kupası / Türkiye Kupası"),
 			(u"510", u"Bugün: günün tüm maçları (◄► gün)"),
 			(u"110", u"Takımım"), (u"470", u"Avrupa milli maçlar: UL / EURO / DK eleme (◄►)"), (u"480–484", u"Sıralamalar: FIFA, UEFA ülke, UEFA kulüp"),
-			(u"600–640", u"Haberler (Manşet, Güncel, Dünya …)"),
+			(u"600–650", u"Haberler (Türkçe veya Almanca, bkz. Ayarlar)"),
 			(u"EXIT", u"Genel Bakış, tekrar EXIT = TV"), (u"MENU", u"Ayarlar (900)"),
 			(u"INFO", u"bu yardım (190)"), (u"CH+ / CH−", u"sonraki / önceki sayfa")],
 	},
@@ -152,7 +154,11 @@ SETTINGS = [
 	("autoupd", (u"Auto-Update", u"Otomatik güncelleme"), [
 		("on", u"Beim Start prüfen", u"Açılışta kontrol et"), ("off", u"Aus", u"Kapalı")],
 		(u"Sucht beim Start auf GitHub nach einer neuen Version.", u"Açılışta GitHub'da yeni sürüm arar.")),
+	("news", (u"Nachrichten (600)", u"Haberler (600)"), [
+		("tr", u"Türkisch (TRT, AA)", u"Türkçe (TRT, AA)"), ("de", u"Deutsch (tagesschau, kicker)", u"Almanca (tagesschau, kicker)")],
+		(u"Türkische oder deutsche Schlagzeilen, Welt, Sport … auf den Seiten 600 ff.", u"600 ve sonrası: Türkçe veya Almanca manşet, dünya, spor …")),
 ]
+DL_CODE = u"5694507"   # Downloader-Code fuer die Android-App (aftv.news/5694507)
 
 
 def tr_upper(s):

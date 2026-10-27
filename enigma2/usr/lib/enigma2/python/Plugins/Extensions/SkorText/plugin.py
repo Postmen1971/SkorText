@@ -18,12 +18,12 @@ from Plugins.Plugin import PluginDescriptor
 from twisted.internet import threads
 
 from .data import EXTRA_PAGES, STORE, RATE, log, nice_error, RANKINGS, ranking_by_page, FupaLeague, fupa_today, NAT, get_url_json, fetch_bytes
-from .texts import TXT, SETTINGS, tr_upper, nation, FAV_LEAGUES
-from .news import FEED_LIST, feed_by_page
+from .texts import TXT, SETTINGS, tr_upper, nation, FAV_LEAGUES, DL_CODE
+from .news import FEED_LIST, feed_by_page, set_news, NEWS
 
 PY2 = sys.version_info[0] == 2
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "3.9.0"
+VERSION = "3.10.0"
 
 
 def E(s):
@@ -62,6 +62,8 @@ def set_cfg(key, val):
 	c = getattr(config.plugins.SkorText, key)
 	c.value = E(val)
 	c.save()
+	if key == "news":
+		set_news(val)
 	try:
 		configfile.save()
 	except Exception:
@@ -97,6 +99,11 @@ def toggle_page(p):
 
 
 STORE.is_on = page_on
+set_news(cfg("news"))
+
+
+def news_label():
+	return (u"Nachrichten" if NEWS["lang"] == "de" else u"Haberler") + u" · " + u", ".join(f.name for f in FEED_LIST[:3]) + u" …"
 
 
 def mk_timer(owner, cb):
@@ -898,7 +905,7 @@ class SkorText(Screen):
 		more = sec({"hdr": T("cMORE"), "bg": "m", "fg": "k"}, [
 			{"page": 110, "lbl": T("fav") + ((u" · " + cfg("fav")) if cfg("fav") else u"")}, {"page": 510, "lbl": T("today")},
 			{"page": 500, "lbl": T("allLive"), "live": True},
-			{"page": 600, "lbl": u"Haberler · " + u", ".join(f.name for f in FEED_LIST[:3]) + u" …"},
+			{"page": 600, "lbl": news_label()},
 			{"page": 150, "lbl": self.tick_label()}, {"page": 900, "lbl": T("settings")}])
 		dep = sec({"hdr": T("cDE"), "bg": "r", "fg": "w"}, views(de))
 		left = dep + ([None] if dep else []) + more
@@ -943,7 +950,7 @@ class SkorText(Screen):
 		out.append((None, T("cRANK"), "rk"))
 		out += [(480, T("rkFifa"), "rk"), (482, T("rkUefa"), "rk"), (484, T("rkClub"), "rk")]
 		out.append((None, T("cMORE"), "more"))
-		out += [(110, T("fav"), "more"), (510, T("today"), "more"), (500, T("allLive"), "more"), (600, u"Haberler", "more"), (150, T("ticker"), "more")]
+		out += [(110, T("fav"), "more"), (510, T("today"), "more"), (500, T("allLive"), "more"), (600, u"Nachrichten / Haberler", "more"), (150, T("ticker"), "more")]
 		return out
 
 	def lsel_toggle(self):
@@ -1314,6 +1321,8 @@ class SkorText(Screen):
 			lines.append(self.text(u""))
 			inf = SETTINGS[self.set_sel][3] if not (ls or sel or us) else ((T("lselInfo"),) * 2 if ls else ((T("helpInfo"),) * 2 if sel else ((T("updInfo") + u" " + VERSION),) * 2))
 			lines.append(self.text(u" " + (inf[1] if lang == "tr" else inf[0]), "g"))
+			lines.append(self.text(u""))
+			lines.append(self.text(u" " + T("dlRow") % (DL_CODE, DL_CODE), "y"))
 			while len(lines) < 19:
 				lines.append(self.text(u""))
 			lines.append(self.text(T("setHint"), "c"))
@@ -1585,7 +1594,7 @@ class SkorText(Screen):
 		import textwrap
 		C = self.cols
 		fd = feed_by_page(self.page)
-		title = tr_upper(T("cNEWS") + u" · " + fd.name)
+		title = (T("cNEWSde") + u" · " + fd.name).upper() if NEWS["lang"] == "de" else tr_upper(T("cNEWS") + u" · " + fd.name)
 		lt = time.localtime(fd.t_load or time.time())
 		head = (None, [seg(0, C - 18, fd.source, "c"), seg(C - 17, 17, T("stand") + u" " + two(lt.tm_hour) + u":" + two(lt.tm_min), "c", al="r")])
 		ban = {"bg": ("m", "k"), "head": head}
