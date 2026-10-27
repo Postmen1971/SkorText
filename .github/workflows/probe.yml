@@ -25,47 +25,16 @@ jobs:
           def print_(*a): return ' '.join(str(x) for x in a)
           os.makedirs("samples", exist_ok=True)
           import re, collections
-          def get(u, **kw):
-              return requests.get(u, headers=H, timeout=25, **kw)
-          F = "https://api.fupa.net/v1"
-          for slug in ["3-liga", "dritte-liga", "regionalliga-suedwest", "regionalliga-west", "regionalliga-bayern", "regionalliga-nord", "regionalliga-nordost",
-                       "oberliga-baden-wuerttemberg", "2-bundesliga", "bundesliga"]:
-              try:
-                  r = get("%s/standings?competition=%s&season=2026-27" % (F, slug))
-                  n = len(r.json().get("standings", [])) if r.status_code == 200 else -1
-                  m = get("%s/competitions/%s/seasons/2026-27/matches?limit=5" % (F, slug))
-                  OUT.append(print_("FUPA", slug, r.status_code, n, "| matches", m.status_code, len(m.text)))
-              except Exception as ex:
-                  OUT.append(print_("FERR", slug, ex))
-          for u in ["https://api.openligadb.de/getmatchdata/bl3/2026", "https://api.openligadb.de/getbltable/bl3/2026", "https://api.openligadb.de/getavailableleagues"]:
-              try:
-                  r = get(u); OUT.append(print_("OLDB", u, r.status_code, len(r.text)))
-                  if "available" in u and r.status_code == 200:
-                      for l in r.json():
-                          sc = (l.get("leagueShortcut") or "")
-                          if l.get("leagueSeason") in (2026, "2026") and l.get("sport", {}).get("sportId") == 1:
-                              OUT.append(print_("   ", sc, l.get("leagueName")))
-              except Exception as ex:
-                  OUT.append(print_("OERR", u, ex))
-          for u in ["https://www.tff.org/default.aspx?pageID=142", "https://www.tff.org/default.aspx?pageID=976", "https://www.tff.org/default.aspx?pageID=198",
-                    "https://www.tff.org/Default.aspx?pageId=561"]:
-              try:
-                  r = get(u); t = r.text
-                  OUT.append(print_("TFF", u, r.status_code, len(t), re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", t))[:300]))
-                  i = t.find("Bandırma"); 
-                  if i < 0: i = t.find("Bandirma")
-                  if i >= 0: OUT.append("   BAND: " + re.sub(r"\s+", " ", t[i-300:i+300]))
-              except Exception as ex:
-                  OUT.append(print_("TERR", u, ex))
-          # ESPN heute fuer Live-Ersatz
-          r = get("https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard")
-          OUT.append(print_("ESPNALL", r.status_code, len(r.text)))
+          for pid, name in [(142, "tff_1lig"), (976, "tff_2lig")]:
+              r = requests.get("https://www.tff.org/default.aspx?pageID=%d" % pid, headers=H, timeout=30)
+              open("samples/%s.html" % name, "w").write(r.text)
+              OUT.append(print_("TFF", pid, r.status_code, len(r.text), r.encoding))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
         with:
           path: repo
       - run: |
-          cp probe-result.txt repo/probe-result.txt && mkdir -p repo/samples && (cp samples/espn_* repo/samples/ 2>/dev/null || true)
+          cp probe-result.txt repo/probe-result.txt && mkdir -p repo/samples && (cp samples/tff_* repo/samples/ 2>/dev/null || true)
           cd repo && git config user.name Claude && git config user.email noreply@anthropic.com
           git add probe-result.txt samples && git commit -m 'Testergebnis [skip ci]' && git push
