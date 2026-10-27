@@ -1,4 +1,4 @@
-KUPA 200 69561 ['Fikstürler']
+KUPA 200 254774 ['Fikstürler', 'Puan Cetvelleri', 'Site İçi Arama']
   LINK 288 ZİRAAT TÜRKİYE KUPASI
   LINK 329 TURKCELL SÜPER KUPA
   LINK 1764 2026/27 UEFA Uluslar A Ligi
@@ -23,6 +23,8 @@ KUPA 200 69561 ['Fikstürler']
   LINK 288 Ziraat T&#252;rkiye Kupası
   LINK 329 Turkcell S&#252;per Kupa
   LINK 593 Avrupa Kupaları
+  LINK 28 SMS GRUP SARIYER
   LINK 88 Kupalar Ana Sayfa
+  LINK 288 Ziraat Türkiye Kupası
   LINK 329 Turkcell Süper Kupa
   LINK 593 Avrupa Kupaları
