@@ -23,7 +23,7 @@ from .news import FEED_LIST, feed_by_page, set_news, NEWS
 
 PY2 = sys.version_info[0] == 2
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "3.10.0"
+VERSION = "3.11.0"
 
 
 def E(s):

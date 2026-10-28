@@ -22,6 +22,8 @@ FEEDS = [
 	(620, u"Dünya", u"Anadolu Ajansı", "https://www.aa.com.tr/tr/rss/default?cat=dunya"),
 	(630, u"Ekonomi", u"Anadolu Ajansı", "https://www.aa.com.tr/tr/rss/default?cat=ekonomi"),
 	(640, u"Spor", u"Anadolu Ajansı", "https://www.aa.com.tr/tr/rss/default?cat=spor"),
+	(650, u"Kahramanmaraş", u"haberler.com", "https://www.haberler.com/kahramanmaras/rss"),
+	(660, u"Maraş Yerel", u"Maraş Manşet", "https://www.marasmanset.com/rss"),
 ]
 FEEDS_DE = [
 	(600, u"Schlagzeilen", u"tagesschau", "https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml"),

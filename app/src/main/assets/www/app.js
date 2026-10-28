@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "3.10";
+var VERSION = "3.11";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -959,7 +959,9 @@ var FEED_SETS = {tr: [
  {page: 610, name: "Güncel", source: "Anadolu Ajansı", url: "https://www.aa.com.tr/tr/rss/default?cat=guncel"},
  {page: 620, name: "Dünya", source: "Anadolu Ajansı", url: "https://www.aa.com.tr/tr/rss/default?cat=dunya"},
  {page: 630, name: "Ekonomi", source: "Anadolu Ajansı", url: "https://www.aa.com.tr/tr/rss/default?cat=ekonomi"},
- {page: 640, name: "Spor", source: "Anadolu Ajansı", url: "https://www.aa.com.tr/tr/rss/default?cat=spor"}
+ {page: 640, name: "Spor", source: "Anadolu Ajansı", url: "https://www.aa.com.tr/tr/rss/default?cat=spor"},
+ {page: 650, name: "Kahramanmaraş", source: "haberler.com", url: "https://www.haberler.com/kahramanmaras/rss"},
+ {page: 660, name: "Maraş Yerel", source: "Maraş Manşet", url: "https://www.marasmanset.com/rss"}
 ], de: [
  {page: 600, name: "Schlagzeilen", source: "tagesschau", url: "https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml"},
  {page: 610, name: "Inland", source: "tagesschau", url: "https://www.tagesschau.de/inland/index~rss2.xml"},
