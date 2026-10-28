@@ -31,15 +31,18 @@ jobs:
           sys.path.insert(0, "repo0/enigma2/usr/lib/enigma2/python/Plugins/Extensions/SkorText")
           import types; pk = types.ModuleType("sk"); pk.__path__ = ["repo0/enigma2/usr/lib/enigma2/python/Plugins/Extensions/SkorText"]; sys.modules["sk"] = pk
           import importlib; news = importlib.import_module("sk.news")
-          for u in ["https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml", "https://www.tagesschau.de/index~rss2.xml",
-                    "https://www.tagesschau.de/inland/index~rss2.xml", "https://www.tagesschau.de/ausland/index~rss2.xml",
-                    "https://www.tagesschau.de/wirtschaft/index~rss2.xml", "https://www.sportschau.de/index~rss2.xml",
-                    "https://www.sportschau.de/fussball/index~rss2.xml", "https://newsfeed.kicker.de/news/aktuell", "https://newsfeed.kicker.de/news/fussball",
-                    "https://www.spiegel.de/schlagzeilen/index.rss", "https://www.zdf.de/rss/zdf/nachrichten"]:
+          for u in ["https://www.haberler.com/kahramanmaras/rss", "https://rss.haberler.com/rss.asp?kategori=kahramanmaras", "https://www.haberler.com/rss/kahramanmaras.xml",
+                    "https://www.ntv.com.tr/kahramanmaras.rss", "https://www.ntv.com.tr/haberleri/kahramanmaras.rss", "https://www.trthaber.com/etiket/kahramanmaras.rss",
+                    "https://www.dha.com.tr/rss/kahramanmaras", "https://www.iha.com.tr/rss/kahramanmaras", "https://www.iha.com.tr/kahramanmaras-haberleri/rss",
+                    "https://www.milliyet.com.tr/rss/rssnew/kahramanmaras", "https://www.kahramanmarasmanset.com/rss", "https://www.marassonsoz.com/rss",
+                    "https://www.marasgundem.com/rss", "https://www.kahramanmarashaber.com/rss", "https://www.kahramanmarasgazetesi.com/rss", "https://www.bizimmaras.com/rss",
+                    "https://www.kahramanmarasajans.com/rss", "https://www.marasolay.com/rss", "https://www.haber46.com.tr/rss", "https://www.kmaras.com/rss",
+                    "https://www.marasmanset.com/rss", "https://www.kahramanmaraspostasi.com/rss",
+                    "https://news.google.com/rss/search?q=Kahramanmara%C5%9F&hl=tr&gl=TR&ceid=TR:tr"]:
               try:
-                  r = requests.get(u, headers=H, timeout=30); its = news.parse_feed(r.content)
-                  OUT.append(print_(r.status_code, u, len(its), [(i["title"][:50], len(i["desc"]), i["desc"][:90], time.strftime("%d.%m %H:%M", time.gmtime(i["ts"]))) for i in its[:2]]))
-              except Exception as e: OUT.append(print_("ERR", u, e))
+                  r = requests.get(u, headers=H, timeout=25); its = news.parse_feed(r.content)
+                  OUT.append(print_(r.status_code, u, len(its), [(i["title"][:60], len(i["desc"]), i["desc"][:80], time.strftime("%d.%m %H:%M", time.gmtime(i["ts"]))) for i in sorted(its, key=lambda x: -x["ts"])[:2]]))
+              except Exception as e: OUT.append(print_("ERR", u, str(e)[:80]))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
