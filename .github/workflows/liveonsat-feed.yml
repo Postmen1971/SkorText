@@ -21,7 +21,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Feed erzeugen
-        run: cd feed && python3 make_feed.py /tmp/liveonsat.json && head -c 400 /tmp/liveonsat.json
+        run: |
+          # bisherige Datei holen (Tage, die diesmal nicht neu geladen werden, bleiben erhalten)
+          git fetch -q --depth 1 origin feed && git show FETCH_HEAD:liveonsat.json > /tmp/old.json || true
+          cd feed && python3 make_feed.py /tmp/liveonsat.json /tmp/old.json && head -c 400 /tmp/liveonsat.json
       - name: In Zweig "feed" legen
         run: |
           cd /tmp && rm -rf pub && mkdir pub && cd pub
