@@ -136,7 +136,7 @@ def tokens(team):
     return [t for t in re.split(r"[^a-z0-9]+", norm(team)) if len(t) >= 3 and t not in _NOISE]
 
 
-_YOUTH = re.compile(r"(?i)\b(u\d{2}|women|woman|frauen|kadin|ladies|reserves|ii)\b|\(w\)")
+_YOUTH = re.compile(r"(?i)\b(u-?\d{2}|women|woman|frauen|kadin|ladies|reserves|ii)\b|\(w\)")
 
 
 def for_match(home, away, fixtures):
