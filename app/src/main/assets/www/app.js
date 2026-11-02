@@ -25,7 +25,7 @@ var TXT = {
   rkFifa:"FIFA-Weltrangliste",rkUefa:"UEFA-Länderwertung",rkClub:"UEFA-Klubwertung",points:"Punkte",season:"Saison",nation:"Land",asOf:"Stand",
   noMatches:"Keine Spiele an diesem Tag.",nlHint:"◄► ▲▼ nächste Gruppe",natEU:"Länderspiele Europa",t_nlHint:"wischen = nächste Gruppe",helpOpen:"OK = öffnen",t_helpOpen:"antippen = öffnen",
   helpInfo:"Alle Tasten und Seiten auf einen Blick.",updRow:"Update suchen",updOpen:"OK = jetzt prüfen",t_updOpen:"antippen = jetzt prüfen",
-  updInfo:"Neue Version von GitHub laden. Installiert:",updNone:"SkorText ist aktuell",updLoad:"Update %s wird geladen …",updPerm:"Bitte „Unbekannte Apps installieren“ für SkorText erlauben und mit ZURÜCK zurückkommen – dann geht es von selbst weiter",updOpen:"Installation wird geöffnet …",
+  updInfo:"Neue Version von GitHub laden. Installiert:",updNone:"SkorText ist aktuell",updLoad:"Update %s wird geladen …",updPerm:"Bitte „Unbekannte Apps installieren“ für SkorText erlauben und mit ZURÜCK zurückkommen – dann geht es von selbst weiter",updOpening:"Installation wird geöffnet …",updEmbed:"Im Aze-IPTV-Player kommt SkorText mit dessen Update (Einstellungen → App-Update)",
   updErr:"Update fehlgeschlagen",updAvail:"Neue Version %s – Einstellungen → Update",
   t_openHint:"Antippen = öffnen · ZURÜCK beenden",t_home:"◄ Übersicht (hier tippen)",t_resHint:"wischen ◄► Liga · Titel antippen = Tabelle",
   t_tabHint:"wischen ◄► Liga · Titel antippen = Ergebnisse",t_setHint:"Antippen = ändern · ZURÜCK zurück",
@@ -53,7 +53,7 @@ var TXT = {
   rkFifa:"FIFA Dünya Sıralaması",rkUefa:"UEFA Ülke Puanı",rkClub:"UEFA Kulüp Puanı",points:"Puan",season:"Sezon",nation:"Ülke",asOf:"Güncel",
   noMatches:"Bu gün maç yok.",nlHint:"◄► ▲▼ sonraki grup",natEU:"Avrupa milli maçları",t_nlHint:"kaydır = sonraki grup",helpOpen:"OK = aç",t_helpOpen:"dokun = aç",
   helpInfo:"Tüm tuşlar ve sayfalar.",updRow:"Güncelleme ara",updOpen:"OK = şimdi kontrol et",t_updOpen:"dokun = şimdi kontrol et",
-  updInfo:"GitHub'dan yeni sürüm yükle. Kurulu:",updNone:"SkorText güncel",updLoad:"Güncelleme %s yükleniyor …",updPerm:"Lütfen SkorText için „Bilinmeyen uygulamalar“ iznini ver ve GERİ ile dön – kurulum kendiliğinden başlar",updOpen:"Kurulum açılıyor …",
+  updInfo:"GitHub'dan yeni sürüm yükle. Kurulu:",updNone:"SkorText güncel",updLoad:"Güncelleme %s yükleniyor …",updPerm:"Lütfen SkorText için „Bilinmeyen uygulamalar“ iznini ver ve GERİ ile dön – kurulum kendiliğinden başlar",updOpening:"Kurulum açılıyor …",updEmbed:"Aze-IPTV-Player içinde SkorText onun güncellemesiyle gelir (Ayarlar → Uygulama güncellemesi)",
   updErr:"Güncelleme başarısız",updAvail:"Yeni sürüm %s – Ayarlar → Güncelleme",
   t_openHint:"Dokun = aç · GERİ çık",t_home:"◄ Genel Bakış (dokun)",t_resHint:"kaydır ◄► Lig · başlığa dokun = Puan",
   t_tabHint:"kaydır ◄► Lig · başlığa dokun = Sonuçlar",t_setHint:"Dokun = değiştir · GERİ",
@@ -1833,7 +1833,10 @@ function newerVersion(a, b) {
   for (var i = 0; i < Math.max(x.length, y.length); i++) { var p = +(x[i] || 0), q = +(y[i] || 0); if (p !== q) return p > q; }
   return false;
 }
+/* Im Aze-IPTV-Player eingebettet: dort kommt SkorText mit dem Update des Players – eigener Update-Knopf nur Hinweis */
+var EMBED = !!(window.SkorBridge && SkorBridge.host && SkorBridge.host() === "aze");
 function checkUpdate(manual) {
+  if (EMBED) { if (manual) { UPD.msg = T("updEmbed"); message(UPD.msg, 6); draw(); } return; }
   if (UPD.busy) return;
   UPD.busy = true; if (manual) { UPD.msg = "…"; draw(); }
   rawJSON(UPD_BASE + "version.json").then(function (v) {
@@ -1845,7 +1848,7 @@ function checkUpdate(manual) {
 }
 window.__skorUpd = function (st) {
   if (st === "perm") UPD.msg = T("updPerm");
-  else if (st === "open") UPD.msg = T("updOpen");
+  else if (st === "open") UPD.msg = T("updOpening");
   else if (String(st).indexOf("error") === 0) UPD.msg = T("updErr") + ": " + String(st).slice(6);
   else UPD.msg = "";
   if (UPD.msg) message(UPD.msg, 5);
