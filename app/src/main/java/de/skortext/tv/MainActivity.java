@@ -116,6 +116,11 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		// zurück aus "Unbekannte Apps installieren": wenn jetzt erlaubt, Installation automatisch öffnen
+		if (pendingInstall && ApkProvider.file(this).exists()
+			&& (android.os.Build.VERSION.SDK_INT < 26 || getPackageManager().canRequestPackageInstalls())) {
+			openInstaller();
+		}
 		if (web != null) {
 			web.onResume();
 			web.resumeTimers();
@@ -200,6 +205,44 @@ public class MainActivity extends Activity {
 		ui.removeCallbacksAndMessages(null);
 		if (web != null) web.destroy();
 		super.onDestroy();
+	}
+
+	/** Update liegt bereit, aber erst muss "Unbekannte Apps installieren" erlaubt werden → beim Zurückkommen weiter */
+	private boolean pendingInstall = false;
+
+	/** Installationsfenster für die heruntergeladene APK öffnen (wie im Aze-IPTV-Player, zuverlässig auf SHIELD/Fire TV). */
+	private void openInstaller() {
+		try {
+			if (android.os.Build.VERSION.SDK_INT >= 26 && !getPackageManager().canRequestPackageInstalls()) {
+				// einmalig erlauben: "Unbekannte Apps installieren" für SkorText – danach geht es automatisch weiter
+				pendingInstall = true;
+				try {
+					startActivity(new android.content.Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+						Uri.parse("package:" + getPackageName())).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK));
+				} catch (Exception e) {
+					startActivity(new android.content.Intent(android.provider.Settings.ACTION_SECURITY_SETTINGS).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK));
+				}
+				status("perm");
+				return;
+			}
+			pendingInstall = false;
+			Uri uri = Uri.parse("content://" + ApkProvider.AUTH + "/skortext.apk");
+			// INSTALL_PACKAGE öffnet den Installer auf Android TV zuverlässig; ACTION_VIEW nur als Ersatz
+			@SuppressWarnings("deprecation")
+			android.content.Intent install = new android.content.Intent(android.content.Intent.ACTION_INSTALL_PACKAGE)
+				.setDataAndType(uri, "application/vnd.android.package-archive")
+				.addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION | android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+			try {
+				startActivity(install);
+			} catch (Exception e) {
+				startActivity(new android.content.Intent(android.content.Intent.ACTION_VIEW)
+					.setDataAndType(uri, "application/vnd.android.package-archive")
+					.addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION | android.content.Intent.FLAG_ACTIVITY_NEW_TASK));
+			}
+			status("open");
+		} catch (Exception e) {
+			status("error:" + e.getMessage());
+		}
 	}
 
 	private void status(final String st) {
@@ -296,22 +339,7 @@ public class MainActivity extends Activity {
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								try {
-									if (android.os.Build.VERSION.SDK_INT >= 26 && !getPackageManager().canRequestPackageInstalls()) {
-										// einmalig erlauben: "Unbekannte Apps installieren" für SkorText
-										startActivity(new android.content.Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
-											Uri.parse("package:" + getPackageName())));
-										status("perm");
-										return;
-									}
-									android.content.Intent it = new android.content.Intent(android.content.Intent.ACTION_VIEW);
-									it.setDataAndType(Uri.parse("content://" + ApkProvider.AUTH + "/skortext.apk"), "application/vnd.android.package-archive");
-									it.addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION | android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
-									startActivity(it);
-									status("open");
-								} catch (Exception e) {
-									status("error:" + e.getMessage());
-								}
+								openInstaller();
 							}
 						});
 					} catch (Exception e) {

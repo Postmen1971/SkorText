@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "3.12";
+var VERSION = "3.13";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -25,7 +25,7 @@ var TXT = {
   rkFifa:"FIFA-Weltrangliste",rkUefa:"UEFA-Länderwertung",rkClub:"UEFA-Klubwertung",points:"Punkte",season:"Saison",nation:"Land",asOf:"Stand",
   noMatches:"Keine Spiele an diesem Tag.",nlHint:"◄► ▲▼ nächste Gruppe",natEU:"Länderspiele Europa",t_nlHint:"wischen = nächste Gruppe",helpOpen:"OK = öffnen",t_helpOpen:"antippen = öffnen",
   helpInfo:"Alle Tasten und Seiten auf einen Blick.",updRow:"Update suchen",updOpen:"OK = jetzt prüfen",t_updOpen:"antippen = jetzt prüfen",
-  updInfo:"Neue Version von GitHub laden. Installiert:",updNone:"SkorText ist aktuell",updLoad:"Update %s wird geladen …",updPerm:"Bitte „Unbekannte Apps installieren“ erlauben, dann nochmal",
+  updInfo:"Neue Version von GitHub laden. Installiert:",updNone:"SkorText ist aktuell",updLoad:"Update %s wird geladen …",updPerm:"Bitte „Unbekannte Apps installieren“ für SkorText erlauben und mit ZURÜCK zurückkommen – dann geht es von selbst weiter",updOpen:"Installation wird geöffnet …",
   updErr:"Update fehlgeschlagen",updAvail:"Neue Version %s – Einstellungen → Update",
   t_openHint:"Antippen = öffnen · ZURÜCK beenden",t_home:"◄ Übersicht (hier tippen)",t_resHint:"wischen ◄► Liga · Titel antippen = Tabelle",
   t_tabHint:"wischen ◄► Liga · Titel antippen = Ergebnisse",t_setHint:"Antippen = ändern · ZURÜCK zurück",
@@ -53,7 +53,7 @@ var TXT = {
   rkFifa:"FIFA Dünya Sıralaması",rkUefa:"UEFA Ülke Puanı",rkClub:"UEFA Kulüp Puanı",points:"Puan",season:"Sezon",nation:"Ülke",asOf:"Güncel",
   noMatches:"Bu gün maç yok.",nlHint:"◄► ▲▼ sonraki grup",natEU:"Avrupa milli maçları",t_nlHint:"kaydır = sonraki grup",helpOpen:"OK = aç",t_helpOpen:"dokun = aç",
   helpInfo:"Tüm tuşlar ve sayfalar.",updRow:"Güncelleme ara",updOpen:"OK = şimdi kontrol et",t_updOpen:"dokun = şimdi kontrol et",
-  updInfo:"GitHub'dan yeni sürüm yükle. Kurulu:",updNone:"SkorText güncel",updLoad:"Güncelleme %s yükleniyor …",updPerm:"Lütfen „Bilinmeyen uygulamalar“ iznini ver, sonra tekrar",
+  updInfo:"GitHub'dan yeni sürüm yükle. Kurulu:",updNone:"SkorText güncel",updLoad:"Güncelleme %s yükleniyor …",updPerm:"Lütfen SkorText için „Bilinmeyen uygulamalar“ iznini ver ve GERİ ile dön – kurulum kendiliğinden başlar",updOpen:"Kurulum açılıyor …",
   updErr:"Güncelleme başarısız",updAvail:"Yeni sürüm %s – Ayarlar → Güncelleme",
   t_openHint:"Dokun = aç · GERİ çık",t_home:"◄ Genel Bakış (dokun)",t_resHint:"kaydır ◄► Lig · başlığa dokun = Puan",
   t_tabHint:"kaydır ◄► Lig · başlığa dokun = Sonuçlar",t_setHint:"Dokun = değiştir · GERİ",
@@ -1845,7 +1845,8 @@ function checkUpdate(manual) {
 }
 window.__skorUpd = function (st) {
   if (st === "perm") UPD.msg = T("updPerm");
-  else if (String(st).indexOf("error") === 0) UPD.msg = T("updErr");
+  else if (st === "open") UPD.msg = T("updOpen");
+  else if (String(st).indexOf("error") === 0) UPD.msg = T("updErr") + ": " + String(st).slice(6);
   else UPD.msg = "";
   if (UPD.msg) message(UPD.msg, 5);
   draw();
