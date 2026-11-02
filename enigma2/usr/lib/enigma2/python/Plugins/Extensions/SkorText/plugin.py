@@ -20,10 +20,11 @@ from twisted.internet import threads
 from .data import EXTRA_PAGES, STORE, RATE, log, nice_error, RANKINGS, ranking_by_page, FupaLeague, fupa_today, NAT, get_url_json, fetch_bytes
 from .texts import TXT, SETTINGS, tr_upper, nation, FAV_LEAGUES, DL_CODE
 from .news import FEED_LIST, feed_by_page, set_news, NEWS
+from . import liveonsat
 
 PY2 = sys.version_info[0] == 2
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "3.11.0"
+VERSION = "3.12.0"
 
 
 def E(s):
@@ -306,6 +307,9 @@ class SkorText(Screen):
 			self.need_nat()
 		elif t == "day":
 			self.need_day()
+		elif t == "tv":
+			self.need_day(time.strftime("%Y%m%d"))
+			self.need_los()
 		elif t == "rank":
 			self.need_rank(ranking_by_page(self.page))
 		fd = feed_by_page(self.page)
@@ -406,8 +410,29 @@ class SkorText(Screen):
 	def day_key(self):
 		return time.strftime("%Y%m%d", time.localtime(time.time() + self.day_off * 86400))
 
-	def need_day(self):
-		ymd = self.day_key()
+	def need_los(self):
+		"""Sender je Spiel von liveonsat.com – höchstens alle 30 Minuten (bei Fehler nach 2 Minuten erneut)."""
+		L = liveonsat.LOS
+		if L.loading:
+			return
+		if L.fixtures is not None and time.time() - L.t < 1800:
+			return
+		if L.error and time.time() - L.t < 120:
+			return
+		L.loading = True
+
+		def done(_r):
+			L.loading = False
+
+		def fail(f):
+			L.loading = False
+			L.t = time.time()
+			L.error = nice_error(f.value)
+			log("liveonsat: %r" % (f.value,))
+		self.run_bg(liveonsat.load, done, fail)
+
+	def need_day(self, ymd=None):
+		ymd = ymd or self.day_key()
 		d = STORE.days.get(ymd)
 		if d is not None and d.get("loading"):
 			return
@@ -629,6 +654,8 @@ class SkorText(Screen):
 			return "nl"
 		if p == 510:
 			return "day"
+		if p == 520:
+			return "tv"
 		if ranking_by_page(p):
 			return "rank"
 		if feed_by_page(p):
@@ -642,7 +669,7 @@ class SkorText(Screen):
 		pages = [100, 110, 150, 190, 470]
 		for lg, base, gi in STORE.all_views():
 			pages += [base, base + 1]
-		return sorted(pages + [500, 510] + [r.page for r in RANKINGS] + [f.page for f in FEED_LIST] + [900, 910])
+		return sorted(pages + [500, 510, 520] + [r.page for r in RANKINGS] + [f.page for f in FEED_LIST] + [900, 910])
 
 	def go(self, p, quiet=False):
 		if self.page_type(p) is None:
@@ -904,6 +931,7 @@ class SkorText(Screen):
 			return [hdr] + items if items else []
 		more = sec({"hdr": T("cMORE"), "bg": "m", "fg": "k"}, [
 			{"page": 110, "lbl": T("fav") + ((u" · " + cfg("fav")) if cfg("fav") else u"")}, {"page": 510, "lbl": T("today")},
+			{"page": 520, "lbl": T("tv")},
 			{"page": 500, "lbl": T("allLive"), "live": True},
 			{"page": 600, "lbl": news_label()},
 			{"page": 150, "lbl": self.tick_label()}, {"page": 900, "lbl": T("settings")}])
@@ -950,7 +978,7 @@ class SkorText(Screen):
 		out.append((None, T("cRANK"), "rk"))
 		out += [(480, T("rkFifa"), "rk"), (482, T("rkUefa"), "rk"), (484, T("rkClub"), "rk")]
 		out.append((None, T("cMORE"), "more"))
-		out += [(110, T("fav"), "more"), (510, T("today"), "more"), (500, T("allLive"), "more"), (600, u"Nachrichten / Haberler", "more"), (150, T("ticker"), "more")]
+		out += [(110, T("fav"), "more"), (510, T("today"), "more"), (520, T("tv"), "more"), (500, T("allLive"), "more"), (600, u"Nachrichten / Haberler", "more"), (150, T("ticker"), "more")]
 		return out
 
 	def lsel_toggle(self):
@@ -1296,6 +1324,8 @@ class SkorText(Screen):
 			subs = self.nl_subpages()
 		elif t == "day":
 			subs = self.day_subpages()
+		elif t == "tv":
+			subs = self.tv_subpages()
 		elif t == "rank":
 			subs = self.rank_subpages()
 		elif t == "set":
@@ -1550,6 +1580,38 @@ class SkorText(Screen):
 			bl = [self.text((lg.tag + u" " if lg.tag else u"") + lg.name(lang) + u"   (%d)" % lg.page, "y")]
 			bl += [self.zebra(self.res_row(live[e["id"]]), i) for i, e in enumerate(evs)]
 			blocks.append(bl)
+		if not blocks:
+			blocks = [[self.text(u""), self.text(T("noMatches"), "c")]]
+		return [{"ban": (title, u""), "bg": ("b", "w"), "head": head, "lines": ch} for ch in self.chunk_blocks(blocks)]
+
+	def tv_subpages(self):
+		"""Seite 520: heutige Spiele der eigenen Ligen mit den Sendern laut liveonsat.com (europäisch, DE/TR zuerst)."""
+		C = self.cols
+		lang = cfg("lang")
+		ymd = time.strftime("%Y%m%d")
+		title = self.up(T("tv") + u" · " + self.day_label(time.time()))
+		head = self.info_head(T("tvHint"))
+		d = STORE.days.get(ymd) or {}
+		L = liveonsat.LOS
+		if "list" not in d or L.fixtures is None:
+			err = d.get("error") or (L.error if L.fixtures is None else None)
+			if err and not (L.loading or d.get("loading")):
+				lines = [self.text(u""), self.text(T("noData"), "r"), self.text(fit(err, C), "d")]
+			else:
+				lines = [self.text(u""), self.text(T("loading"), "y")]
+			return [{"ban": (title, u""), "bg": ("b", "w"), "head": head, "lines": lines}]
+		blocks = []
+		for lg, evs in d["list"]:
+			bl = [self.text((lg.tag + u" " if lg.tag else u"") + lg.name(lang), "y")]
+			for i, e in enumerate(evs):
+				e = STORE.live.get(e["id"], e)
+				if e["state"] == "post":
+					continue  # vorbei – im TV nicht mehr interessant
+				bl.append(self.zebra(self.res_row(e), i))
+				ch = liveonsat.european_sorted(liveonsat.for_match(e["h"], e["a"], L.fixtures))
+				bl.append(self.text(u"   " + fit(u" · ".join(ch) if ch else T("tvNone"), C - 3), "g" if ch else "d"))
+			if len(bl) > 1:
+				blocks.append(bl)
 		if not blocks:
 			blocks = [[self.text(u""), self.text(T("noMatches"), "c")]]
 		return [{"ban": (title, u""), "bg": ("b", "w"), "head": head, "lines": ch} for ch in self.chunk_blocks(blocks)]
