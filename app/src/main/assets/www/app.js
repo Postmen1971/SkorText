@@ -1661,8 +1661,9 @@ function needTv() {
   TVF.loading = true;
   rawJSON(TVF.url).then(function (d) {
     TVF.loading = false; TVF.t = Date.now() / 1000; TVF.error = null;
-    // nur die Liste von heute (liveonsat zeigt immer den aktuellen Tag)
-    TVF.list = String(d.updated || "").slice(0, 10) === new Date().toISOString().slice(0, 10) ? (d.fixtures || []) : [];
+    // nur die Spiele von heute (die Datei enthält 7 Tage; ältere Dateien ohne Datum gelten nur am selben Tag)
+    var n = new Date(), iso = n.getFullYear() + "-" + two(n.getMonth() + 1) + "-" + two(n.getDate());
+    TVF.list = (d.fixtures || []).filter(function (f) { return f.date ? f.date === iso : String(d.updated || "").slice(0, 10) === iso; });
     draw();
   }, function (e) { TVF.loading = false; TVF.t = Date.now() / 1000; TVF.error = niceError(e); draw(); });
 }
