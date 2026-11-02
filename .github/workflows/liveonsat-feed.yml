@@ -1,0 +1,34 @@
+name: liveonsat-Feed
+
+# Alle 30 Minuten: Sender je Spiel von liveonsat.com holen und als JSON in den Zweig "feed" legen
+# (für Browser-Seiten, die liveonsat nicht direkt lesen dürfen).
+on:
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: liveonsat-feed
+  cancel-in-progress: false
+
+jobs:
+  feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Feed erzeugen
+        run: cd feed && python3 make_feed.py /tmp/liveonsat.json && head -c 400 /tmp/liveonsat.json
+      - name: In Zweig "feed" legen
+        run: |
+          cd /tmp && rm -rf pub && mkdir pub && cd pub
+          git init -q -b feed
+          cp /tmp/liveonsat.json .
+          git config user.name "liveonsat-feed"
+          git config user.email "actions@users.noreply.github.com"
+          git add liveonsat.json
+          git commit -qm "liveonsat $(date -u +%H:%M)"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" feed
