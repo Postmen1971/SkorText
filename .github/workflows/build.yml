@@ -31,6 +31,8 @@ jobs:
           PV=$(grep -m1 '^VERSION = ' enigma2/usr/lib/enigma2/python/Plugins/Extensions/SkorText/plugin.py | cut -d'"' -f2)
           AV=$(grep -m1 'VERSION = ' app/src/main/assets/www/app.js | cut -d'"' -f2)
           echo "Plugin $PV / App $AV"
+          # Android-App und GigaBlue-Plugin tragen immer dieselbe Versionsnummer
+          [ "$PV" = "$AV" ] || { echo "::error::Versionen ungleich: Plugin $PV, App $AV – bitte beide gleich setzen"; exit 1; }
           B=$(mktemp -d)
           cp -r enigma2/usr $B/
           sed "s/^Version:.*/Version: $PV/" enigma2/CONTROL/control > $B/control
@@ -49,4 +51,5 @@ jobs:
         run: |
           cp app/build/outputs/apk/release/app-release.apk skortext.apk
           TAG="v1.0.${{ github.run_number }}"
-          gh release create "$TAG" skortext.apk skortext.ipk version.json --title "SkorText $TAG" --notes "Android: skortext.apk · GigaBlue: skortext.ipk" --latest
+          V=$(grep -m1 'VERSION = ' app/src/main/assets/www/app.js | cut -d'"' -f2)
+          gh release create "$TAG" skortext.apk skortext.ipk version.json --title "SkorText $V" --notes "SkorText $V – Android: skortext.apk · GigaBlue: skortext.ipk" --latest

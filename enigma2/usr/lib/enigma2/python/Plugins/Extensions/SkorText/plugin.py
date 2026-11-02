@@ -24,7 +24,7 @@ from . import liveonsat
 
 PY2 = sys.version_info[0] == 2
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "3.12.0"
+VERSION = "3.13"
 
 
 def E(s):
