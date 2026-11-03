@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "3.14";
+var VERSION = "3.15";
 
 /* ================= Texte ================= */
 var TXT = {
