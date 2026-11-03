@@ -3,6 +3,7 @@
 from __future__ import absolute_import, division
 import os
 import sys
+import re
 import time
 
 from enigma import (eListboxPythonMultiContent, gFont, getDesktop, eTimer, addFont, eActionMap,
@@ -24,7 +25,7 @@ from . import liveonsat
 
 PY2 = sys.version_info[0] == 2
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "3.13"
+VERSION = "3.14"
 
 
 def E(s):
@@ -242,6 +243,8 @@ class SkorText(Screen):
 		self.tick_sel = 0
 		self.news_sel = 0
 		self.news_open = None
+		self.tv_sel = 0     # Seite 520: gewähltes Spiel
+		self.tv_open = None  # Seite 520: aufgeklapptes Spiel
 		self.md = None   # angezeigter Spieltag (None = automatisch)
 		self.det = False  # Ergebnisse mit Torschuetzen
 		self.day_off = 0  # Seite 510: Tag relativ zu heute
@@ -686,6 +689,8 @@ class SkorText(Screen):
 		self.last_rot = time.time()
 		self.news_sel = 0
 		self.news_open = None
+		self.tv_sel = 0
+		self.tv_open = None
 		fd = feed_by_page(p)
 		if fd:
 			self.need_feed(fd)
@@ -741,6 +746,10 @@ class SkorText(Screen):
 		t = self.page_type(self.page)
 		if t == "news" and k in ("exit", "ok", "up", "down", "left", "right"):
 			self.news_key(k)
+			self.draw()
+			return
+		if t == "tv" and (k in ("ok", "up", "down") or (k == "exit" and self.tv_open is not None)):
+			self.tv_key(k)
 			self.draw()
 			return
 		if k == "exit" and t == "lsel":
@@ -1584,14 +1593,43 @@ class SkorText(Screen):
 			blocks = [[self.text(u""), self.text(T("noMatches"), "c")]]
 		return [{"ban": (title, u""), "bg": ("b", "w"), "head": head, "lines": ch} for ch in self.chunk_blocks(blocks)]
 
+	_TV_LOW = re.compile(u"regionalliga|oberliga|verbandsliga|landesliga", re.I)
+
+	def tv_matches(self):
+		"""Spiele für „Heute im TV“: ohne beendete Spiele und ohne Amateurligen (Regionalliga, Oberliga, Verbandsliga)."""
+		d = STORE.days.get(time.strftime("%Y%m%d")) or {}
+		fx = liveonsat.LOS.fixtures or []
+		out = []
+		for lg, evs in d.get("list") or []:
+			if isinstance(lg, FupaLeague) or self._TV_LOW.search(lg.name("de") + u" " + (lg.tag or u"")):
+				continue
+			for e0 in evs:
+				e = STORE.live.get(e0["id"], e0)
+				if e["state"] != "post":
+					out.append((lg, e, liveonsat.european_sorted(liveonsat.for_match(e["h"], e["a"], fx))))
+		return out
+
+	def tv_key(self, k):
+		"""▲▼ Spiel wählen (schließt das offene), OK Sender auf/zu, EXIT schließt."""
+		if k == "exit":
+			self.tv_open = None
+			return
+		n = len(self.tv_matches())
+		if not n:
+			return
+		if k == "ok":
+			self.tv_open = None if self.tv_open == self.tv_sel else self.tv_sel
+			return
+		self.tv_sel = max(0, min(n - 1, self.tv_sel + (1 if k == "down" else -1)))
+		self.tv_open = None
+
 	def tv_subpages(self):
-		"""Seite 520: heutige Spiele der eigenen Ligen mit den Sendern laut liveonsat.com (europäisch, DE/TR zuerst)."""
+		"""Seite 520: heutige Spiele mit Anzahl Sender; OK klappt beim gewählten Spiel alle Sender auf (liveonsat.com)."""
 		C = self.cols
 		lang = cfg("lang")
-		ymd = time.strftime("%Y%m%d")
 		title = self.up(T("tv") + u" · " + self.day_label(time.time()))
 		head = self.info_head(T("tvHint"))
-		d = STORE.days.get(ymd) or {}
+		d = STORE.days.get(time.strftime("%Y%m%d")) or {}
 		L = liveonsat.LOS
 		if "list" not in d or L.fixtures is None:
 			err = d.get("error") or (L.error if L.fixtures is None else None)
@@ -1600,21 +1638,50 @@ class SkorText(Screen):
 			else:
 				lines = [self.text(u""), self.text(T("loading"), "y")]
 			return [{"ban": (title, u""), "bg": ("b", "w"), "head": head, "lines": lines}]
-		blocks = []
-		for lg, evs in d["list"]:
-			bl = [self.text((lg.tag + u" " if lg.tag else u"") + lg.name(lang), "y")]
-			for i, e in enumerate(evs):
-				e = STORE.live.get(e["id"], e)
-				if e["state"] == "post":
-					continue  # vorbei – im TV nicht mehr interessant
-				bl.append(self.zebra(self.res_row(e), i))
-				ch = liveonsat.european_sorted(liveonsat.for_match(e["h"], e["a"], L.fixtures))
-				bl.append(self.text(u"   " + fit(u" · ".join(ch) if ch else T("tvNone"), C - 3), "g" if ch else "d"))
-			if len(bl) > 1:
-				blocks.append(bl)
-		if not blocks:
-			blocks = [[self.text(u""), self.text(T("noMatches"), "c")]]
-		return [{"ban": (title, u""), "bg": ("b", "w"), "head": head, "lines": ch} for ch in self.chunk_blocks(blocks)]
+		ms = self.tv_matches()
+		if not ms:
+			return [{"ban": (title, u""), "bg": ("b", "w"), "head": head, "lines": [self.text(u""), self.text(T("noMatches"), "c")]}]
+		if self.tv_sel >= len(ms):
+			self.tv_sel = len(ms) - 1
+			self.tv_open = None
+		lines, heads, sel_line, last = [], set(), 0, None
+		for i, (lg, e, ch) in enumerate(ms):
+			if lg is not last:
+				heads.add(len(lines))
+				lines.append(self.text((lg.tag + u" " if lg.tag else u"") + lg.name(lang), "y"))
+				last = lg
+			oc = self.cols
+			self.cols = C - 5  # rechts Platz für die Anzahl der Sender
+			try:
+				bg, segs = self.res_row(e)
+			finally:
+				self.cols = oc
+			segs = list(segs)
+			segs.append(seg(C - 4, 4, ((u"▼" if self.tv_open == i else u"") + u"%d" % len(ch)) if ch else u"–", "g" if ch else "d", al="r"))
+			if i == self.tv_sel:
+				sel_line = len(lines)
+			lines.append((COL["sel"] if i == self.tv_sel else bg, segs))
+			if self.tv_open == i:
+				if not ch:
+					lines.append(self.text(u"   " + T("tvNone"), "d"))
+				cur, col = [], 3
+				for k, name in enumerate(ch):
+					nm = fit(name, C - 4)
+					if col + len(nm) > C:
+						lines.append((None, cur))
+						cur, col = [], 3
+					cur.append(seg(col, len(nm), nm, "g" if k % 2 == 0 else "c"))
+					col += len(nm) + 2
+				if cur:
+					lines.append((None, cur))
+		H = 20
+		start = 0
+		if len(lines) > H:
+			start = max(0, sel_line - 2)
+			if start > 0 and (start - 1) in heads:
+				start -= 1
+			start = min(start, len(lines) - H)
+		return [{"ban": (title, u"%d/%d" % (self.tv_sel + 1, len(ms))), "bg": ("b", "w"), "head": head, "lines": lines[start:start + H]}]
 
 	# ---------- Ranglisten ----------
 	def rank_subpages(self):
