@@ -132,8 +132,12 @@ def norm(s):
 _NOISE = {"fc", "sc", "sk", "fk", "cf", "ac", "as", "sv", "vfb", "vfl", "tsg", "afc", "club", "de", "the", "1"}
 
 
+_ALIAS = {"internazionale": "inter"}
+
+
 def tokens(team):
-    return [t for t in re.split(r"[^a-z0-9]+", norm(team)) if len(t) >= 3 and t not in _NOISE]
+    # „Internazionale“ heißt bei liveonsat „Inter Milan“
+    return [_ALIAS.get(t, t) for t in re.split(r"[^a-z0-9]+", norm(team)) if len(t) >= 3 and t not in _NOISE]
 
 
 _YOUTH = re.compile(r"(?i)\b(u-?\d{2}|women|woman|frauen|kadin|ladies|reserves|ii)\b|\(w\)")

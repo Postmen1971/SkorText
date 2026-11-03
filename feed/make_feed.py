@@ -50,7 +50,7 @@ for i in range(DAYS if full else 2):
     for f in fx:
         ch = liveonsat.european_sorted(f["channels"])
         if ch:
-            day.append({"date": d.isoformat(), "home": f["home"], "away": f["away"], "channels": ch[:25]})
+            day.append({"date": d.isoformat(), "home": f["home"], "away": f["away"], "channels": ch[:80]})
     by_date[d.isoformat()] = day
     print(d, "Spiele mit Sendern:", len(day))
 
