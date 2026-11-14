@@ -21,11 +21,14 @@ from twisted.internet import threads
 from .data import EXTRA_PAGES, STORE, RATE, log, nice_error, RANKINGS, ranking_by_page, FupaLeague, fupa_today, NAT, get_url_json, fetch_bytes
 from .texts import TXT, SETTINGS, tr_upper, nation, FAV_LEAGUES, DL_CODE
 from .news import FEED_LIST, feed_by_page, set_news, NEWS
+from .ardtext import ARD, ARD_COLS
+from .data import get_url_text
+ARD_PAGE = 990   # SkorText-Seite fuer den ARD-Text
 from . import liveonsat
 
 PY2 = sys.version_info[0] == 2
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "3.15"
+VERSION = "3.16"
 
 
 def E(s):
@@ -102,6 +105,10 @@ def toggle_page(p):
 
 STORE.is_on = page_on
 set_news(cfg("news"))
+
+
+def now_msg(scr):
+	return time.time() < scr.msg_until
 
 
 def news_label():
@@ -313,6 +320,8 @@ class SkorText(Screen):
 		elif t == "tv":
 			self.need_day(time.strftime("%Y%m%d"))
 			self.need_los()
+		elif t == "ard" and not ARD.loading and (ARD.data is None or now - ARD.t_load > 60):
+			self.need_ard(ARD.page, ARD.sub)
 		elif t == "rank":
 			self.need_rank(ranking_by_page(self.page))
 		fd = feed_by_page(self.page)
@@ -659,6 +668,8 @@ class SkorText(Screen):
 			return "day"
 		if p == 520:
 			return "tv"
+		if p == ARD_PAGE:
+			return "ard"
 		if ranking_by_page(p):
 			return "rank"
 		if feed_by_page(p):
@@ -672,7 +683,7 @@ class SkorText(Screen):
 		pages = [100, 110, 150, 190, 470]
 		for lg, base, gi in STORE.all_views():
 			pages += [base, base + 1]
-		return sorted(pages + [500, 510, 520] + [r.page for r in RANKINGS] + [f.page for f in FEED_LIST] + [900, 910])
+		return sorted(pages + [500, 510, 520] + [r.page for r in RANKINGS] + [f.page for f in FEED_LIST] + [900, 910, ARD_PAGE])
 
 	def go(self, p, quiet=False):
 		if self.page_type(p) is None:
@@ -738,12 +749,19 @@ class SkorText(Screen):
 		if len(self.entry) == 3:
 			p = int(self.entry)
 			self.entry = u""
-			self.go(p)
+			if self.page_type(self.page) == "ard" and p != ARD_PAGE:
+				self.need_ard(p, 1)
+			else:
+				self.go(p)
 		self.draw()
 
 	def key(self, k):
 		self.entry = u""
 		t = self.page_type(self.page)
+		if t == "ard" and k in ("up", "down", "left", "right", "ok", "red", "green", "yellow", "blue", "chup", "chdn"):
+			self.ard_key(k)
+			self.draw()
+			return
 		if t == "news" and k in ("exit", "ok", "up", "down", "left", "right"):
 			self.news_key(k)
 			self.draw()
@@ -941,11 +959,13 @@ class SkorText(Screen):
 		more = sec({"hdr": T("cMORE"), "bg": "m", "fg": "k"}, [
 			{"page": 110, "lbl": T("fav") + ((u" · " + cfg("fav")) if cfg("fav") else u"")}, {"page": 510, "lbl": T("today")},
 			{"page": 520, "lbl": T("tv")},
+			{"page": ARD_PAGE, "lbl": T("ardRow")},
 			{"page": 500, "lbl": T("allLive"), "live": True},
 			{"page": 600, "lbl": news_label()},
 			{"page": 150, "lbl": self.tick_label()}, {"page": 900, "lbl": T("settings")}])
 		dep = sec({"hdr": T("cDE"), "bg": "r", "fg": "w"}, views(de))
-		left = dep + ([None] if dep else []) + more
+		# Leerzeile vor WEITERES nur, wenn Platz ist
+		left = dep + ([None] if dep and len(dep) + 1 + len(more) <= IDX_ROWS else []) + more
 		right = sec({"hdr": T("cTR"), "bg": "g", "fg": "k"}, views(tr)) + sec({"hdr": T("cEU"), "bg": "y", "fg": "k"}, views(eu)) + \
 			sec({"hdr": T("cNAT"), "bg": "c", "fg": "k"}, [{"page": 470, "lbl": NAT.title(lang) if NAT.groups else T("natEU")}]) + \
 			sec({"hdr": T("cRANK"), "bg": "b", "fg": "w"}, [{"page": 480, "lbl": T("rkFifa")}, {"page": 482, "lbl": T("rkUefa")}, {"page": 484, "lbl": T("rkClub")}])
@@ -987,7 +1007,7 @@ class SkorText(Screen):
 		out.append((None, T("cRANK"), "rk"))
 		out += [(480, T("rkFifa"), "rk"), (482, T("rkUefa"), "rk"), (484, T("rkClub"), "rk")]
 		out.append((None, T("cMORE"), "more"))
-		out += [(110, T("fav"), "more"), (510, T("today"), "more"), (520, T("tv"), "more"), (500, T("allLive"), "more"), (600, u"Nachrichten / Haberler", "more"), (150, T("ticker"), "more")]
+		out += [(110, T("fav"), "more"), (510, T("today"), "more"), (520, T("tv"), "more"), (ARD_PAGE, T("ardRow"), "more"), (500, T("allLive"), "more"), (600, u"Nachrichten / Haberler", "more"), (150, T("ticker"), "more")]
 		return out
 
 	def lsel_toggle(self):
@@ -1776,8 +1796,78 @@ class SkorText(Screen):
 		return subs
 
 	# ---------- Zeichnen ----------
+	# ---------- ARD Text (Seite 990) ----------
+	def need_ard(self, page, sub=1, direction=None):
+		if ARD.loading:
+			return
+		ARD.loading = True
+		ARD.want = page
+
+		def work():
+			return ARD.load(lambda u: get_url_text(u, timeout=20), page, sub, direction)
+
+		def ok(_d):
+			ARD.loading = False
+			if not self.closed:
+				self.draw()
+
+		def err(f):
+			ARD.loading = False
+			ARD.error = nice_error(f.value)
+			ARD.t_load = time.time() - 45   # in 15 s nochmal
+			log("ARD Text %s: %r" % (page, f.value))
+			if not self.closed:
+				self.message(T("ardErr") % page, 3)
+				self.draw()
+		self.run_bg(work, ok, err)
+
+	def ard_key(self, k):
+		d = ARD.data or {}
+		fast = d.get("fast") or {}
+		if k in ("up", "green", "chup"):
+			self.need_ard(fast.get("green") or (ARD.page + 1), 1, "fwd")
+		elif k in ("down", "red", "chdn"):
+			self.need_ard(fast.get("red") or (ARD.page - 1), 1, "bck")
+		elif k in ("yellow", "blue"):
+			if fast.get(k):
+				self.need_ard(fast[k], 1)
+		elif k in ("left", "right"):
+			n = d.get("nsub") or 1
+			if n > 1:
+				s = (ARD.sub - 1 + (1 if k == "right" else -1)) % n + 1
+				self.need_ard(ARD.page, s)
+		elif k == "ok":
+			ARD.cache.clear()
+			self.need_ard(ARD.page, ARD.sub)
+
+	def ard_rows(self):
+		C = self.cols
+		lt = time.localtime()
+		d = ARD.data
+		pg = (u"P" + (self.entry + u"---")[:3]) if self.entry else (u"P%d" % (ARD.page if d else ARD_PAGE))
+		date = u"%s %s.%s.  %s:%s:%s" % (T("days")[lt.tm_wday], two(lt.tm_mday), two(lt.tm_mon), two(lt.tm_hour), two(lt.tm_min), two(lt.tm_sec))
+		subtxt = (u"  %d/%d" % (d["sub"], d["nsub"])) if d and d.get("nsub", 1) > 1 else u""
+		info = u"ARD Text" + subtxt + (u"  …" if ARD.loading else u"")
+		rows = [(None, [seg(0, 5, pg, "y" if self.entry else "w", blink=bool(self.entry)), seg(6, 9, u"SkorText", "y"),
+			seg(16, C - 39, info, "c"), seg(C - 22, 22, date, "y", al="r")])]
+		off = max(0, (C - ARD_COLS) // 2)
+		if now_msg(self):
+			rows.append((COL["w"], [seg(1, C - 2, self.msg, "k")]))
+			body = (d["rows"][1:] if d else [])
+		else:
+			body = d["rows"] if d else []
+		if not d:
+			body = [[], [], [(0, ARD_COLS, (T("ardLoad") if not ARD.error else (T("ardErr") % ARD.want)), "c", "k")]]
+		for r in body[:23 - (len(rows) - 1)]:
+			rows.append((COL["k"], [seg(off + c, w, txt, fg, None if bg == "k" else bg) for c, w, txt, fg, bg in r]))
+		while len(rows) < 24:
+			rows.append((COL["k"], []))
+		return rows
+
 	def build_rows(self):
 		C = self.cols
+		if self.page_type(self.page) == "ard":
+			return self.ard_rows()
 		subs = self.subpages()
 		if self.sub >= len(subs):
 			self.sub = 0

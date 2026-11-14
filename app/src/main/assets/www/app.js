@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "3.15";
+var VERSION = "3.16";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -19,6 +19,7 @@ var TXT = {
   noMore:"Kein weiterer Spieltag",newsHint:"▲▼ wählen · OK lesen · ◄► Rubrik",articleHint:"▲▼ / ◄► nächste Meldung · OK / ZURÜCK",
   resHint:"◄► Liga · OK Tabelle",tabHint:"◄► Liga · OK Ergebnisse",
   cNAT:"LÄNDERSPIELE",cRANK:"RANGLISTEN",cMORE:"WEITERES",more:"▼ mehr: Länderspiele, Ranglisten",t_more:"wischen ▲ = mehr: Länderspiele, Ranglisten",
+  ardRow:"ARD Text (Videotext online)",ardLoad:"ARD Text wird geladen …",ardErr:"ARD-Seite %d nicht erreichbar",
   fav:"Mein Verein",today:"Heute",tv:"Heute im TV",tvHint:"▲▼ Spiel · OK Sender · ZURÜCK zu",tvNone:"keine Sender bekannt",yesterday:"Gestern",tomorrow:"Morgen",dayHint:"◄► Tag wechseln",t_dayHint:"wischen ◄► = Tag wechseln",
   last:"Letzte Spiele",next:"Nächste Spiele",noFav:"Kein Lieblingsverein gewählt.",noFav2:"Unter Einstellungen (900) auswählen.",place:"Platz",
   scorers:"Torschützen",detHint:"OK = Tabelle · ▲▼ blättern",t_detHint:"Titel antippen = Tabelle · wischen ▲▼",pen:"E",og:"ET",
@@ -47,6 +48,7 @@ var TXT = {
   noMore:"Başka hafta yok",newsHint:"▲▼ seç · OK oku · ◄► kategori",articleHint:"▲▼ / ◄► sonraki haber · OK / GERİ",
   resHint:"◄► Lig · OK Puan",tabHint:"◄► Lig · OK Sonuçlar",
   cNAT:"MİLLİ MAÇLAR",cRANK:"SIRALAMALAR",cMORE:"DİĞER",more:"▼ devamı: Milli maçlar, sıralamalar",t_more:"kaydır ▲ = devamı: Milli maçlar, sıralamalar",
+  ardRow:"ARD Text (Almanca teletext)",ardLoad:"ARD Text yükleniyor …",ardErr:"ARD sayfası %d açılamadı",
   fav:"Takımım",today:"Bugün",tv:"Bugün TV'de",tvHint:"▲▼ maç · OK kanallar · GERİ kapat",tvNone:"kanal bilgisi yok",yesterday:"Dün",tomorrow:"Yarın",dayHint:"◄► gün değiştir",t_dayHint:"kaydır ◄► = gün değiştir",
   last:"Son maçlar",next:"Sıradaki maçlar",noFav:"Favori takım seçilmedi.",noFav2:"Ayarlar (900) altından seç.",place:"Sıra",
   scorers:"Goller",detHint:"OK = Puan durumu · ▲▼ sayfa",t_detHint:"başlığa dokun = Puan · kaydır ▲▼",pen:"P",og:"KK",
@@ -1065,7 +1067,80 @@ window.skorAlive = function () {
 };
 window.addEventListener("resize", function () { layout(); draw(); });
 
+/* ---- ARD Text (Seite 990): Online-Videotext von ard-text.de ---- */
+var ARD_PAGE = 990, ARD_COLS = 40;
+var ARD = {page: 100, sub: 1, data: null, loading: false, error: null, tLoad: 0, want: 100, cache: {}};
+var ARD_COL = {w: "w", g: "g", bl: "b", c: "c", y: "y", r: "r", m: "m", b: "k"};
+function ardMosaic(code) {
+  var b = code & 0x5f, tl = b & 1, tr = b & 2, ml = b & 4, mr = b & 8, bl = b & 16, br = b & 64;
+  var n = [tl, tr, ml, mr, bl, br].filter(function (x) { return x; }).length;
+  if (!n) return " "; if (n >= 5) return "\u2588";
+  var top = !!(tl || tr), bot = !!(bl || br);
+  if (!(tr || mr || br)) return "\u258c"; if (!(tl || ml || bl)) return "\u2590";
+  if (top && !bot) return "\u2580"; if (bot && !top) return "\u2584";
+  return n >= 3 ? "\u2588" : ((tl || tr) ? "\u2580" : "\u2584");
+}
+var ardDec = document.createElement("textarea");
+function ardText(inner) {
+  inner = inner.replace(/<img src='[^']*?g\d[a-z]+([0-9a-f]{2})\.gif'>/g, function (m, h) { return "\ue000" + h + "\ue000"; });
+  inner = inner.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ");
+  ardDec.innerHTML = inner; inner = ardDec.value;
+  return inner.replace(/\ue000([0-9a-f]{2})\ue000/g, function (m, h) { return ardMosaic(parseInt(h, 16)); }).replace(/\u00a0/g, " ");
+}
+function ardParse(html) {
+  var out = {page: null, sub: 1, nsub: 1, rows: [], fast: {}}, m;
+  if ((m = /class="hiddenpagenumber"[^>]*>(\d{3})</.exec(html))) out.page = +m[1];
+  if ((m = /subpageCounter">\s*(\d+)\s*\/\s*(\d+)\s*</.exec(html))) { out.sub = +m[1]; out.nsub = Math.max(1, +m[2]); }
+  ["red", "green", "yellow", "blue"].forEach(function (c) { var mm = new RegExp('class="field ' + c + '"[^>]*href="[^"]*page=(\\d{3})').exec(html); if (mm) out.fast[c] = +mm[1]; });
+  var i = html.indexOf("<div id='page_1'>"); if (i < 0) return out;
+  var j = html.indexOf('<div class="row', i), chunk = html.slice(i, j > i ? j : i + 200000);
+  var rowRe = /<div>(<span[\s\S]*?)<\/div>/g, rm;
+  while ((rm = rowRe.exec(chunk)) && out.rows.length < 23) {
+    var segs = [], col = 0, spRe = /<span class='fg(\w+) bg(\w+)' style='width:(\d+)px;'><nobr>([\s\S]*?)<\/nobr><\/span>/g, sm;
+    while ((sm = spRe.exec(rm[1]))) {
+      var w = Math.floor(+sm[3] / 10); if (w <= 0) continue;
+      var txt = (ardText(sm[4]) + new Array(w + 1).join(" ")).slice(0, w);
+      segs.push([col, w, txt, ARD_COL[sm[1]] || "w", ARD_COL[sm[2]] || "k"]); col += w;
+    }
+    out.rows.push(segs);
+  }
+  return out;
+}
+function needArd(page, sub, dir) {
+  if (ARD.loading) return;
+  sub = sub || 1; ARD.loading = true; ARD.want = page;
+  var key = page + "/" + sub + "/" + (dir || ""), hit = ARD.cache[key];
+  var p = (hit && Date.now() - hit[0] < 60000) ? Promise.resolve(hit[1])
+    : httpGet("https://www.ard-text.de/index.php?page=" + page + (sub > 1 ? "&sub=" + sub : "") + (dir ? "&dir=" + dir : "")).then(function (html) {
+        var d = ardParse(html); if (!d.rows.length) throw new Error("Seite " + page + " nicht gefunden");
+        ARD.cache[key] = [Date.now(), d]; return d;
+      });
+  p.then(function (d) { ARD.loading = false; ARD.data = d; ARD.page = d.page || page; ARD.sub = d.sub; ARD.tLoad = Date.now() / 1000; ARD.error = null; draw(); },
+    function (e) { ARD.loading = false; ARD.error = niceError(e); ARD.tLoad = Date.now() / 1000 - 45; message(fmt(T("ardErr"), page), 3); draw(); });
+}
+function ardKey(k) {
+  var d = ARD.data || {}, fast = d.fast || {};
+  if (k === "up" || k === "green" || k === "chup") needArd(fast.green || ARD.page + 1, 1, "fwd");
+  else if (k === "down" || k === "red" || k === "chdn") needArd(fast.red || ARD.page - 1, 1, "bck");
+  else if (k === "yellow" || k === "blue") { if (fast[k]) needArd(fast[k], 1); }
+  else if (k === "left" || k === "right") { var n = d.nsub || 1; if (n > 1) needArd(ARD.page, ((ARD.sub - 1 + (k === "right" ? 1 : -1)) % n + n) % n + 1); }
+  else if (k === "ok") { ARD.cache = {}; needArd(ARD.page, ARD.sub); }
+}
+function ardRows() {
+  var C = G.cols, now = new Date(), d = ARD.data;
+  var pg = S.entry ? "P" + (S.entry + "---").slice(0, 3) : "P" + (d ? ARD.page : ARD_PAGE);
+  var date = T("days")[now.getDay()] + " " + two(now.getDate()) + "." + two(now.getMonth() + 1) + ".  " + two(now.getHours()) + ":" + two(now.getMinutes()) + ":" + two(now.getSeconds());
+  var info = "ARD Text" + (d && d.nsub > 1 ? "  " + d.sub + "/" + d.nsub : "") + (ARD.loading ? "  …" : "");
+  var rows = [[null, [seg(0, 5, pg, S.entry ? "y" : "w", null, "l", !!S.entry), seg(6, 9, "SkorText", "y"), seg(16, C - 39, info, "c"), seg(C - 22, 22, date, "y", null, "r")]]];
+  var off = Math.max(0, Math.floor((C - ARD_COLS) / 2)), body = d ? d.rows : [[], [], [[0, ARD_COLS, ARD.error ? fmt(T("ardErr"), ARD.want) : T("ardLoad"), "c", "k"]]];
+  if (Date.now() < S.msgUntil) { rows.push([COL.w, [seg(1, C - 2, S.msg, "k")]]); body = body.slice(1); }
+  S.ardOff = off;
+  body.slice(0, 24 - rows.length).forEach(function (r) { rows.push([COL.k, r.map(function (s) { return seg(off + s[0], s[1], s[2].replace(/ /g, "\u00a0"), s[3], s[4] === "k" ? null : s[4]); })]); });
+  while (rows.length < 24) rows.push([COL.k, []]);
+  return rows;
+}
 function pageType(p) {
+  if (p === ARD_PAGE) return "ard";
   if (p === 100) return "idx"; if (p === 190) return "help"; if (p === 500) return "live"; if (p === 900) return "set"; if (p === 910) return "lsel";
   if (p === 110) return "fav"; if (p === 470) return "nl"; if (p === 510) return "day"; if (p === 520) return "tv"; if (rankingByPage(p)) return "rank";
   if (feedByPage(p)) return "news";
@@ -1073,7 +1148,7 @@ function pageType(p) {
 }
 function allPages() {
   var pages = [100, 110, 190, 470]; STORE.allViews().forEach(function (v) { pages.push(v[1], v[1] + 1); });
-  return pages.concat([500, 510, 520]).concat(RANKINGS.map(function (r) { return r.page; })).concat(FEEDS.map(function (f) { return f.page; })).concat([900, 910]).sort(function (a, b) { return a - b; });
+  return pages.concat([500, 510, 520]).concat(RANKINGS.map(function (r) { return r.page; })).concat(FEEDS.map(function (f) { return f.page; })).concat([900, 910, ARD_PAGE]).sort(function (a, b) { return a - b; });
 }
 function up(s, country) {
   if (country === "tr" || cfg("lang") === "tr") { var u = trUpper(s); if (cfg("lang") !== "tr") u = u.replace(/LİGA/g, "LIGA"); return u; }
@@ -1170,12 +1245,13 @@ function shownRound(lg) {
 function keyNumber(n) {
   if (!S.entry && n === 0) { go(100); return; }
   S.entry += String(n); S.entryAt = Date.now();
-  if (S.entry.length === 3) { var p = +S.entry; S.entry = ""; go(p); }
+  if (S.entry.length === 3) { var p = +S.entry; S.entry = ""; if (pageType(S.page) === "ard" && p !== ARD_PAGE) needArd(p, 1); else go(p); }
 }
 function key(k) {
   if (/^[0-9]$/.test(k)) { keyNumber(+k); draw(); return; }
   S.entry = "";
   var t = pageType(S.page);
+  if (t === "ard" && ["up", "down", "left", "right", "ok", "red", "green", "yellow", "blue", "chup", "chdn"].indexOf(k) >= 0) { ardKey(k); draw(); return; }
   if (t === "news" && ["back", "ok", "up", "down", "left", "right"].indexOf(k) >= 0) { newsKey(k); draw(); return; }
   if (t === "tv" && ["ok", "up", "down"].indexOf(k) >= 0 || (t === "tv" && k === "back" && S.tvOpen !== null)) { tvKey(k); draw(); return; }
   if (k === "back" && t === "lsel") { go(900); draw(); return; }
@@ -1251,7 +1327,7 @@ function lselItems() {
   });
   out.push([null, T("cNAT"), "nat"], [470, NAT.groups.length ? NAT.title(lang) : T("natEU"), "nat"]);
   out.push([null, T("cRANK"), "rk"], [480, T("rkFifa"), "rk"], [482, T("rkUefa"), "rk"], [484, T("rkClub"), "rk"]);
-  out.push([null, T("cMORE"), "more"], [110, T("fav"), "more"], [510, T("today"), "more"], [520, T("tv"), "more"], [500, T("allLive"), "more"], [600, "Nachrichten / Haberler", "more"]);
+  out.push([null, T("cMORE"), "more"], [110, T("fav"), "more"], [510, T("today"), "more"], [520, T("tv"), "more"], [ARD_PAGE, T("ardRow"), "more"], [500, T("allLive"), "more"], [600, "Nachrichten / Haberler", "more"]);
   return out;
 }
 function lselToggle() { if (S.lsSel === null || S.lsSel === undefined) return; togglePage(S.lsSel); message(pageOn(S.lsSel) ? T("lselOn") : T("lselOff"), 1.2); }
@@ -1299,10 +1375,10 @@ function idxCols() {
   var fav = cfg("fav");
   function sec(hdr, items) { items = items.filter(function (it) { return it.page === 900 || pageOn(it.page); }); return items.length ? [hdr].concat(items) : []; }
   var more = sec({hdr: T("cMORE"), bg: "m", fg: "k"}, [
-    {page: 110, lbl: T("fav") + (fav ? " · " + fav : "")}, {page: 510, lbl: T("today")}, {page: 520, lbl: T("tv")}, {page: 500, lbl: T("allLive"), live: true},
+    {page: 110, lbl: T("fav") + (fav ? " · " + fav : "")}, {page: 510, lbl: T("today")}, {page: 520, lbl: T("tv")}, {page: ARD_PAGE, lbl: T("ardRow")}, {page: 500, lbl: T("allLive"), live: true},
     {page: 600, lbl: newsLabel()}, {page: 900, lbl: T("settings")}]);
   var dep = sec({hdr: T("cDE"), bg: "r", fg: "w"}, views("de"));
-  var left = dep.concat(dep.length ? [null] : []).concat(more);
+  var left = dep.concat(dep.length && dep.length + 1 + more.length <= IDX_ROWS ? [null] : []).concat(more);  // Leerzeile nur, wenn Platz ist
   var right = sec({hdr: T("cTR"), bg: "g", fg: "k"}, views("tr")).concat(sec({hdr: T("cEU"), bg: "y", fg: "k"}, views("eu")))
     .concat(sec({hdr: T("cNAT"), bg: "c", fg: "k"}, [{page: 470, lbl: NAT.groups.length ? NAT.title(lang) : T("natEU")}]))
     .concat(sec({hdr: T("cRANK"), bg: "b", fg: "w"}, [{page: 480, lbl: T("rkFifa")}, {page: 482, lbl: T("rkUefa")}, {page: 484, lbl: T("rkClub")}]));
@@ -1799,6 +1875,7 @@ function newsSubpages() {
   return subs;
 }
 function buildRows() {
+  if (pageType(S.page) === "ard") return ardRows();
   var C = G.cols, subs = subpages(); if (S.sub >= subs.length) S.sub = 0;
   var sp = subs[S.sub], now = new Date(), rows = [];
   var pg = S.entry ? "P" + (S.entry + "---").slice(0, 3) : "P" + S.page;
@@ -1909,6 +1986,7 @@ function tick() {
   else if (tt === "nl") needNat();
   else if (tt === "day") needDay();
   else if (tt === "tv") { needDay(); needTv(); }
+  else if (tt === "ard" && !ARD.loading && (!ARD.data || now - ARD.tLoad > 60)) needArd(ARD.page, ARD.sub);
   else if (tt === "rank") needRank(rankingByPage(S.page));
   var f = feedByPage(S.page); if (f) needFeed(f);
   if (cfg("rotate") === "10" && !f && !(tt === "res" && !S.det) && Date.now() - S.lastRot > 10000) {
@@ -1931,6 +2009,16 @@ function touchTap(x, y) {
   var r = scr.getBoundingClientRect(), row = Math.floor((y - r.top) / G.rowH), col = (x - r.left) / G.cw, t = pageType(S.page), C = G.cols;
   if (row < 0 || row > 23) return;
   if (row === 0) { if (S.page !== 100) key("back"); else draw(); return; }
+  if (t === "ard") {
+    var ar = ARD.data && ARD.data.rows[row - 1], ac = col - (S.ardOff || 0);
+    if (ar) {
+      var line = ar.map(function (s) { return s[2]; }).join(""), best = null, mm, re3 = /\b([1-8]\d\d)\b/g;
+      while ((mm = re3.exec(line))) { var dist = Math.abs(mm.index + 1 - ac); if (dist <= 6 && (!best || dist < best[1])) best = [+mm[1], dist]; }
+      if (best) { needArd(best[0], 1); return; }
+    }
+    if (row >= 20) key(col < C / 2 ? "down" : "up");
+    return;
+  }
   if (row === 23) { var q = Math.floor(C / 4); key(["red", "green", "yellow", "blue"][Math.max(0, Math.min(3, Math.floor(col / q)))]); return; }
   var bi = row - 3;
   if (row === 1) {
