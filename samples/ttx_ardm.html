@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="de">
+
+
+<head>
+ <title>ARD Text - Der Teletext im Ersten</title>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+	<!-- <meta name="viewport" content="width=320; user-scalable=yes" /> -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="ARD Text. Kurznachrichten sind unsere Stärke. Nachrichten der tagesschau, Sport und Programminformationen. Im Fernsehen, im Internet, mobil und als App."/>
+	<meta property="og:title" content="Der Teletext des Ersten"/>
+	<meta property="og:description" content="ARD Text. Kurznachrichten sind unsere Stärke. Nachrichten der tagesschau, Sport und Programminformationen. Im Fernsehen, im Internet, mobil und als App."/>
+	<meta name="twitter:site" content="@ardtext">
+	<meta name="twitter:domain" content="www.ard-text.de">
+	<meta name="twitter:title" content="Der Teletext des Ersten">
+	<meta name="twitter:description" content="ARD Text. Kurznachrichten sind unsere Stärke. Nachrichten der tagesschau, Sport und Programminformationen. Im Fernsehen, im Internet, mobil und als App.">
+	<link href="/stylesheets/mobil/general.css?reload=1" rel="stylesheet" type="text/css">
+
+  <link rel="icon" type="image/x-icon"   href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/apple-icon.png"/>
+
+  <script type="text/javascript">
+   // <![CDATA[
+	 function createCookie(name, value, days) {
+		   var expires;
+	     if (days) {
+	         var date = new Date();
+	         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+	         expires = "; expires=" + date.toGMTString();
+	     } else {
+	    	   expires = "";
+	     }
+	     document.cookie = name + "=" + value + expires + "; path=/";
+	 }
+
+	 function getCookie(c_name) {
+		   if (document.cookie.length > 0) {
+		       c_start = document.cookie.indexOf(c_name + "=");
+		       if (c_start != -1) {
+		           c_start = c_start + c_name.length + 1;
+		           c_end = document.cookie.indexOf(";", c_start);
+		           if (c_end == -1) {
+		               c_end = document.cookie.length;
+		           }
+		           return unescape(document.cookie.substring(c_start, c_end));
+		       }
+		   }
+		   return "";
+	 }
+	 var DO_NOT_TRACK = false;
+	 //Injected JS. Apple-Tracking-Transparency
+	 if (navigator.userAgent.match("App-ardtext-iOS") && typeof APP_TRACKING_DISABLED !== "undefined") {
+		DO_NOT_TRACK = APP_TRACKING_DISABLED;
+	} else if(getCookie("ardtext_oo") == 'OPT-OUT') {
+			 createCookie("ardtext_oo", "OPT-OUT", 365);
+			 DO_NOT_TRACK = true;
+	 }
+
+	 if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+			 var msViewportStyle = document.createElement("style");
+			 msViewportStyle.appendChild(document.createTextNode("@-ms-viewport{width:auto!important}"));
+			 document.getElementsByTagName("head")[0].appendChild(msViewportStyle);
+	 }
+
+	 // ]]>
+	 var menuOpen = false;
+	 //
+	 function toggle() {
+		   var menuWrapper = document.getElementsByClassName("menuWrapper")[0];
+		   var menuToggle = document.getElementsByClassName("hamburger")[0];
+
+
+		   if( !menuOpen ) {
+			     menuWrapper.className += ' menuOpen';
+				 menuToggle.setAttribute("aria-expanded", true);
+				 menuToggle.setAttribute("aria-label", 'Menü schließen');
+		   } else {
+			     menuWrapper.className = menuWrapper.className.replace( /(?:^|\s)menuOpen(?!\S)/g , '' );
+				 menuToggle.setAttribute("aria-expanded", false);
+				 menuToggle.setAttribute("aria-label", 'Menü öffnen');
+
+		   }
+		   menuOpen = !menuOpen;
+	 }
+
+	 var colorTheme = 'light';
+	 var colorThemeDark = 'Auf dunkles Farbschema wechseln.';
+	 var colorThemeLight = 'Auf helles Farbschema wechseln.';
+
+	 function toggleColorTheme() {
+		   if( colorTheme == 'dark' ) {
+			     colorTheme = 'light';
+			     document.getElementById('switchtheme').innerHTML = colorThemeDark;
+		   } else {
+			     colorTheme = 'dark';
+			     document.getElementById('switchtheme').innerHTML = colorThemeLight;
+		   }
+		   createCookie('ardtext_colortheme', colorTheme, 365);
+		   document.body.className = colorTheme;
+		   toggle();
+	 }
+
+	 window.onload = function() {
+		   var bodyClass = document.body.className;
+		   if( bodyClass == 'dark') {
+			     document.getElementById('switchtheme').innerHTML = colorThemeLight;
+		   } else {
+			     document.getElementById('switchtheme').innerHTML = colorThemeDark;
+		   }
+       // Wert muss per JS gesetzt werden:
+       var field = document.getElementById('id');
+       field.value = "100";
+   }
+	</script>
+</head>
+<body class="">
+	  <script>
+		 if(getCookie('ardtext_colortheme') == 'dark') {
+			   colorTheme = 'dark';
+		 }
+		 document.body.className = colorTheme;
+	  </script>
+	  <div class="pageWrapper">
+
+		    <a name="_top"></a>
+		    <div class="fixedNavigation">
+	              <div id="mc" class="menuWrapper">
+		                <div id="mn" class="menu">
+			                  <a href="#" title="Menü schließen" id="mt" aria-label="Menü schließen" class="chevron blink" onclick="toggle();"></a>
+			                  <ul>
+                            <li><a href="/mobil/100"><span>Startseite</span><span>100</span></a></li>
+<li><a href="/mobil/101"><span>Nachrichten</span><span>101</span></a></li>
+<li><a href="/mobil/135"><span>Aus aller Welt</span><span>135</span></a></li>
+<li><a href="/mobil/141"><span>Wissen+Umwelt</span><span>141</span></a></li>
+<li><a href="/mobil/155"><span>Wirtschaft</span><span>155</span></a></li>
+<li><a href="/mobil/161"><span>Verbraucher</span><span>161</span></a></li>
+<li><a href="/mobil/170"><span>Wetter</span><span>170</span></a></li>
+<li><a href="/mobil/200"><span>Sport I</span><span>200</span></a></li>
+<li><a href="/mobil/500"><span>Sport II</span><span>500</span></a></li>
+<li><a href="/mobil/600"><span>Sport III</span><span>600</span></a></li>
+<li><a href="/mobil/300"><span>TV-Programm</span><span>300</span></a></li>
+<li><a href="/mobil/410"><span>Kultur+Medien</span><span>410</span></a></li>
+<li><a href="/mobil/401"><span>Kalenderblatt</span><span>401</span></a></li>
+<li><a href="/mobil/870"><span>Nachrichtenleicht</span><span>870</span></a></li>
+
+			                      <li><h4><a href="#" id="switchtheme" onclick="toggleColorTheme();" style="cursor: pointer;">dark</a></h4></li>
+			                  </ul>
+
+		                </div>
+	              </div>
+		            <script type="text/javascript">
+		             if ( /jasmine/gi.test( navigator.userAgent ) || /jasmin/gi.test( navigator.userAgent) ) {
+			               p = document.getElementById("mc");
+			               p.removeChild( document.getElementById("mn") );
+		             }
+	              </script>
+
+			      <div id="mtc" class="header clearfix" style="display:flex; align-items:center">
+					          <script type="text/javascript">
+						         if (  !/jasmine/gi.test( navigator.userAgent ) && !/jasmin/gi.test( navigator.userAgent )  ) {
+							           document.write('<a href="#" aria-expanded="false" title="Inhalt ARD Text" id="mt" aria-label="Menü öffnen" class="hamburger" onclick="toggle()">&#x2261;</a>' );
+						         }
+					          </script>
+
+
+				        <a href="/mobil/100" class="logo" title="Zurück zur Seite 100"/>
+				        <img src="/static/images/mobil/logo.png" alt="Logo"  height="30" style="height: 30px; width: auto;" />
+			  </a>
+				<form action="/mobil/form" id="pageForm" class="panelChooser" method="get" style="position:absolute; right: 12px;">
+					  <input type="tel" format="NNN" pattern="[1-8][0-9]{2}" maxlength="3" id="id" name="id" placeholder="100" value="100" size="3"/><input type="submit" id="ok" value="OK"/>
+				</form>
+			</div>
+				<div class="browse top clearfix">
+					<ul class="horizontal four-piece">
+						<li class="back"><a href="javascript:history.back()" title="Zurück zur zuletzt aufgerufenen Seite im Browser"><span class="icon"></span><span class="visuallyhidden">Zurück zur zuletzt aufgerufenen Seite im Browser</span></a></li>
+						<li class="refresh"><a href="/mobil/100" title="Ansicht aktualisieren"><span class="icon"></span><span class="visuallyhidden">Ansicht aktualisieren</span></a></li>
+						<li class="previous"><a href="/mobil/previous/100" title="Zur vorigen Seite zurückblättern"><span class="icon"></span><span class="visuallyhidden">Zur vorigen Seite zurückblättern</span></a></li>
+						<li class="next"><a href="/mobil/next/100" title="Zur nächste Seite blättern"><span class="icon"></span><span class="visuallyhidden">Zur nächste Seite blättern/span></a></li>
+					</ul>
+				</div>
+		</div>
+	<div class="master" style="padding-top: 110px;">
+			<div class="cluster">
+		<table cellpadding="0" cellspacing="0" class="broadcastTable">
+<tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h1>Startseite:</h1>
+                       </td>
+             </tr>
+		    <tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h2>Weitere Textseiten:</h4>
+                       </td>
+             </tr>
+			<tr class="title">
+				<td>
+					<h3><a href="/mobil/101">Nachrichten tagesschau</h3></a>
+				</td>
+				<td class="numberHead"><h4><a href="/mobil/101"><p>101</p></a></h4></td>
+			</tr>
+
+
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/104">
+								Heil kandidiert für SPD-Vorsitz
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/104">
+                104
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/105">
+								MV: Koalitionsvertrag besiegelt
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/105">
+                105
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/106">
+								Flugverbot in den USA aufgehoben
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/106">
+                106
+							</a>
+						</td>
+					</tr>
+
+		</table>
+	</div>
+	<div class="cluster">
+		<table cellpadding="0" cellspacing="0" class="broadcastTable">
+<tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h1>Startseite:</h1>
+                       </td>
+             </tr>
+		    <tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h2>Weitere Textseiten:</h4>
+                       </td>
+             </tr>
+			<tr class="title">
+				<td>
+					<h3><a href="/mobil/200">Sport</h3></a>
+				</td>
+				<td class="numberHead"><h4><a href="/mobil/200"><p>200</p></a></h4></td>
+			</tr>
+
+
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/204">
+								NL: Portugal mit Heim-Pleite
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/204">
+                204
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/215">
+								Ski alpin: Aicher gewinnt Slalom
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/215">
+                215
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/216">
+								FCB-Frauen deklassieren den VfL
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/216">
+                216
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/220">
+								HBL: Berlin schlägt den THW Kiel
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/220">
+                220
+							</a>
+						</td>
+					</tr>
+
+		</table>
+	</div>
+	<div class="cluster">
+		<table cellpadding="0" cellspacing="0" class="broadcastTable">
+<tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h1>Startseite:</h1>
+                       </td>
+             </tr>
+		    <tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h2>Weitere Textseiten:</h4>
+                       </td>
+             </tr>
+			<tr class="title">
+				<td>
+					<h3><a href="/mobil/135">Aus aller Welt</h3></a>
+				</td>
+				<td class="numberHead"><h4><a href="/mobil/135">135</a></h4></td>
+			</tr>
+
+
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/136">
+								Bund vor Ausstieg aus Meyer Werft
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/136">
+                136
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/137">
+								Unwetter: Krise in Gaza versch&#xE4;rft 
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/137">
+                137
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/138">
+								Abschiebezentrum in Ruanda geplant
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/138">
+                138
+							</a>
+						</td>
+					</tr>
+
+		</table>
+	</div>
+	<div class="cluster">
+		<table cellpadding="0" cellspacing="0" class="broadcastTable">
+<tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h1>Startseite:</h1>
+                       </td>
+             </tr>
+		    <tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h2>Weitere Textseiten:</h4>
+                       </td>
+             </tr>
+			<tr class="title">
+				<td>
+					<h3><a href="/mobil/135">Wissen+Umwelt</h3></a>
+				</td>
+				<td class="numberHead"><h4><a href="/mobil/135">135</a></h4></td>
+			</tr>
+
+
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/141">
+								Fehlschlag bei Starship-Testflug
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/141">
+                141
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/142">
+								WHO: Weniger Tuberkulose-Todesf&#xE4;lle
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/142">
+                142
+							</a>
+						</td>
+					</tr>
+
+		</table>
+	</div>
+	<div class="cluster">
+		<table cellpadding="0" cellspacing="0" class="broadcastTable">
+<tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h1>Startseite:</h1>
+                       </td>
+             </tr>
+		    <tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h2>Weitere Textseiten:</h4>
+                       </td>
+             </tr>
+			<tr class="title">
+				<td>
+					<h3><a href="/mobil/155">Wirtschaft</h3></a>
+				</td>
+				<td class="numberHead"><h4><a href="/mobil/155">155</a></h4></td>
+			</tr>
+
+
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/156">
+								&#xD6;konomen warnen vor Haushaltskrise
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/156">
+                156
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/157">
+								Sonnenstrom mit Rekordwerten
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/157">
+                157
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/158">
+								Meta muss 805 Mio.EUR Strafe zahlen
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/158">
+                158
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/701">
+								Marktberichte
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/701">
+                701
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/710">
+								Börsenkurse
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/710">
+                710
+							</a>
+						</td>
+					</tr>
+
+		</table>
+	</div>
+	<div class="cluster">
+		<table cellpadding="0" cellspacing="0" class="broadcastTable">
+<tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h1>Startseite:</h1>
+                       </td>
+             </tr>
+		    <tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h2>Weitere Textseiten:</h4>
+                       </td>
+             </tr>
+			<tr class="title">
+				<td>
+					<h3><a href="/mobil/410">Kultur+Medien</h3></a>
+				</td>
+				<td class="numberHead"><h4><a href="/mobil/410">410</a></h4></td>
+			</tr>
+
+
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/411">
+								Zwei Nominierungen f&#xFC;r H&#xFC;ller
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/411">
+                411
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/412">
+								Asiatischer ESC:Sieg an Philippinen
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/412">
+                412
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/413">
+								Steinmeier w&#xFC;rdigt J&#xFC;disches Museum 
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/413">
+                413
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/414">
+								Hamburger Bahnhof feiert Jubil&#xE4;um 
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/414">
+                414
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/415">
+								Aura von Modersohn-Becker im Museum 
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/415">
+                415
+							</a>
+						</td>
+					</tr>
+
+		</table>
+	</div>
+	<div class="cluster">
+		<table cellpadding="0" cellspacing="0" class="broadcastTable">
+<tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h1>Startseite:</h1>
+                       </td>
+             </tr>
+		    <tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h2>Weitere Textseiten:</h4>
+                       </td>
+             </tr>
+			<tr class="title">
+				<td>
+					<h3><a href="/mobil/170">Wetter</h3></a>
+				</td>
+				<td class="numberHead"><h4><a href="/mobil/170">170</a></h4></td>
+			</tr>
+
+
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/171">
+								Wetter heute
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/171">
+                171
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/172">
+								Wetter morgen
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/172">
+                172
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/173">
+								Wetter die nächsten Tage
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/173">
+                173
+							</a>
+						</td>
+					</tr>
+
+		</table>
+	</div>
+	<div class="cluster">
+		<table cellpadding="0" cellspacing="0" class="broadcastTable">
+<tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h1>Startseite:</h1>
+                       </td>
+             </tr>
+		    <tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h2>Weitere Textseiten:</h4>
+                       </td>
+             </tr>
+			<tr class="title">
+				<td>
+					<h3><a href="/mobil/870">Nachrichten in einfacher Sprache</h3></a>
+				</td>
+				<td class="numberHead"><h4><a href="/mobil/870">870</a></h4></td>
+			</tr>
+
+
+
+		</table>
+	</div>
+	<div class="cluster">
+		<table cellpadding="0" cellspacing="0" class="broadcastTable">
+<tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h1>Startseite:</h1>
+                       </td>
+             </tr>
+		    <tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h2>Weitere Textseiten:</h4>
+                       </td>
+             </tr>
+			<tr class="title">
+				<td>
+					<h3><a href="/mobil/899">Die letzte Seite</h3></a>
+				</td>
+				<td class="numberHead"><h4><a href="/mobil/899">899</a></h4></td>
+			</tr>
+
+
+
+		</table>
+	</div>
+	<div class="cluster">
+		<table cellpadding="0" cellspacing="0" class="broadcastTable">
+<tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h1>Startseite:</h1>
+                       </td>
+             </tr>
+		    <tr class="visuallyhidden">
+                         <td colspan="2">
+                             <h2>Weitere Textseiten:</h4>
+                       </td>
+             </tr>
+			<tr class="title">
+				<td>
+					<h3>Aktuelle Themen</h3>
+				</td>
+				<td class="numberHead"><h4><a href="/mobil/"></a></h4></td>
+			</tr>
+
+
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/164">
+								Verbraucher: Neu ab November
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/164">
+                164
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/406">
+								Welt-Diabetes-Tag
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/406">
+                406
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/870">
+								Wochen-Rückblick in einfacher Sprache
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/870">
+                870
+							</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text">
+							<a href="/mobil/521">
+								Spiele der europäischen Top-Teams
+							</a>
+						</td>
+						<td class="number">
+							<a href="/mobil/521">
+                521
+							</a>
+						</td>
+					</tr>
+
+		</table>
+	</div>
+	<div class="basicBox">
+		<h3 class='title'>Jetzt im Ersten</h3>
+		<table cellpadding="0" cellspacing="0" class="broadcastTable">
+				<tr>
+					<td class="number">
+						23:40&nbsp;
+					</td>
+						<td class="text">
+							<a href="/mobil/328">
+								Die Friesenjunkies (5)
+							</a>
+								Fernsehserie, D 2026
+						</td>
+				</tr>
+				<tr>
+					<td class="number">
+						00:00&nbsp;
+					</td>
+						<td class="text">
+							<a href="/mobil/330">
+								Die Friesenjunkies (6)
+							</a>
+						</td>
+				</tr>
+				<tr>
+					<td class="number">
+						00:30&nbsp;
+					</td>
+						<td class="text">
+							<a href="/mobil/331">
+								Die Friesenjunkies (7)
+							</a>
+						</td>
+				</tr>
+		</table>
+	</div>
+
+
+			<div class="browse bottom clearfix">
+				<ul class="horizontal four-piece">
+					<li class="back"><a href="javascript:history.back()" title="Zurück zur zuletzt aufgerufenen Seite im Browser"><span class="icon"></span><span class="visuallyhidden">Zurück zur zuletzt aufgerufenen Seite im Browser</span></a></li>
+					<li class="refresh"><a href="/mobil/100" title="Ansicht aktualisieren"><span class="icon"></span><span class="visuallyhidden">Ansicht aktualisieren</span></a></li>
+					<li class="previous"><a href="/mobil/previous/100" title="Zur vorigen Seite zurückblättern"><span class="icon"></span><span class="visuallyhidden">Zur vorigen Seite zurückblättern</span></a></li>
+					<li class="next"><a href="/mobil/next/100" title="Zur nächste Seite blättern"><span class="icon"></span><span class="visuallyhidden">Zur nächste Seite blättern</span></a></li>
+				</ul>
+			</div>
+
+			<div class='navigation bottom'>
+		<table cellpadding="0" cellspacing="0" class="broadcastTable">
+			<tr class="visuallyhidden">
+               <td colspan="2">
+                   <h4>Weitere Textseiten:</h4>
+               </td>
+            </tr>
+			<tr>
+					<td class="text">
+						<a href='/mobil/101'>
+							tagesschau Nachrichten
+						</a>
+					</td>
+					<td class="number">
+						<a href='/mobil/101'>
+              101
+            </a>
+					</td>
+			</tr>
+			<tr class="visuallyhidden">
+               <td colspan="2">
+                   <h4>Weitere Textseiten:</h4>
+               </td>
+            </tr>
+			<tr>
+					<td class="text">
+						<a href='/mobil/135'>
+							Aus aller Welt
+						</a>
+					</td>
+					<td class="number">
+						<a href='/mobil/135'>
+              135
+            </a>
+					</td>
+			</tr>
+			<tr class="visuallyhidden">
+               <td colspan="2">
+                   <h4>Weitere Textseiten:</h4>
+               </td>
+            </tr>
+			<tr>
+					<td class="text">
+						<a href='/mobil/141'>
+							Wissen+Umwelt
+						</a>
+					</td>
+					<td class="number">
+						<a href='/mobil/141'>
+              141
+            </a>
+					</td>
+			</tr>
+			<tr class="visuallyhidden">
+               <td colspan="2">
+                   <h4>Weitere Textseiten:</h4>
+               </td>
+            </tr>
+			<tr>
+					<td class="text">
+						<a href='/mobil/155'>
+							Wirtschaft
+						</a>
+					</td>
+					<td class="number">
+						<a href='/mobil/155'>
+              155
+            </a>
+					</td>
+			</tr>
+			<tr class="visuallyhidden">
+               <td colspan="2">
+                   <h4>Weitere Textseiten:</h4>
+               </td>
+            </tr>
+			<tr>
+					<td class="text">
+						<a href='/mobil/161'>
+							Verbraucher
+						</a>
+					</td>
+					<td class="number">
+						<a href='/mobil/161'>
+              161
+            </a>
+					</td>
+			</tr>
+			<tr class="visuallyhidden">
+               <td colspan="2">
+                   <h4>Weitere Textseiten:</h4>
+               </td>
+            </tr>
+			<tr>
+					<td class="text">
+						<a href='/mobil/410'>
+							Kultur+Medien
+						</a>
+					</td>
+					<td class="number">
+						<a href='/mobil/410'>
+              410
+            </a>
+					</td>
+			</tr>
+			<tr class="visuallyhidden">
+               <td colspan="2">
+                   <h4>Weitere Textseiten:</h4>
+               </td>
+            </tr>
+			<tr>
+					<td class="text">
+						<a href='/mobil/170'>
+							Wetter
+						</a>
+					</td>
+					<td class="number">
+						<a href='/mobil/170'>
+              170
+            </a>
+					</td>
+			</tr>
+			<tr class="visuallyhidden">
+               <td colspan="2">
+                   <h4>Weitere Textseiten:</h4>
+               </td>
+            </tr>
+			<tr>
+					<td class="text">
+						<a href='/mobil/200'>
+							Sport
+						</a>
+					</td>
+					<td class="number">
+						<a href='/mobil/200'>
+              200
+            </a>
+					</td>
+			</tr>
+			<tr class="visuallyhidden">
+               <td colspan="2">
+                   <h4>Weitere Textseiten:</h4>
+               </td>
+            </tr>
+			<tr>
+					<td class="text">
+						<a href='/mobil/300'>
+							Programm Das Erste
+						</a>
+					</td>
+					<td class="number">
+						<a href='/mobil/300'>
+              300
+            </a>
+					</td>
+			</tr>
+			<tr class="visuallyhidden">
+               <td colspan="2">
+                   <h4>Weitere Textseiten:</h4>
+               </td>
+            </tr>
+			<tr>
+					<td class="text">
+						<a href='/mobil/800'>
+							ARD Text Extra
+						</a>
+					</td>
+					<td class="number">
+						<a href='/mobil/800'>
+              800
+            </a>
+					</td>
+			</tr>
+			<tr class="visuallyhidden">
+               <td colspan="2">
+                   <h4>Weitere Textseiten:</h4>
+               </td>
+            </tr>
+			<tr>
+					<td class="text">
+						<a href='/mobil/790'>
+							Index
+						</a>
+					</td>
+					<td class="number">
+						<a href='/mobil/790'>
+              790
+            </a>
+					</td>
+			</tr>
+			<tr class="visuallyhidden">
+               <td colspan="2">
+                   <h4>Weitere Textseiten:</h4>
+               </td>
+            </tr>
+			<tr>
+					<td class="text">
+						<a href='/mobil/870'>
+							Nachrichten in einfacher Sprache
+						</a>
+					</td>
+					<td class="number">
+						<a href='/mobil/870'>
+              870
+            </a>
+					</td>
+			</tr>
+		</table>
+	</div>
+
+
+	</div>
+	<div class="footer">
+		<ul>
+			<li>
+				<a href="/mobil/100">Home</a>
+			</li>
+			<li>
+				<a href="/mobil/790">Inhalt</a>
+			</li>
+			<li class="last-child">
+				<a href="/mobil/797">Impressum</a>
+			</li>
+			<li class="last-child">
+				<a href="/mobil/900">Datenschutz</a>
+			</li>
+		</ul>
+	</div>
+	<!-- AT Internet 2014 -->
+	<script type="text/javascript">
+		if(!DO_NOT_TRACK) {
+			xt_tags = "[Startseite 100]|[alles]"; // Tags
+			// do not modify below
+			if (window.xtparam != null) {
+				window.xtparam += "&tag=" + xt_tags;
+			} else {
+				window.xtparam = "&tag=" + xt_tags;
+			};
+		}
+	</script>
+
+	<script type="text/javascript">
+		<!--
+		if(!DO_NOT_TRACK) {
+			xtnv = document; //parent.document or top.document or document
+			if (window.location.protocol == "https:") {
+				xtsd = "https://logs1406";
+			} else {
+				xtsd = "http://logc406";
+			}
+			xtsite = "553883" // ARD Text	(auch beim noscript unten)
+			xtn2 = "2"; // level 2 site ID - 2 = ARD Text PC mobile
+			xtpage = "100"; //page name (with the use of :: to create chapters)
+			xtdi = ""; //implication degree
+			xt_multc = ""; //all the xi indicators (like "&x1=...&x2=....&x3=...")
+			xt_an = ""; //user ID
+			xt_ac = ""; //category ID
+			//do not modify below
+			if (window.xtparam != null) {
+				window.xtparam += "&ac=" + xt_ac + "&an=" + xt_an + xt_multc;
+			} else {
+				window.xtparam = "&ac=" + xt_ac + "&an=" + xt_an + xt_multc;
+			};
+		}
+		//-->
+	</script>
+	<script type="text/javascript" src="/static/js/xtcore.js"></script>
+	<script type="text/javascript" src="/static/js/num.js?d=1"></script>
+
+	<script type="text/javascript">
+	document.title = document.getElementsByTagName("H1")[0].innerHTML.replace(/(<([^>]+)>)/gi, "");
+	</script>
+
+	<script type="text/javascript">
+
+        var img=document.createElement("img");
+        img.src="/static/images/mobil/live-message.gif"
+        img.className="visuallyhidden"
+        img.id="picture"
+        img.alt="Live-Meldung"
+        var uelement = document.querySelector('U');
+		uelement.before(img);
+    </script>
+
+
+</body>
+</html>
