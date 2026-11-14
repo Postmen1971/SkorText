@@ -32,13 +32,13 @@ jobs:
               try:
                   r = requests.get(u, headers=H, timeout=25); return r.status_code, r.text, r.headers.get("content-type", "")
               except Exception as e: return 0, str(e), ""
-          for n, u in [("ard", "https://www.ard-text.de/"), ("ard100", "https://www.ard-text.de/index.php?page=100"), ("ard200", "https://www.ard-text.de/index.php?page=200"),
-                       ("ardm", "https://www.ard-text.de/mobil/100"), ("zdf", "https://teletext.zdf.de/teletext/zdf/seiten/100.html"),
-                       ("trt1", "https://teletext.trt.net.tr/"), ("trt2", "https://www.trt.net.tr/teletext"), ("trt3", "https://www.trt.net.tr/telegun"), ("trt4", "https://telegun.trt.net.tr/")]:
-              s, t, ct = get(u)
-              open("samples/ttx_%s.html" % n, "w").write(t)
-              OUT.append(print_(n, s, ct, len(t), re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", t))[:300]))
-              OUT.append(print_("   links:", sorted(set(re.findall(r'(?:src|href)="([^"]+)"', t)))[:40]))
+          for pg in ["101", "250", "251", "210", "520", "300", "999", "201&dir=fwd", "199&dir=bck"]:
+              s, t, ct = get("https://www.ard-text.de/index.php?page=" + pg)
+              ids = re.findall(r"<div id='(page_\d+)'>", t)
+              i = t.find("<div id='page_1'>")
+              rows = re.findall(r"<div><span", t[i:]) if i >= 0 else []
+              OUT.append(print_(pg, s, len(t), ids, "rows", len(rows), "counter", re.findall(r'subpageCounter">([^<]*)<', t), re.findall(r"img/(g\d[a-z]+)[0-9a-f]{2}\.gif", t)[:3] and sorted(set(re.findall(r"img/(g\d[a-z]+)[0-9a-f]{2}\.gif", t)))))
+              if pg in ("250", "101"): open("samples/ttx_ard%s.html" % pg, "w").write(t)
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
