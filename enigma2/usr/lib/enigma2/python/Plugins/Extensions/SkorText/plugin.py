@@ -28,7 +28,7 @@ from . import liveonsat
 
 PY2 = sys.version_info[0] == 2
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "3.16"
+VERSION = "3.17"
 
 
 def E(s):
@@ -686,6 +686,9 @@ class SkorText(Screen):
 		return sorted(pages + [500, 510, 520] + [r.page for r in RANKINGS] + [f.page for f in FEED_LIST] + [900, 910, ARD_PAGE])
 
 	def go(self, p, quiet=False):
+		if p == ARD_PAGE and self.page != ARD_PAGE:
+			ARD.hist = []
+			self.message(T("ardHint"), 5)
 		if self.page_type(p) is None:
 			self.message(T("notfound") % p)
 			return
@@ -750,7 +753,7 @@ class SkorText(Screen):
 			p = int(self.entry)
 			self.entry = u""
 			if self.page_type(self.page) == "ard" and p != ARD_PAGE:
-				self.need_ard(p, 1)
+				self.ard_open(p)
 			else:
 				self.go(p)
 		self.draw()
@@ -758,7 +761,7 @@ class SkorText(Screen):
 	def key(self, k):
 		self.entry = u""
 		t = self.page_type(self.page)
-		if t == "ard" and k in ("up", "down", "left", "right", "ok", "red", "green", "yellow", "blue", "chup", "chdn"):
+		if t == "ard" and k in ("up", "down", "left", "right", "ok", "red", "green", "yellow", "blue", "chup", "chdn", "exit"):
 			self.ard_key(k)
 			self.draw()
 			return
@@ -1821,24 +1824,47 @@ class SkorText(Screen):
 				self.draw()
 		self.run_bg(work, ok, err)
 
+	def ard_open(self, page, sub=1, direction=None):
+		"""Neue Tafel oeffnen und die aktuelle fuer ZURUECK merken."""
+		if ARD.data and (not ARD.hist or ARD.hist[-1] != ARD.page):
+			ARD.hist.append(ARD.page)
+			del ARD.hist[:-30]
+		self.need_ard(page, sub, direction)
+
 	def ard_key(self, k):
+		"""Bedienung ohne Zifferntasten (z. B. SHIELD): ▲▼ Seitennummer markieren, OK oeffnen,
+		◄► Unterseite bzw. vorige/naechste Tafel, ZURUECK = zuletzt angesehene Tafel."""
 		d = ARD.data or {}
 		fast = d.get("fast") or {}
-		if k in ("up", "green", "chup"):
-			self.need_ard(fast.get("green") or (ARD.page + 1), 1, "fwd")
-		elif k in ("down", "red", "chdn"):
-			self.need_ard(fast.get("red") or (ARD.page - 1), 1, "bck")
+		links = d.get("links") or []
+		n = d.get("nsub") or 1
+		if k == "exit":
+			if ARD.hist:
+				self.need_ard(ARD.hist.pop(), 1)
+			else:
+				self.go(100)
+		elif k in ("up", "down"):
+			if links:
+				ARD.sel = (ARD.sel + (1 if k == "down" else -1)) % len(links)
+			else:
+				self.ard_open(fast.get("green" if k == "up" else "red") or (ARD.page + (1 if k == "up" else -1)), 1, "fwd" if k == "up" else "bck")
+		elif k == "ok":
+			if links:
+				self.ard_open(links[min(ARD.sel, len(links) - 1)][2])
+			else:
+				ARD.cache.clear()
+				self.need_ard(ARD.page, ARD.sub)
+		elif k == "right" and n > 1 and ARD.sub < n:
+			self.need_ard(ARD.page, ARD.sub + 1)
+		elif k == "left" and n > 1 and ARD.sub > 1:
+			self.need_ard(ARD.page, ARD.sub - 1)
+		elif k in ("right", "green", "chup"):
+			self.ard_open(fast.get("green") or (ARD.page + 1), 1, "fwd")
+		elif k in ("left", "red", "chdn"):
+			self.ard_open(fast.get("red") or (ARD.page - 1), 1, "bck")
 		elif k in ("yellow", "blue"):
 			if fast.get(k):
-				self.need_ard(fast[k], 1)
-		elif k in ("left", "right"):
-			n = d.get("nsub") or 1
-			if n > 1:
-				s = (ARD.sub - 1 + (1 if k == "right" else -1)) % n + 1
-				self.need_ard(ARD.page, s)
-		elif k == "ok":
-			ARD.cache.clear()
-			self.need_ard(ARD.page, ARD.sub)
+				self.ard_open(fast[k], 1)
 
 	def ard_rows(self):
 		C = self.cols
@@ -1858,8 +1884,14 @@ class SkorText(Screen):
 			body = d["rows"] if d else []
 		if not d:
 			body = [[], [], [(0, ARD_COLS, (T("ardLoad") if not ARD.error else (T("ardErr") % ARD.want)), "c", "k")]]
-		for r in body[:23 - (len(rows) - 1)]:
-			rows.append((COL["k"], [seg(off + c, w, txt, fg, None if bg == "k" else bg) for c, w, txt, fg, bg in r]))
+		links = (d.get("links") or []) if d else []
+		mark = links[min(ARD.sel, len(links) - 1)] if links else None
+		skip = len(rows) - 1   # Zeilen, die die Meldung verdeckt
+		for ri, r in enumerate(body[:23 - (len(rows) - 1)]):
+			segs = [seg(off + c, w, txt, fg, None if bg == "k" else bg) for c, w, txt, fg, bg in r]
+			if mark and mark[0] == ri + skip:
+				segs.append(seg(off + mark[1], 3, u"%d" % mark[2], "k", "y"))   # markierte Seitennummer
+			rows.append((COL["k"], segs))
 		while len(rows) < 24:
 			rows.append((COL["k"], []))
 		return rows

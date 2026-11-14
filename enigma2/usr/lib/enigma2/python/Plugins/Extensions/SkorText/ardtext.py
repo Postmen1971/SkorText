@@ -26,6 +26,17 @@ _SPAN = re.compile(r"<span class='fg(\w+) bg(\w+)' style='width:(\d+)px;'><nobr>
 _ROW = re.compile(r"<div>(<span.*?)</div>", re.S)
 _IMG = re.compile(r"<img src='[^']*?g\d[a-z]+([0-9a-f]{2})\.gif'>")
 _TAG = re.compile(r"<[^>]+>")
+_LINK = re.compile(r"(?<!\d)([1-8]\d\d)(?!\d)")
+
+
+def find_links(rows):
+	"""Seitennummern (100-899) auf der Tafel: [(zeile, spalte, nummer)] - zum Ansteuern ohne Zifferntasten."""
+	out = []
+	for ri, r in enumerate(rows):
+		line = u"".join(s[2] for s in r)
+		for m in _LINK.finditer(line):
+			out.append((ri, m.start(), int(m.group(1))))
+	return out
 
 
 def mosaic(code):
@@ -91,6 +102,7 @@ def parse(html):
 		out["rows"].append(segs)
 		if len(out["rows"]) >= ARD_ROWS:
 			break
+	out["links"] = find_links(out["rows"])
 	return out
 
 
@@ -106,6 +118,8 @@ class ArdText(object):
 		self.t_load = 0
 		self.cache = {}
 		self.want = 100
+		self.sel = 0       # markierte Seitennummer (Index in data["links"])
+		self.hist = []     # zuvor angesehene Seiten (fuer ZURUECK)
 
 	def url(self, page, sub=1, direction=None):
 		q = u"%d" % page
@@ -129,8 +143,10 @@ class ArdText(object):
 			if len(self.cache) > 40:
 				for k in sorted(self.cache, key=lambda x: self.cache[x][0])[:10]:
 					self.cache.pop(k, None)
-		self.page = d["page"] or page
-		self.sub = d["sub"]
+		new = (d["page"] or page, d["sub"])
+		if self.data is None or new != (self.page, self.sub):
+			self.sel = 0   # neue Tafel: erste Seitennummer markieren
+		self.page, self.sub = new
 		self.data = d
 		self.t_load = time.time()
 		self.error = None

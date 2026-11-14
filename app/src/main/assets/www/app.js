@@ -1,7 +1,7 @@
 /* SkorText für Android TV / NVIDIA Shield – Portierung des Enigma2-Plugins */
 (function () {
 "use strict";
-var VERSION = "3.16";
+var VERSION = "3.17";
 
 /* ================= Texte ================= */
 var TXT = {
@@ -19,7 +19,7 @@ var TXT = {
   noMore:"Kein weiterer Spieltag",newsHint:"▲▼ wählen · OK lesen · ◄► Rubrik",articleHint:"▲▼ / ◄► nächste Meldung · OK / ZURÜCK",
   resHint:"◄► Liga · OK Tabelle",tabHint:"◄► Liga · OK Ergebnisse",
   cNAT:"LÄNDERSPIELE",cRANK:"RANGLISTEN",cMORE:"WEITERES",more:"▼ mehr: Länderspiele, Ranglisten",t_more:"wischen ▲ = mehr: Länderspiele, Ranglisten",
-  ardRow:"ARD Text (Videotext online)",ardLoad:"ARD Text wird geladen …",ardErr:"ARD-Seite %d nicht erreichbar",
+  ardRow:"ARD Text (Videotext online)",ardHint:"▲▼ Seitenzahl wählen · OK öffnen · ◄► blättern · ZURÜCK",t_ardHint:"Seitenzahl antippen = öffnen · ZURÜCK = vorige Seite",ardLoad:"ARD Text wird geladen …",ardErr:"ARD-Seite %d nicht erreichbar",
   fav:"Mein Verein",today:"Heute",tv:"Heute im TV",tvHint:"▲▼ Spiel · OK Sender · ZURÜCK zu",tvNone:"keine Sender bekannt",yesterday:"Gestern",tomorrow:"Morgen",dayHint:"◄► Tag wechseln",t_dayHint:"wischen ◄► = Tag wechseln",
   last:"Letzte Spiele",next:"Nächste Spiele",noFav:"Kein Lieblingsverein gewählt.",noFav2:"Unter Einstellungen (900) auswählen.",place:"Platz",
   scorers:"Torschützen",detHint:"OK = Tabelle · ▲▼ blättern",t_detHint:"Titel antippen = Tabelle · wischen ▲▼",pen:"E",og:"ET",
@@ -48,7 +48,7 @@ var TXT = {
   noMore:"Başka hafta yok",newsHint:"▲▼ seç · OK oku · ◄► kategori",articleHint:"▲▼ / ◄► sonraki haber · OK / GERİ",
   resHint:"◄► Lig · OK Puan",tabHint:"◄► Lig · OK Sonuçlar",
   cNAT:"MİLLİ MAÇLAR",cRANK:"SIRALAMALAR",cMORE:"DİĞER",more:"▼ devamı: Milli maçlar, sıralamalar",t_more:"kaydır ▲ = devamı: Milli maçlar, sıralamalar",
-  ardRow:"ARD Text (Almanca teletext)",ardLoad:"ARD Text yükleniyor …",ardErr:"ARD sayfası %d açılamadı",
+  ardRow:"ARD Text (Almanca teletext)",ardHint:"▲▼ sayfa no. seç · OK aç · ◄► sayfa çevir · GERİ",t_ardHint:"Sayfa numarasına dokun = aç · GERİ = önceki sayfa",ardLoad:"ARD Text yükleniyor …",ardErr:"ARD sayfası %d açılamadı",
   fav:"Takımım",today:"Bugün",tv:"Bugün TV'de",tvHint:"▲▼ maç · OK kanallar · GERİ kapat",tvNone:"kanal bilgisi yok",yesterday:"Dün",tomorrow:"Yarın",dayHint:"◄► gün değiştir",t_dayHint:"kaydır ◄► = gün değiştir",
   last:"Son maçlar",next:"Sıradaki maçlar",noFav:"Favori takım seçilmedi.",noFav2:"Ayarlar (900) altından seç.",place:"Sıra",
   scorers:"Goller",detHint:"OK = Puan durumu · ▲▼ sayfa",t_detHint:"başlığa dokun = Puan · kaydır ▲▼",pen:"P",og:"KK",
@@ -1069,7 +1069,16 @@ window.addEventListener("resize", function () { layout(); draw(); });
 
 /* ---- ARD Text (Seite 990): Online-Videotext von ard-text.de ---- */
 var ARD_PAGE = 990, ARD_COLS = 40;
-var ARD = {page: 100, sub: 1, data: null, loading: false, error: null, tLoad: 0, want: 100, cache: {}};
+var ARD = {page: 100, sub: 1, data: null, loading: false, error: null, tLoad: 0, want: 100, cache: {}, sel: 0, hist: []};
+// Seitennummern 100–899 auf der Tafel – zum Ansteuern ohne Zifferntasten (SHIELD)
+function ardLinks(rows) {
+  var out = [];
+  rows.forEach(function (r, ri) {
+    var line = r.map(function (s) { return s[2]; }).join(""), re = /(\d*)([1-8]\d\d)(?!\d)/g, m;
+    while ((m = re.exec(line))) if (!m[1]) out.push([ri, m.index, +m[2]]);
+  });
+  return out;
+}
 var ARD_COL = {w: "w", g: "g", bl: "b", c: "c", y: "y", r: "r", m: "m", b: "k"};
 function ardMosaic(code) {
   var b = code & 0x5f, tl = b & 1, tr = b & 2, ml = b & 4, mr = b & 8, bl = b & 16, br = b & 64;
@@ -1104,6 +1113,7 @@ function ardParse(html) {
     }
     out.rows.push(segs);
   }
+  out.links = ardLinks(out.rows);
   return out;
 }
 function needArd(page, sub, dir) {
@@ -1115,16 +1125,29 @@ function needArd(page, sub, dir) {
         var d = ardParse(html); if (!d.rows.length) throw new Error("Seite " + page + " nicht gefunden");
         ARD.cache[key] = [Date.now(), d]; return d;
       });
-  p.then(function (d) { ARD.loading = false; ARD.data = d; ARD.page = d.page || page; ARD.sub = d.sub; ARD.tLoad = Date.now() / 1000; ARD.error = null; draw(); },
+  p.then(function (d) {
+    var np = d.page || page; if (!ARD.data || np !== ARD.page || d.sub !== ARD.sub) ARD.sel = 0;  // neue Tafel: erste Seitenzahl markieren
+    ARD.loading = false; ARD.data = d; ARD.page = np; ARD.sub = d.sub; ARD.tLoad = Date.now() / 1000; ARD.error = null; draw(); },
     function (e) { ARD.loading = false; ARD.error = niceError(e); ARD.tLoad = Date.now() / 1000 - 45; message(fmt(T("ardErr"), page), 3); draw(); });
 }
+function ardOpen(page, sub, dir) {
+  if (ARD.data && (!ARD.hist.length || ARD.hist[ARD.hist.length - 1] !== ARD.page)) { ARD.hist.push(ARD.page); if (ARD.hist.length > 30) ARD.hist.shift(); }
+  needArd(page, sub || 1, dir);
+}
+/* Bedienung ohne Zifferntasten: ▲▼ Seitenzahl markieren, OK öffnen, ◄► Unterseite bzw. vorige/nächste Tafel, ZURÜCK = zuletzt angesehene Tafel */
 function ardKey(k) {
-  var d = ARD.data || {}, fast = d.fast || {};
-  if (k === "up" || k === "green" || k === "chup") needArd(fast.green || ARD.page + 1, 1, "fwd");
-  else if (k === "down" || k === "red" || k === "chdn") needArd(fast.red || ARD.page - 1, 1, "bck");
-  else if (k === "yellow" || k === "blue") { if (fast[k]) needArd(fast[k], 1); }
-  else if (k === "left" || k === "right") { var n = d.nsub || 1; if (n > 1) needArd(ARD.page, ((ARD.sub - 1 + (k === "right" ? 1 : -1)) % n + n) % n + 1); }
-  else if (k === "ok") { ARD.cache = {}; needArd(ARD.page, ARD.sub); }
+  var d = ARD.data || {}, fast = d.fast || {}, links = d.links || [], n = d.nsub || 1;
+  if (k === "back") { if (ARD.hist.length) needArd(ARD.hist.pop(), 1); else go(100); }
+  else if (k === "up" || k === "down") {
+    if (links.length) ARD.sel = ((ARD.sel + (k === "down" ? 1 : -1)) % links.length + links.length) % links.length;
+    else ardOpen(fast[k === "up" ? "green" : "red"] || ARD.page + (k === "up" ? 1 : -1), 1, k === "up" ? "fwd" : "bck");
+  }
+  else if (k === "ok") { if (links.length) ardOpen(links[Math.min(ARD.sel, links.length - 1)][2]); else { ARD.cache = {}; needArd(ARD.page, ARD.sub); } }
+  else if (k === "right" && n > 1 && ARD.sub < n) needArd(ARD.page, ARD.sub + 1);
+  else if (k === "left" && n > 1 && ARD.sub > 1) needArd(ARD.page, ARD.sub - 1);
+  else if (k === "right" || k === "green" || k === "chup") ardOpen(fast.green || ARD.page + 1, 1, "fwd");
+  else if (k === "left" || k === "red" || k === "chdn") ardOpen(fast.red || ARD.page - 1, 1, "bck");
+  else if (k === "yellow" || k === "blue") { if (fast[k]) ardOpen(fast[k], 1); }
 }
 function ardRows() {
   var C = G.cols, now = new Date(), d = ARD.data;
@@ -1132,10 +1155,15 @@ function ardRows() {
   var date = T("days")[now.getDay()] + " " + two(now.getDate()) + "." + two(now.getMonth() + 1) + ".  " + two(now.getHours()) + ":" + two(now.getMinutes()) + ":" + two(now.getSeconds());
   var info = "ARD Text" + (d && d.nsub > 1 ? "  " + d.sub + "/" + d.nsub : "") + (ARD.loading ? "  …" : "");
   var rows = [[null, [seg(0, 5, pg, S.entry ? "y" : "w", null, "l", !!S.entry), seg(6, 9, "SkorText", "y"), seg(16, C - 39, info, "c"), seg(C - 22, 22, date, "y", null, "r")]]];
-  var off = Math.max(0, Math.floor((C - ARD_COLS) / 2)), body = d ? d.rows : [[], [], [[0, ARD_COLS, ARD.error ? fmt(T("ardErr"), ARD.want) : T("ardLoad"), "c", "k"]]];
+  var off = 0, body = d ? d.rows : [[], [], [[0, ARD_COLS, ARD.error ? fmt(T("ardErr"), ARD.want) : T("ardLoad"), "c", "k"]]];
   if (Date.now() < S.msgUntil) { rows.push([COL.w, [seg(1, C - 2, S.msg, "k")]]); body = body.slice(1); }
   S.ardOff = off;
-  body.slice(0, 24 - rows.length).forEach(function (r) { rows.push([COL.k, r.map(function (s) { return seg(off + s[0], s[1], s[2].replace(/ /g, "\u00a0"), s[3], s[4] === "k" ? null : s[4]); })]); });
+  var links = d && d.links || [], mark = links.length ? links[Math.min(ARD.sel, links.length - 1)] : null, skip = rows.length - 1;
+  body.slice(0, 24 - rows.length).forEach(function (r, ri) {
+    var segs = r.map(function (s) { return seg(off + s[0], s[1], s[2].replace(/ /g, "\u00a0"), s[3], s[4] === "k" ? null : s[4]); });
+    if (mark && mark[0] === ri + skip) segs.push(seg(off + mark[1], 3, String(mark[2]), "k", "y"));  // markierte Seitenzahl
+    rows.push([COL.k, segs, "ard"]);
+  });
   while (rows.length < 24) rows.push([COL.k, []]);
   return rows;
 }
@@ -1245,13 +1273,13 @@ function shownRound(lg) {
 function keyNumber(n) {
   if (!S.entry && n === 0) { go(100); return; }
   S.entry += String(n); S.entryAt = Date.now();
-  if (S.entry.length === 3) { var p = +S.entry; S.entry = ""; if (pageType(S.page) === "ard" && p !== ARD_PAGE) needArd(p, 1); else go(p); }
+  if (S.entry.length === 3) { var p = +S.entry; S.entry = ""; if (pageType(S.page) === "ard" && p !== ARD_PAGE) ardOpen(p, 1); else go(p); }
 }
 function key(k) {
   if (/^[0-9]$/.test(k)) { keyNumber(+k); draw(); return; }
   S.entry = "";
   var t = pageType(S.page);
-  if (t === "ard" && ["up", "down", "left", "right", "ok", "red", "green", "yellow", "blue", "chup", "chdn"].indexOf(k) >= 0) { ardKey(k); draw(); return; }
+  if (t === "ard" && ["up", "down", "left", "right", "ok", "red", "green", "yellow", "blue", "chup", "chdn", "back"].indexOf(k) >= 0) { ardKey(k); draw(); return; }
   if (t === "news" && ["back", "ok", "up", "down", "left", "right"].indexOf(k) >= 0) { newsKey(k); draw(); return; }
   if (t === "tv" && ["ok", "up", "down"].indexOf(k) >= 0 || (t === "tv" && k === "back" && S.tvOpen !== null)) { tvKey(k); draw(); return; }
   if (k === "back" && t === "lsel") { go(900); draw(); return; }
@@ -1924,6 +1952,17 @@ function draw() {
     el.style.background = bgc; el.style.borderRadius = rounded ? Math.max(3, Math.floor(G.rowH / 4)) + "px" : "0";
     el.style.boxShadow = (mod && rbg === COL.sel) ? "inset " + Math.max(4, Math.floor(G.cw * 0.45)) + "px 0 0 " + COL.y : "none";
     var html = "";
+    if (r[2] === "ard") {
+      // ARD-Tafel (40 Zeichen) auf die volle Bildbreite strecken – wie Videotext auf einem 16:9-Fernseher
+      var sx = G.pw / (ARD_COLS * G.cw);
+      segs.forEach(function (s) {
+        html += '<div class="sg" style="left:' + Math.floor(s[0] * G.cw) + "px;width:" + (Math.ceil(s[1] * G.cw) + 1) + "px;color:" + COL[s[3]] +
+          (s[4] ? ";background:" + COL[s[4]] : "") + '">' + esc(s[2]) + "</div>";
+      });
+      el.innerHTML = '<div style="position:absolute;left:0;top:0;height:100%;width:' + Math.ceil(ARD_COLS * G.cw) + "px;transform:scaleX(" + sx +
+        ');transform-origin:0 0;font-family:SkorMono,\'DejaVu Sans Mono\',monospace">' + html + "</div>";
+      continue;
+    }
     segs.forEach(function (s) {
       var x = Math.floor(s[0] * G.cw), w = Math.floor(s[1] * G.cw) + 2, txt = (s[6] && !S.blinkOn) ? "" : s[2];
       if (x >= G.pw) return; w = Math.min(w, G.pw - x);
@@ -2010,11 +2049,11 @@ function touchTap(x, y) {
   if (row < 0 || row > 23) return;
   if (row === 0) { if (S.page !== 100) key("back"); else draw(); return; }
   if (t === "ard") {
-    var ar = ARD.data && ARD.data.rows[row - 1], ac = col - (S.ardOff || 0);
+    var ar = ARD.data && ARD.data.rows[row - 1], ac = (x - r.left) / (G.pw / ARD_COLS);  // Tafel ist auf volle Breite gestreckt
     if (ar) {
       var line = ar.map(function (s) { return s[2]; }).join(""), best = null, mm, re3 = /\b([1-8]\d\d)\b/g;
       while ((mm = re3.exec(line))) { var dist = Math.abs(mm.index + 1 - ac); if (dist <= 6 && (!best || dist < best[1])) best = [+mm[1], dist]; }
-      if (best) { needArd(best[0], 1); return; }
+      if (best) { ardOpen(best[0], 1); return; }
     }
     if (row >= 20) key(col < C / 2 ? "down" : "up");
     return;
