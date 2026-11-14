@@ -32,13 +32,19 @@ jobs:
               try:
                   r = requests.get(u, headers=H, timeout=25); return r.status_code, r.text, r.headers.get("content-type", "")
               except Exception as e: return 0, str(e), ""
-          for pg in ["101", "250", "251", "210", "520", "300", "999", "201&dir=fwd", "199&dir=bck"]:
-              s, t, ct = get("https://www.ard-text.de/index.php?page=" + pg)
-              ids = re.findall(r"<div id='(page_\d+)'>", t)
+          s, t, ct = get("https://www.ard-text.de/index.php?page=210")
+          for js in sorted(set(re.findall(r'src="([^"]+\.js[^"]*)"', t))):
+              u = js if js.startswith("http") else "https://www.ard-text.de/" + js.lstrip("./")
+              s2, t2, c2 = get(u)
+              hits = [t2[max(0, m.start()-150):m.end()+150] for m in re.finditer(r"(?i)unterseite|subpage|sub=|ajax|\.php", t2)][:8]
+              OUT.append(print_("JS", u, s2, len(t2), hits))
+          def rows(t):
               i = t.find("<div id='page_1'>")
-              rows = re.findall(r"<div><span", t[i:]) if i >= 0 else []
-              OUT.append(print_(pg, s, len(t), ids, "rows", len(rows), "counter", re.findall(r'subpageCounter">([^<]*)<', t), re.findall(r"img/(g\d[a-z]+)[0-9a-f]{2}\.gif", t)[:3] and sorted(set(re.findall(r"img/(g\d[a-z]+)[0-9a-f]{2}\.gif", t)))))
-              if pg in ("250", "101"): open("samples/ttx_ard%s.html" % pg, "w").write(t)
+              return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", t[i:i+20000]).replace("&nbsp;", " "))[:200]
+          for q in ["210", "210&sub=2", "210&subpage=2", "210_02", "210-2", "210&s=2", "210/2"]:
+              s, t, ct = get("https://www.ard-text.de/index.php?page=" + q)
+              OUT.append(print_(q, s, re.findall(r'subpageCounter">([^<]*)<', t), rows(t)))
+          s, t, ct = get("https://www.ard-text.de/mobil/210"); OUT.append(print_("mobil210", s, re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", t))[-1500:]))
           open('probe-result.txt','w').write('\n'.join(OUT))
           PY
       - uses: actions/checkout@v4
