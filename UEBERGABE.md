@@ -1,6 +1,6 @@
 # SkorText – Übergabe für einen neuen Chat
 
-Stand: 14.11.2026 · aktuelle Version **3.15** (Android-App und GigaBlue-Plugin haben dieselbe Nummer)
+Stand: 14.11.2026 · aktuelle Version **3.16** (Android-App und GigaBlue-Plugin haben dieselbe Nummer)
 
 ## 1. Was ist SkorText?
 
@@ -32,7 +32,7 @@ Fußball-Ergebnisse, Tabellen und Nachrichten im Videotext-Stil (Seitennummern w
   - Android: https://github.com/Postmen1971/SkorText/releases/latest/download/skortext.apk
   - Downloader-Code: **5694507** (aftv.news/5694507)
   - GigaBlue: https://github.com/Postmen1971/SkorText/releases/latest/download/skortext.ipk
-  - Versionsdatei: …/latest/download/version.json → `{"app": "3.15", "plugin": "3.15"}`
+  - Versionsdatei: …/latest/download/version.json → `{"app": "3.16", "plugin": "3.16"}`
 
 ## 3. Seiten
 
@@ -52,6 +52,7 @@ Fußball-Ergebnisse, Tabellen und Nachrichten im Videotext-Stil (Seitennummern w
 | 520 | Heute im TV – Sender je Spiel (liveonsat), OK klappt alle Sender eines Spiels auf |
 | 600–660 | Nachrichten. Türkisch: 600 Manşet (TRT), 610 Güncel, 620 Dünya, 630 Ekonomi, 640 Spor (AA), 650 Kahramanmaraş (haberler.com), 660 Maraş Yerel (Maraş Manşet). Deutsch: 600 Schlagzeilen, 610 Inland, 620 Welt, 630 Wirtschaft (tagesschau), 640 Sport (sportschau), 650 Fußball (kicker) |
 | 700–810 | Weitere Ligen (Standard aus): NED, POR, BEL, SCO, AUT, SUI, GRE, ENG Championship, ESP LaLiga 2, ITA Serie B, FRA Ligue 2, DEN |
+| 990 | ARD Text – Online-Videotext von ard-text.de (`ardtext.py` / `ardParse` in app.js). Ziffern = ARD-Seite, ▲▼/Rot/Grün blättern, ◄► Unterseiten (`&sub=N`), Gelb/Blau = ARD-Farbtasten, OK neu laden, Tippen auf Seitennummer (Tablet) |
 | 900 | Einstellungen: Stil, Sprache, Lieblingsverein, Startseite, Aktualisierung, Unterseiten, Hintergrund, Auto-Update, Nachrichten TR/DE, „Ligen auswählen“ (→ 910), Bedienung (→ 190), Update suchen; unten der Downloader-Code |
 | 910 | Ligen-Auswahl: Haken = auf der Übersicht eingeblendet (ausgeblendet = auch nicht in Heute/Live) |
 
@@ -91,7 +92,8 @@ Bedienung: OK schaltet Ergebnis ⇄ Tabelle (keine Torschützen). ▲▼ blätte
 - LaLiga über ESPN: Spieltag 1–2 fehlen
 - Übersicht läuft über, wenn viele Zusatzligen eingeblendet sind (dann zweite Übersichtsseite)
 - `build.yml` baut bei **jedem** Push ein Release (auch bei Probe-Commits) – ggf. auf Änderungen in `app/` und `enigma2/` beschränken
-- **Neue Idee (14.11.):** Online-Videotext anderer Sender in SkorText anzeigen. ARD Text (ard-text.de, klassisch `index.php?page=NNN`, mobil `/mobil/NNN`) liefert echten Text, ebenso ZDF, ORF, SRF. TRT bietet keinen Online-Videotext an.
+- ARD Text ist seit 3.16 eingebaut (Seite 990). Möglich wären noch ZDFtext, ORF, SRF. TRT bietet keinen Online-Videotext an.
+- Übersicht hat mit 990 eine Zeile zu viel (zweite Übersichtsseite), bis man über 910 etwas ausblendet.
 - Reserve-Quellen aus dem Galvanik-Tool (TheSportsDB, OpenLigaDB, football-data.org über Cloudflare-Worker) sind **nicht** eingebaut. football-data.org bräuchte einen eigenen kostenlosen API-Schlüssel.
 
 ## 8. Schlüssel
