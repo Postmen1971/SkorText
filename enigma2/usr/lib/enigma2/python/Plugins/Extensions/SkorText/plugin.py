@@ -19,7 +19,7 @@ from Plugins.Plugin import PluginDescriptor
 from twisted.internet import threads
 
 from .data import EXTRA_PAGES, STORE, RATE, log, nice_error, RANKINGS, ranking_by_page, FupaLeague, fupa_today, NAT, get_url_json, fetch_bytes
-from .texts import TXT, SETTINGS, tr_upper, nation, FAV_LEAGUES, DL_CODE
+from .texts import TXT, SETTINGS, tr_upper, nation, FAV_LEAGUES, DL_CODE, tx, text_for, set_lang_getter, min_txt
 from .news import FEED_LIST, feed_by_page, set_news, NEWS
 from .ardtext import ARD, ARD_COLS
 from .data import get_url_text
@@ -28,7 +28,7 @@ from . import liveonsat
 
 PY2 = sys.version_info[0] == 2
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
-VERSION = "3.17"
+VERSION = "3.18"
 
 
 def E(s):
@@ -76,7 +76,11 @@ def set_cfg(key, val):
 
 
 def T(key):
-	return TXT[cfg("lang")][key]
+	return text_for(cfg("lang"), key)
+
+
+# Meldungen aus dem Datenmodul in der eingestellten Sprache
+set_lang_getter(lambda: cfg("lang"))
 
 
 # ---------------- Ligen-Auswahl (Seite 910) ----------------
@@ -593,7 +597,7 @@ class SkorText(Screen):
 		v = (u"%.2f" % RATE.value).replace(u".", u",")
 		self["rate"].setText(E(u"1 € = %s ₺" % v))
 		dd = RATE.date[8:10] + u"." + RATE.date[5:7] + u"." if len(RATE.date) >= 10 else u""
-		src = (u"AMB" if cfg("lang") == "tr" else u"EZB") if RATE.src == u"ezb" else u"Kurs"
+		src = tx(u"EZB", u"AMB", cfg("lang")) if RATE.src == u"ezb" else tx(u"Kurs", u"Kur", cfg("lang"))
 		self["ratesub"].setText(E(src + u" " + dd))
 
 	def shown_round(self, lg):
@@ -1092,7 +1096,7 @@ class SkorText(Screen):
 			return [seg(col, 6, T("pp"), "r")]
 		if st == "ht":
 			return [seg(col, 6, T("ht"), "g")]
-		return [seg(col, 6, (e["min"] or u"") + (u"'" if e["min"] and e["min"][0].isdigit() else u""), "g")]
+		return [seg(col, 6, min_txt(e["min"]) + (u"'" if e["min"] and e["min"][0].isdigit() else u""), "g")]
 
 	def res_row(self, e):
 		C = self.cols
@@ -1367,8 +1371,8 @@ class SkorText(Screen):
 				sel = i == self.set_sel
 				cur = [o for o in opts if o[0] == cfg(key)]
 				cur = cur[0] if cur else opts[0]
-				val = cur[2] if lang == "tr" else cur[1]
-				lines.append((COL["sel"] if sel else None, [seg(1, half - 2, lbl[1] if lang == "tr" else lbl[0], "y" if sel else "w"),
+				val = tx(cur[1], cur[2], lang)
+				lines.append((COL["sel"] if sel else None, [seg(1, half - 2, tx(lbl[0], lbl[1], lang), "y" if sel else "w"),
 					seg(half, half, (u"◄ " if sel else u"  ") + val + (u" ►" if sel else u""), "y" if sel else "c")]))
 			ls = self.set_sel == len(SETTINGS)
 			non = len([1 for it in self.lsel_items() if it[0] is not None and page_on(it[0])])
@@ -1382,7 +1386,7 @@ class SkorText(Screen):
 				seg(half, half, (u"► " if us else u"  ") + (UPD["msg"] or T("updOpen")), "y" if us else "c")]))
 			lines.append(self.text(u""))
 			inf = SETTINGS[self.set_sel][3] if not (ls or sel or us) else ((T("lselInfo"),) * 2 if ls else ((T("helpInfo"),) * 2 if sel else ((T("updInfo") + u" " + VERSION),) * 2))
-			lines.append(self.text(u" " + (inf[1] if lang == "tr" else inf[0]), "g"))
+			lines.append(self.text(u" " + tx(inf[0], inf[1], lang), "g"))
 			lines.append(self.text(u""))
 			lines.append(self.text(u" " + T("dlRow") % (DL_CODE, DL_CODE), "y"))
 			while len(lines) < 19:
@@ -1397,13 +1401,13 @@ class SkorText(Screen):
 			cur = [o for o in opts if o[0] == cfg("alarm")][0]
 			st = [seg(1, 12, T("ticker") + u":", "w"), seg(13, 8, u" " + (T("tkOn") if on else T("tkOff")) + u" ", "k" if on else "w", "g" if on else "r")]
 			if on:
-				st.append(seg(23, C - 24, cur[2] if lang == "tr" else cur[1], "g"))
+				st.append(seg(23, C - 24, tx(cur[1], cur[2], lang), "g"))
 			lines = [self.text(u""), (None, st), self.text(u""),
 				self.text(u" " + T("tk1"), "c"), self.text(u" " + T("tk2"), "c"), self.text(u" " + T("tk3"), "c"), self.text(u"")]
 			for i, o in enumerate(opts):
 				sel = i == self.tick_sel
 				act = o[0] == cfg("alarm")
-				lines.append((COL["sel"] if sel else None, [seg(1, C - 2, (u"► " if sel else u"  ") + (u"● " if act else u"○ ") + (o[2] if lang == "tr" else o[1]),
+				lines.append((COL["sel"] if sel else None, [seg(1, C - 2, (u"► " if sel else u"  ") + (u"● " if act else u"○ ") + tx(o[1], o[2], lang),
 					"y" if sel else ("g" if act else "w"))]))
 			while len(lines) < 19:
 				lines.append(self.text(u""))
@@ -1417,7 +1421,7 @@ class SkorText(Screen):
 		for x in inc:
 			if x["side"] != side:
 				continue
-			m = x["min"] + u"."
+			m = min_txt(x["min"]) + u"."
 			if x["type"] in ("goal", "pen", "og"):
 				extra = {"pen": u" (" + T("pen") + u")", "og": u" (" + T("og") + u")"}.get(x["type"], u"")
 				out.append((m + u" " + x["name"] + extra, "c"))
@@ -1923,7 +1927,7 @@ class SkorText(Screen):
 			rows.append((COL["w"], [seg(1, C - 2, self.msg, "k")]))
 		elif goal:
 			lg = STORE.by_ut.get(goal["ut"])
-			m = goal["min"] + (u"'" if goal["min"] and goal["min"][0].isdigit() else u"")
+			m = min_txt(goal["min"]) + (u"'" if goal["min"] and goal["min"][0].isdigit() else u"")
 			txt = u"%s  %s  %s %d:%d %s" % (T("goal"), m, goal["h"], goal["hs"] or 0, goal["as"] or 0, goal["a"])
 			rows.append((COL["y"] if self.blink_on else COL["k"], [seg(1, C - 22, fit(txt, C - 22), "k" if self.blink_on else "y"),
 				seg(C - 21, 20, fit(lg.name(cfg("lang")) if lg else u"", 20), "k" if self.blink_on else "y", al="r")]))
@@ -2180,9 +2184,9 @@ class Background(object):
 			return
 		e = new[-1][1]
 		lg = STORE.by_ut.get(e["ut"])
-		m = e["min"] + (u"'" if e["min"] and e["min"][0].isdigit() else u"")
-		main = u"%s %s  %s %d:%d %s" % (TXT[cfg("lang")]["goal"], m, e["h"], e["hs"] or 0, e["as"] or 0, e["a"])
-		sub = (lg.name(cfg("lang")) if lg else u"") + u" · " + (u"TEXT uzun → Detay" if cfg("lang") == "tr" else u"TEXT lang → Details")
+		m = min_txt(e["min"]) + (u"'" if e["min"] and e["min"][0].isdigit() else u"")
+		main = u"%s %s  %s %d:%d %s" % (T("goal"), m, e["h"], e["hs"] or 0, e["as"] or 0, e["a"])
+		sub = (lg.name(cfg("lang")) if lg else u"") + u" · " + tx(u"TEXT lang → Details", u"TEXT uzun → Detay", cfg("lang"))
 		if self.popup is None:
 			self.popup = self.session.instantiateDialog(SkorGoalPopup)
 		self.popup.set(main, sub)

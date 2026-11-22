@@ -1,6 +1,6 @@
 # SkorText – Übergabe für einen neuen Chat
 
-Stand: 14.11.2026 · aktuelle Version **3.16** (Android-App und GigaBlue-Plugin haben dieselbe Nummer)
+Stand: 22.11.2026 · aktuelle Version **3.18** (Android-App und GigaBlue-Plugin haben dieselbe Nummer)
 
 ## 1. Was ist SkorText?
 
@@ -33,6 +33,17 @@ Fußball-Ergebnisse, Tabellen und Nachrichten im Videotext-Stil (Seitennummern w
   - Downloader-Code: **5694507** (aftv.news/5694507)
   - GigaBlue: https://github.com/Postmen1971/SkorText/releases/latest/download/skortext.ipk
   - Versionsdatei: …/latest/download/version.json → `{"app": "3.16", "plugin": "3.16"}`
+
+## 2b. Sprachen (seit 3.18)
+
+Deutsch und Türkisch stehen wie bisher direkt in `app.js` (TXT) bzw. `texts.py`. **Englisch, Französisch, Spanisch, Italienisch, Schwedisch, Dänisch, Norwegisch** kommen aus einer gemeinsamen Datei:
+
+- `app/src/main/assets/www/sprachen.js` (`var SKOR_SPRACHEN = {…}` – reines JSON nach dem `=`), von `index.html` vor `app.js` geladen
+- GigaBlue: `SkorText/sprachen.json` – wird beim Bauen von `tools/sprachen_json.py` aus der JS-Datei erzeugt (ohne die Touch-Texte `t_…`); nach Änderungen auch von Hand ausführen
+- Aufbau je Sprache: `txt` (gleiche Schlüssel wie TXT; `e2_…` = abweichender Text fürs Plugin mit EXIT/MENU-Tasten, `e2_helpRows` = Plugin-Hilfe; `days` ab Montag – die App dreht sie auf Sonntag zuerst), `tx` (Übersetzung nach dem **deutschen Originaltext**: Einstellungen, Runden, Gruppen, Meldungen, Ligennamen), `nations` (nach dem englischen Namen der Datenquellen)
+- Rückfall: Sprache → Englisch → Deutsch. Code-Helfer: `tx(de, tr)` / `txIn(lang, de, tr)` in app.js, `tx(de, tr, lang)` / `text_for(lang, key)` in texts.py. Türkische Ligen heißen in den weiteren Sprachen offiziell (Trendyol Süper Lig …), deutsche Ligen wie im Deutschen.
+- Nachrichten (600 ff.) bleiben türkisch oder deutsch (Einstellung „Nachrichten“).
+- Neue Sprache: in `sprachen.js` unter `order`, `names` und einem eigenen Block ergänzen – sonst nichts.
 
 ## 3. Seiten
 

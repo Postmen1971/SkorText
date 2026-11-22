@@ -33,6 +33,8 @@ jobs:
           echo "Plugin $PV / App $AV"
           # Android-App und GigaBlue-Plugin tragen immer dieselbe Versionsnummer
           [ "$PV" = "$AV" ] || { echo "::error::Versionen ungleich: Plugin $PV, App $AV – bitte beide gleich setzen"; exit 1; }
+          # gemeinsame Sprachdatei der App (www/sprachen.js) fürs Plugin als sprachen.json
+          python3 tools/sprachen_json.py
           B=$(mktemp -d)
           cp -r enigma2/usr $B/
           sed "s/^Version:.*/Version: $PV/" enigma2/CONTROL/control > $B/control

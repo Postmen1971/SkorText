@@ -14,6 +14,15 @@ try:
 except ImportError:  # Python 2
 	from urllib2 import Request, urlopen
 
+try:
+	from .texts import tx, cur_lang
+except Exception:  # Datenmodul allein (Tests ohne Paket)
+	def tx(de, tr=None, lang="de"):
+		return tr if (lang == "tr" and tr is not None) else de
+
+	def cur_lang():
+		return "de"
+
 BASE = "https://prod-public-api.livescore.com/v1/api/app"
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 
@@ -115,17 +124,23 @@ def log(msg):
 
 
 def nice_error(err):
+	return _nice_error_de(err, tx, cur_lang())
+
+
+def _nice_error_de(err, tx, lang):
 	s = str(err)
 	if "403" in s:
-		return u"Datenquelle sperrt den Zugriff (HTTP 403) – neuer Versuch in 5 Min."
+		return tx(u"Datenquelle sperrt den Zugriff (HTTP 403) – neuer Versuch in 5 Min.", None, lang)
 	if "404" in s or "410" in s:
-		return u"Liga bei der Datenquelle nicht gefunden"
+		return tx(u"Liga bei der Datenquelle nicht gefunden", None, lang)
 	if "timed out" in s.lower() or "timeout" in s.lower():
-		return u"Zeitüberschreitung – Internet langsam oder weg"
+		return tx(u"Zeitüberschreitung – Internet langsam oder weg", None, lang)
 	if "name or service" in s.lower() or "nodename" in s.lower() or "errno -2" in s.lower() or "errno -3" in s.lower():
-		return u"Keine Internetverbindung (DNS)"
+		return tx(u"Keine Internetverbindung (DNS)", None, lang)
 	if "certificate" in s.lower() or "ssl" in s.lower():
-		return u"SSL-Fehler – Uhrzeit des Receivers prüfen"
+		return tx(u"SSL-Fehler – Uhrzeit des Receivers prüfen", None, lang)
+	if u"Länderspiele" in s or "Laenderspiele" in s:
+		return tx(u"Keine Länderspiele gefunden", None, lang)
 	return s[:80]
 
 
@@ -479,7 +494,13 @@ class League(object):
 		self.gdefs = []
 
 	def name(self, lang):
-		return self.name_tr if lang == "tr" else self.name_de
+		if lang == "tr":
+			return self.name_tr
+		t = tx(self.name_de, None, lang)
+		# weitere Sprachen: tuerkische Ligen mit ihrem offiziellen Namen, sonst der deutsche (Eigennamen)
+		if lang != "de" and t == self.name_de and self.c == "tr":
+			return self.name_tr
+		return t
 
 	def views(self):
 		if self.c == "nlg":
@@ -981,11 +1002,11 @@ def round_text(key, lang):
 	for rx, (de, tr) in ROUND_NAMES:
 		m = re.match(rx, k)
 		if m:
-			t = tr if lang == "tr" else de
+			t = tx(de, tr, lang)
 			if u"%s" in t:
-				t = t % m.group(1)
+				t = t.replace(u"%s", m.group(1))
 			if sub:
-				t += u" · " + ((u"%s. Tur" if lang == "tr" else u"%s. Runde") % sub)
+				t += u" · " + tx(u"%s. Runde", u"%s. Tur", lang).replace(u"%s", sub)
 			return t
 	return key
 
@@ -1031,7 +1052,7 @@ class CupLeague(League):
 			name = raw.split(u":")[-1].strip() or raw
 			if name.lower().startswith(u"group"):
 				for _n, rows in parse_table(st):
-					tables.append((u"Gruppe " + name.split()[-1], rows))
+					tables.append((tx(u"Gruppe %s", u"Grup %s", cur_lang()).replace(u"%s", name.split()[-1]), rows))
 				name = u"Group"
 			nums = set(e["round"] for e in evs if e["round"] is not None)
 			for e in evs:
@@ -1182,21 +1203,21 @@ def nat_stage_name(snm, lang):
 	for p in parts:
 		m = re.match(r"(?i)^league ([a-d])$", p)
 		if m:
-			out.append((u"%s Ligi" if lang == "tr" else u"Liga %s") % m.group(1).upper())
+			out.append(tx(u"Liga %s", u"%s Ligi", lang).replace(u"%s", m.group(1).upper()))
 			continue
 		m = re.match(r"(?i)^group ([a-z0-9]+)", p)
 		if m:
 			g = m.group(1).upper()
-			out.append((u"%s. Grup" % g if g.isdigit() else u"Grup %s" % g) if lang == "tr" else u"Gruppe %s" % g)
+			out.append(u"%s. Grup" % g if (lang == "tr" and g.isdigit()) else tx(u"Gruppe %s", u"Grup %s", lang).replace(u"%s", g))
 			continue
 		if re.search(r"(?i)play-?off", p):
 			out.append(u"Play-off")
 		elif re.search(r"(?i)final", p):
-			out.append(u"Final" if lang == "tr" else u"Finale")
+			out.append(tx(u"Finale", u"Final", lang))
 		elif re.search(r"(?i)semi", p):
-			out.append(u"Yarı Final" if lang == "tr" else u"Halbfinale")
+			out.append(tx(u"Halbfinale", u"Yarı Final", lang))
 		elif re.search(r"(?i)quarter", p):
-			out.append(u"Çeyrek Final" if lang == "tr" else u"Viertelfinale")
+			out.append(tx(u"Viertelfinale", u"Çeyrek Final", lang))
 	return u" · ".join(out) or snm
 
 
@@ -1210,7 +1231,7 @@ class NatLeague(League):
 
 	def name(self, lang):
 		t = NAT_TITLES[self.kind]
-		return (t[1] if lang == "tr" else t[0]) + u" · " + nat_stage_name(self.snm, lang)
+		return tx(t[0], t[1], lang) + u" · " + nat_stage_name(self.snm, lang)
 
 	def load(self):
 		if getattr(self, "source", "") == "uefa":
@@ -1278,7 +1299,7 @@ class NatComp(object):
 
 	def title(self, lang):
 		t = NAT_TITLES[self.kind]
-		return t[1] if lang == "tr" else t[0]
+		return tx(t[0], t[1], lang)
 
 	def candidates(self):
 		y = time.localtime().tm_year

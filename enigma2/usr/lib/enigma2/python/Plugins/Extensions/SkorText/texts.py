@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+import io
+import json
+import os
 
 TXT = {
 	"de": {
@@ -165,6 +168,89 @@ SETTINGS = [
 DL_CODE = u"5694507"   # Downloader-Code fuer die Android-App (aftv.news/5694507)
 
 
+# ---------------- weitere Sprachen ----------------
+# Englisch, Franzoesisch, Spanisch, Italienisch, Schwedisch, Daenisch, Norwegisch - gemeinsam mit der Android-App
+# (app/src/main/assets/www/sprachen.js, beim Bauen als sprachen.json hierher kopiert). Fehlt ein Text: Englisch, sonst Deutsch.
+def _load_extra():
+	try:
+		p = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sprachen.json")
+		with io.open(p, "rb") as f:
+			d = json.loads(f.read().decode("utf-8"))
+		return d if isinstance(d, dict) else {}
+	except Exception:
+		return {}
+
+
+XS = _load_extra()
+LANG_ORDER = [l for l in XS.get("order", []) if isinstance(XS.get(l), dict)]
+for _l in LANG_ORDER:
+	_src = XS[_l].get("txt", {})
+	_t = dict((k, v) for k, v in _src.items() if not k.startswith("e2_"))
+	# e2_... = Fassung fuer die GigaBlue (EXIT/MENU-Tasten statt ZURUECK)
+	_t.update(dict((k[3:], v) for k, v in _src.items() if k.startswith("e2_")))
+	if "helpRows" in _t:
+		_t["helpRows"] = [tuple(r) for r in _t["helpRows"]]
+	TXT[_l] = _t
+for _k, _lbl, _opts, _info in SETTINGS:
+	if _k == "lang":
+		for _l in LANG_ORDER:
+			_n = XS.get("names", {}).get(_l, _l)
+			_opts.append((_l, _n, _n))
+
+# Meldungen aus dem Datenmodul, die bisher auch auf Tuerkisch deutsch waren
+TR_TX = {
+	u"Datenquelle sperrt den Zugriff (HTTP 403) – neuer Versuch in 5 Min.": u"Veri kaynağı erişimi engelledi (HTTP 403) – 5 dk sonra tekrar",
+	u"Liga bei der Datenquelle nicht gefunden": u"Lig veri kaynağında bulunamadı",
+	u"Zeitüberschreitung – Internet langsam oder weg": u"Zaman aşımı – internet yavaş veya yok",
+	u"Keine Internetverbindung (DNS)": u"İnternet bağlantısı yok (DNS)",
+	u"SSL-Fehler – Uhrzeit des Receivers prüfen": u"SSL hatası – alıcının saatini kontrol et",
+	u"Keine Länderspiele gefunden": u"Milli maç bulunamadı",
+	u"Verl": u"Uz.", u"Elf": u"Pen.", u"Kurs": u"Kur", u"EZB": u"AMB",
+	u"Gruppe %s": u"Grup %s", u"TEXT lang → Details": u"TEXT uzun → Detay",
+}
+
+
+def tx(de, tr=None, lang="de"):
+	"""Text nach deutschem Original in Sprache lang (tr = tuerkische Fassung daneben)."""
+	if lang == "tr":
+		return tr if tr is not None else TR_TX.get(de, de)
+	if lang == "de" or lang not in XS:
+		return de
+	d = XS[lang].get("tx", {})
+	if de in d:
+		return d[de]
+	return XS.get("en", {}).get("tx", {}).get(de, de)
+
+
+def text_for(lang, key):
+	"""Seitentext: Sprache, sonst Englisch, sonst Deutsch."""
+	for l in (lang, "en", "de"):
+		t = TXT.get(l)
+		if t is not None and key in t:
+			return t[key]
+	return u""
+
+
+# aktuelle Sprache fuer Meldungen aus dem Datenmodul (setzt das Plugin beim Start)
+_LANG = [lambda: "de"]
+
+
+def set_lang_getter(f):
+	_LANG[0] = f
+
+
+def cur_lang():
+	try:
+		return _LANG[0]()
+	except Exception:
+		return "de"
+
+
+def min_txt(m):
+	"""Spielminute "Verl" (Verlaengerung) / "Elf" (Elfmeterschiessen) in der eingestellten Sprache."""
+	return tx(m, None, cur_lang()) if m in (u"Verl", u"Elf") else (m or u"")
+
+
 def tr_upper(s):
 	"""Grossschreibung mit korrektem i -> İ und ı -> I."""
 	return s.replace(u"i", u"İ").replace(u"ı", u"I").upper()
@@ -209,6 +295,8 @@ NATIONS = {
 
 
 def nation(name, lang):
+	if lang not in ("de", "tr") and lang in XS:
+		return XS[lang].get("nations", {}).get(name, name)
 	t = NATIONS.get(name)
 	if t is None:
 		return name
